@@ -1,0 +1,111 @@
+.clickable-card {
+    cursor: pointer;
+    transition: transform 0.1s;
+}
+
+/* .bg-banner {
+    background-color: #6ca0ce0b;
+} */
+:root {
+    --light-theme: #ffffff82;
+    --dark-theme: #1716167d;
+}
+
+html[data-mdb-theme="light"] {
+    --img-mask: var(--light-theme);
+}
+
+html[data-mdb-theme="dark"] {
+    --img-mask: var(--dark-theme);
+}
+body {
+    font-family: "Open Sans", serif;
+}
+
+.bg-banner {
+    position: relative;
+    overflow: hidden;
+}
+
+.bg-banner::before {
+    background-color: var(--mdb-surface-bg);
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: linear-gradient(to right, var(--mdb-surface-bg) 25%, var(--img-mask) 100%),
+        url('../img/sejm.webp');
+    background-size: cover;
+    background-position: 50% 25%;
+    filter: blur(5px);
+    z-index: -1;
+}
+
+.home-card-shadow {
+    box-shadow: 0px 2px 11.4px -5px rgba(0, 0, 0, 0.25);
+
+}
+
+.clickable-card:hover {
+    /* make it bigger */
+    transform: scale(1.04);
+}
+
+.not-ready-content {
+    filter: blur(6px);
+    cursor: not-allowed;
+    position: relative;
+}
+
+.article-image {
+    width: 100%;
+    height: 13vw;
+    object-fit: cover;
+    /* or 'contain' depending on your needs */
+}
+
+.divider:after,
+.divider:before {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: #eee;
+}
+
+/* Sidebar */
+
+@media screen and (min-width: 992px) {
+    footer {
+        padding-left: 240px !important;
+    }
+}
+
+.navbar {
+    background-color: var(--mdb-surface-bg);
+}
+
+/* 
+.sidebar {
+    background-color: var(--mdb-surface-bg);
+} */
+
+@media (min-width: 1400px) {
+
+    main,
+    header,
+    #main-navbar {
+        padding-left: 240px;
+    }
+}
+
+.datatable table {
+    table-layout: auto;
+}
+
+.datatable table td,
+.datatable table th {
+    text-overflow: unset;
+    white-space: normal;
+}

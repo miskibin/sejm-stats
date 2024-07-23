@@ -1,0 +1,16 @@
+{% extends 'accounts/generic/base.html' %}
+{% block body %}
+  <div class="mb-md-5 mt-md-4">
+    <h2 class="fw-bold mb-5 text-primary">Aktywowanie konta</h2>
+    <p class="mb-4">
+      Konto zostało utworzone. Wysłaliśmy Ci instrukcje dotyczące aktywowania konta na podany e-mail.
+      Powinieneś je wkrótce otrzymać.
+    </p>
+    <p class="mb-4">
+      Jeśli nie otrzymałeś wiadomości e-mail, sprawdź folder ze spamem i skontaktuj się ze zespołem Sejm-Stats.
+    </p>
+  </div>
+  <div class="d-flex justify-content-between align-items-center mt-5 mb-0">
+    <a class="fw-bold" href="{% url 'login' %}"><i class="fas fa-arrow-left mx-2"></i>Zaloguj</a>
+  </div>
+{% endblock %}

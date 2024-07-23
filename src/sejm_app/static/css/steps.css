@@ -1,0 +1,85 @@
+.timeline {
+    position: relative;
+    z-index: 0;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2px;
+    height: 100%;
+    background: #dc3545;
+    z-index: 0;
+}
+
+/* Arrowhead at the bottom */
+.timeline::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    transform: translateX(-50%) translateY(50%);
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 20px solid #dc3545;
+    z-index: 1;
+    /* The arrow should be above the line */
+}
+
+/* Additional styles for timeline-badge to bring it above the line and arrow */
+
+
+.timeline-step {
+    position: relative;
+    width: 100%;
+    z-index: 2;
+    margin-bottom: 30px;
+
+}
+
+.timeline-content {
+    position: relative;
+    width: 50%;
+    padding: 10px 40px;
+    box-shadow: 0 3px 5px rgba(0, 0, 0, .15);
+}
+
+.timeline-badge {
+    transform: translateX(-50%) translateY(-50%);
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 150px;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    background-color: #dc3545;
+    /* Bootstrap's `btn-danger` color */
+    color: white;
+}
+
+/* Adjust the position of the timeline content based on odd/even child */
+.timeline-step:nth-child(odd) .timeline-content {
+    left: 0;
+}
+
+.timeline-step:nth-child(even) .timeline-content {
+    left: 50%;
+}
+
+/* Add your media queries to make it responsive */
+@media (max-width: 768px) {
+    .timeline-content {
+        width: 100%;
+        padding-left: 30px;
+        padding-right: 30px;
+    }
+
+    .timeline-step:nth-child(even) .timeline-content {
+        left: 0;
+    }
+}

@@ -1,0 +1,110 @@
+{% extends 'generic/base.html' %}
+{% block extra_head %}
+  {% load static %}
+  <script src="{% static 'js/generic/loadDataTable.js' %}"></script>
+  <script src="{% static 'js/votingList.js' %}"></script>
+  {{ form.media.js }}
+  {{ form.media.css }}
+{% endblock extra_head %}
+{% block content %}
+  <div class="container container-fluid mt-4">
+    <div class="d-flex flex-row align-items-center justify-content-between">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item">
+            <a href="/"><i class="fa-solid fa-house"></i></a>
+          </li>
+          <li class="breadcrumb-item">
+            <a href="#">Głosowania</a>
+          </li>
+        </ol>
+      </nav>
+      <div class=" form-check form-switch ">
+        <label class="form-check-label  fw-bold"  for="onlyImportant">Tylko istotne</label>
+        <input class="form-check-input"
+               type="checkbox"
+               role="switch"
+               id="onlyImportant" />
+      </div>
+    </div>
+    {% if envoy %}
+      <p class="text-muted display-6 fs-4 my-2">
+        Uwzględniając: <a href="{% url 'envoy_detail' envoy.pk %}">{{ envoy }}</a>
+      </p>
+    {% endif %}
+    <hr class="my-4">
+    <div class="row" id="votings-table">
+      <div class="col-lg-3 col-md-12 p-md-2 p-0 pt-0 my-2">
+        <form method="get" class="rounded card border shadow-0 p-3" novalidate>
+          {% load crispy_forms_tags %}
+          <h4 class="text-danger">Filtruj</h4>
+          <hr class="my-4 text-danger" />
+          {{ form|crispy }}
+          <button type="submit" class="btn btn-primary m-2">Filtruj</button>
+          <a href="{% url 'votings' %}" class="btn btn-secondary m-2">Resetuj filtry</a>
+        </form>
+        <fieldset class="p-2  mt-4 card border border-primary shadow-0">
+          <legend>Głosowania:</legend>
+          <hr class="my-1" />
+          <div class="m-2">
+            <i class="fas fa-xl mx-2 fa-check text-success"></i>
+            <label class="form-label">
+              Przegłosowano (<span id="succeed"></span>)
+            </label>
+          </div>
+          <div class="m-2">
+            <i class="fas fa-xl mx-2 fa-times text-danger"></i>
+            <label class="form-label">
+              Nie przegłosowano (<span id="failed"></span>)
+            </label>
+          </div>
+          {% if envoy %}
+            <legend>Głosy posła:</legend>
+            <hr class="my-1" />
+            <div class="m-2">
+              <i class="fas fa-xl mx-2 fa-thumbs-up text-success"></i>
+              <label class="form-label">
+                Za (<span id="yes-votes"></span>)
+              </label>
+            </div>
+            <div class="m-2">
+              <i class="fas fa-xl mx-2 fa-thumbs-down text-danger"></i>
+              <label class="form-label">
+                Przeciw (<span id="no-votes"></span>)
+              </label>
+            </div>
+            <div class="m-2">
+              <i class="fas fa-xl mx-2 fa-child-reaching text-primary"></i>
+              <label class="form-label">
+                Wstrzymanie się (<span id="abstain-votes"></span>)
+              </label>
+            </div>
+            <div class="m-2">
+              <i class="fas fa-xl mx-2 fa-arrow-right-from-bracket text-warning"></i>
+              <label class="form-label">
+                Nieobecność (<span id="absent-votes"></span>)
+              </label>
+            </div>
+            <div class="m-2">
+              <i class="fas fa-xl mx-2 fa-check"></i>
+              <label class="form-label">
+                Głos ważny (<span id="valid-votes"></span>)
+              </label>
+            </div>
+          {% endif %}
+        </fieldset>
+      </div>
+      <div class="col-lg-9 col-12 table-responsive my-2">
+        <div data-mdb-input-init class="form-outline my-2 ">
+          <input type="text" class="form-control" id="datatable-search-input" />
+          <label class="form-label" for="datatable-search-input">Szukaj</label>
+        </div>
+        <div id="votingTable"
+             data-mdb-striped="true"
+             data-mdb-fixed-header="true"
+             data-mdb-clickable-rows="true"
+             data-mdb-multi="true"></div>
+      </div>
+    </div>
+  </div>
+{% endblock content %}

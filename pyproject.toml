@@ -1,0 +1,3 @@
+[tool.djlint]
+indent = 2
+ignore = "H013,H006,H021,D018,T003"

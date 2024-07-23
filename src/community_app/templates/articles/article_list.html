@@ -1,0 +1,29 @@
+{% extends 'generic/base.html' %}
+{% load static %}
+{% block content %}
+  <div class="container container-fluid mt-4">
+    <div class="justify-content-between">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item">
+            <a href="/"><i class="fa-solid fa-house"></i></a>
+          </li>
+          <li class="breadcrumb-item">
+            <a href="{% url 'articles' %}">Artykuły</a>
+          </li>
+        </ol>
+      </nav>
+    </div>
+    <hr class='my-4' />
+    <section id="articles" class="container row">
+    </section>
+    <div class="row text-center" id="spinner" style="display: none;">
+      <div class="col-md-12">
+        <div class="spinner-border mx-auto"></div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+{% block extra_js %}
+  <script src="{% static 'js/articlesLoader.js' %}"></script>
+{% endblock %}

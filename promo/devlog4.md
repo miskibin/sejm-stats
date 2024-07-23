@@ -1,0 +1,17 @@
+# Aplikacja działa!
+
+Cześć, od kąd 40 dni temu wrzuciłem pierwszy film przedstawiający aplikację sejm-stats, 
+wasze zaangażowanie w temat jest coraz większe. Wraz ze wsparciem moja motywacja także rosła. 
+
+W wyniku tego udało mi się wupuścić wersje beta aplikacji. Link znajdziecie w opisie. Niestety najciekawszą funkcjonalność to znaczy, inteligentne przeszukiwanie wszystkich obiektów w bazie danych, na podstawie tylko haseł, musiałem wyłączyć. Serwer za 25 zł miesięcznie poprostu zwieszał by się gdyby funkcja była nadużywana, poza tym jest pare innych przycisków, które są wyłączone, a powinny działać. Doszedłem do wniosku, że lepiej aby aplikacja działała płynnie, ale z brakującymi funkcjami, niż zawieszała się co chwilę, przynajmniej póki co. 
+Oprócz tego ostatnim czasie skupiłem się na przygotowaniu środowiska dla innych developerów. Tworzenie filmów na yt, pisanie postów na mediach społeczonościowych i utrzymanie infrastruktury to więcej pracy niz mi sie wydawało, a że pare osób zadeklarowało chęć pomocy, postanowiłem zrobić wszystko by to ułatwić. pierwsze osoby już się wdrażają.
+Zdecydowałem, że projekt nie będzie open sourcowy, dlatego też jeśli ktoś z was chciałby pomóc zapraszam do napisania maila. Technologie wyświetlane są na ekranie. Każda osoba która napisze choć jedną linię zostanie uwzględniona w widoku o zespole. 
+
+Obecnie projekt ma ponad 30 000 linii kodu napisanych tylko przeze mnie, to tyle co 2 przeciętnej długości książki. Aby zaimplementować wszystkie funkcjonalności, które wymyśliłem i które mi zasugerowaliście potrzeba by jeszcze kolejnych 30 000 linii.
+W tym miejscu chciałbym bardzo podziękować moim patronom na patronite. To dzięki wam udało mi się uruchomić serwer, niestety póki co i tak dokładam do projektu, więc będę wdzięczny za każdą kolejną złotówkę. Link do patronite w opisie. Tak jak obiecałem powstał nowy widok zawierający listę patrontów. 
+
+Teraz chwile o tym jak uplynely ostatnie 2 tygodnie prac. Pierwszego wykupiłem domenę i serwer uruchomilem aplikacje dalej w trybie tekstowym. zadowolony z siebie poszedlem spac. Rano jak wstalem strona kompletnie nieodpowiadala. zalogowalem sie na serwer i przeczytalem logi. Wynikalo z nich ze serwer zaatakowano chyba wszystkimi metodami o jakich uczono mnie na studiach. Ostatecznie komus udalo sie zalogowac do bazy danych i ja usunal.  Na szczescie aplikacja dziala w srodowisku wirtualnym, upraszczajac wyobraz sobie ze nasz swiat jest tylko pyłkiem w świecie olbrzymow (jak w hortonie) oni moga zgniesc na swiat a my tak naprawde nie mamy szans wplynac na ich swiat. Tak wlasnie dziala docker. Spalilem zainfekowany pylek i postawilem na jego miejsce nowy zdrowy za pomoca jednego klikniecia, tym razem wzialem sprawy bezpieczenstwa na powaznie. Od tego czasu nie doswiatczylem juz zadnego problemu, a liczba prob ataku tez zmalala. Co ciekawe najwiecej zlosliwych zapytan na serwer bylo zwiazanych z proba wykorzystania luk brzpieczenstwa w worldpresie (ktorego ja oczywiscir nie uzywam). Reszta czasu zeszla na naprawianiu drabnych błędów i przygotowywaniu projektu dla potencjalnych nowych programów. 
+
+
+
+Dotychczas aplikacje tego typu budowałem tylko na wewnętrzne potrzeby mojego korpo, żadna więc z aplikacji nie była wystawiona na ataki z zewnątrz. 

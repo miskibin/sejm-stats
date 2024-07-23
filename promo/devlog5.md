@@ -1,0 +1,17 @@
+# Devlog 5
+
+Wierzysz politykom na słowo?
+Ja też nie, dlatego kilka miesięcy temu zacząłem  pisać projekt SejmStats. To strona, z której możesz skorzystać, by zweryfikować zachowania posłów na podstawie oficjalnych danych z Sejmu. Bardzo istotne jest to, że projekt jest apolityczny. Narzędzie, które buduję, ma wzmocnić demokrację, a nie pozycję jakiejkolwiek partii politycznej.
+
+Od momentu udostępnienia wersji beta aplikacji trzy tygodnie temu, praktycznie codziennie pisałem nowe aktualizacje. To był zdecydowanie najbardziej owocny okres dla projektu. Z perspektywy użytkownika zmienił się wygląd aplikacji, naprawione zostały błędy związane z danymi, ale przede wszystkim dodałem nową zakładkę o nazwie „głosowania”. Tutaj moja przewaga nad oficjalną stroną Sejmu jest najbardziej widoczna. Ja mogę klasyfikować dane i dodać przełącznik „tylko istotne” czy też zaproponować streszczenia ustaw wygenerowane przez AI, podczas gdy strona Sejmu jest wyłącznie informacyjna i z definicji nie oferuje takich możliwości.
+
+Z widoku posła można teraz prześledzić, jak głosował w interesujących nas głosowaniach, a także obejrzeć szczegóły głosowania z różnymi ciekawymi statystykami. Jest to świeża funkcjonalność i miejscami mogą pojawić się jeszcze drobne błędy. Chciałbym też podkreślić, że jestem świadom, że strona nie jest jeszcze tak użyteczna, jak by mogła być. Aby wprowadzić takie funkcjonalności jak np. raport z najciekawszych wydarzeń sejmowych w minionym tygodniu, muszę najpierw rozwinąć poszczególne komponenty aplikacji. Także proszę o cierpliwość. Plan na najbliższe 2 tygodnie to oczywiście najpierw poprawa błędów, a potem dodanie funkcjonalności streszczeń ustaw oparty o AI. Prototyp rozwiązania już mam przygotowany.
+
+ Ostatnio opowiadałem o atakach na stronkę – od tego czasu zająłem się zabezpieczeniami na każdym poziomie. Okazuje się, że było warto. Ilość ataków się wzmożyła, a tylko w tym tygodniu na serwer wysłanych zostało ponad milion złośliwych zapytań. Ataki są bardzo nieudolne, więc nie wyrządzają absolutnie żadnej szkody, ale miło jest wiedzieć, że ktoś tak się tak bardzo stara. Większość ataków to ataki typu DDOS. W najprostszych słowach tłumacząc,  wyobraź sobie, że nagle dzwoni do ciebie 1000 osób, aby cię zirytować. Gdy w końcu ktoś dzwoni w ważnej sprawie, musi czekać godzinę, zanim odbierzesz, lub nie doczeka się wogólę. Tak właśnie działa atak DDOS, gdy w czasie ataku użytkownik próbuje odwiedzić stronę, okazuje się, że strona ładuje się w nieskończoność.
+
+Pracując nad tą stroną i równocześnie w korporacji, wyrabiam praktycznie dwa etaty, z czego drugi wykonuję za darmo. Poza tym Chciałbym wykupić dostęp do biblioteki MDB Pro, która pozwoliłaby mi rozwijać aplikację dużo szybciej, dzięki zbiorowi gotowych komponentów. Dlatego gorąco zachęcam do wspierania mnie na Patronite i dziękuję wszystkim, którzy już to zrobili.
+
+Poza samą pracą nad projektem, chciałbym się pochwalić, że kilka dni temu zostałem zaproszony na mój pierwszy wy
+wiad przez twórców narzędzia "generator referendów". Ponadto napisałem prostego klienta do API Wykopu, co do którego nie mam jeszcze konkretnych planów, ale możliwości są fascynujące.
+
+Dzięki za wsparcie i zaangażowanie w rozwój SejmStats. Wasze opinie i sugestie są dla mnie nieocenione. Zachęcam do komentowania subskrybowania i like'owania. Do usłyszenia za 2 tygodnie!

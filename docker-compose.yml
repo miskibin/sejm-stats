@@ -1,0 +1,42 @@
+version: "3.8"
+
+services:
+  db:
+    build:
+      context: .
+      dockerfile: .docker/postgres/Dockerfile.postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - ${POSTGRES_PORT:-5432}:5432
+    env_file:
+      - .env
+    networks:
+      - sejm
+
+  app:
+    build:
+      context: .
+      dockerfile: .docker/python/Dockerfile
+      target: ${BUILD_TARGET:-dev}
+    volumes:
+      - ./src:/code
+    # - ./src/manage.py:/code/manage.py
+    ports:
+      - ${EXTERNAL_NGINX_PORT:-80}:80
+    env_file:
+      - .env
+    networks:
+      - sejm
+
+  redis:
+    image: redis:latest
+    networks:
+      - sejm
+
+volumes:
+  postgres_data:
+
+networks:
+  sejm:
+    driver: bridge

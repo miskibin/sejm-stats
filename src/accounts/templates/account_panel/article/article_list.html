@@ -1,0 +1,77 @@
+{% extends "account_panel/generic/base.html" %}
+{% load static %}
+{% block content %}
+  <div class="col-md-10 mb-4 mb-md-0">
+    <div class="card shadow-4 mb-5">
+      <div class="card-header py-4 mb-3">
+        <h4>Twoje artykuły</h4>
+      </div>
+      <div class="card-body pt-4">
+        <div class="d-flex justify-content-end mb-4">
+          <div data-mdb-input-init class="form-outline">
+            <input type="text" id="search_table_articles" class="form-control" />
+            <label class="form-label" for="search_table_articles">szukaj</label>
+          </div>
+          <a data-mdb-ripple-init
+             class="btn btn-primary ms-3"
+             data-mdb-add-entry
+             href="{% url 'article_create' %}">
+            <i class="fa fa-plus"></i>
+          </a>
+        </div>
+        <hr />
+        <div id="datatable2"></div>
+        <div class="datatable"
+             id="table_articles"
+             data-mdb-datatable-init
+             data-mdb-entries="5"
+             data-mdb-entries-options="[5, 15, 30]">
+          <table class="table">
+            <thead>
+              <tr>
+                <th class="th-sm" data-mdb-width="300">Tytuł</th>
+                <th class="th-sm" data-mdb-width="150" data-mdb-sort="true">Stworzono</th>
+                <th class="th-sm" data-mdb-width="100" data-mdb-sort="true">Status</th>
+                <th class="th-sm" data-mdb-width="100" data-mdb-sort="false">Akcje</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for article in articles %}
+                <tr>
+                  <td>{{ article.title }}</td>
+                  <td>{{ article.created_at }}</td>
+                  <td>{{ article.get_status_display }}</td>
+                  <td>
+                    <div style="display: flex; align-items: center;">
+                      <a class="me-2 text-secondary delete-button"
+                         title="Podgląd"
+                         href="{% url 'article_preview' slug=article.slug %}"
+                         data-mdb-ripple-init="">
+                        <i class="far fa-lg mx-1 fa-eye"></i>
+                      </a>
+                      <a class="me-2 text-secondary"
+                         title="Edytuj"
+                         href="{% url 'article_edit' slug=article.slug %}"
+                         data-mdb-ripple-init="">
+                        <i class="far fa-lg mx-1 fa-edit"></i>
+                      </a>
+                      <form method="post" action="{% url 'article_delete' slug=article.slug %}">
+                        {% csrf_token %}
+                        <button type="submit"
+                                class="text-secondary nav-link btn-link"
+                                data-mdb-ripple-init=""
+                                title="Usuń">
+                          <i class="far fa-lg mx-1 fa-trash-alt"></i>
+                        </button>
+                      </form>
+                    </div>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock content %}

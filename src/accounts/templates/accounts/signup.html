@@ -1,0 +1,104 @@
+{% extends 'accounts/generic/base.html' %}
+{% block body %}
+  <link href='https://fonts.googleapis.com/css?family=Sofia' rel='stylesheet' />
+  <div class="mb-md-5 mt-md-4 text-center text-gra">
+    <h2 class="fw-bold mb-2 text-primary">Zarejestruj się</h2>
+    <p class="mb-5 opacity-70">Podaj informacje aby się zarejestrować!</p>
+    {% for message in messages %}
+      {% if message.tags == 'error' %}<div class="alert alert-danger m-xl-3 p-2 mb-3">{{ message }}</div>{% endif %}
+      {% if message.tags == 'success' %}<div class="alert alert-success m-xl-3 p-2 mb-3">{{ message }}</div>{% endif %}
+    {% endfor %}
+    {% if form.non_field_errors %}
+      <div class="alert alert-danger m-xl-3 p-2 mb-3" role="alert">{{ form.non_field_errors }}</div>
+    {% endif %}
+    <form method="post">
+      {% csrf_token %}
+      <!-- Name input -->
+      <div class="row">
+        <div class="col-md-6">
+          <div class="mb-4">
+            <div class="form-outline" data-mdb-input-init>
+              {{ form.first_name }}
+              <label class="form-label" for="{{ form.first_name.id_for_label }}">{{ form.first_name.label }}</label>
+            </div>
+            <div id="errorsFirstname" class="form-text text-danger">
+              {% for error in form.first_name.errors %}{{ error }}{% endfor %}
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="mb-4">
+            <div class="form-outline" data-mdb-input-init>
+              {{ form.last_name }}
+              <label class="form-label" for="{{ form.last_name.id_for_label }}">{{ form.last_name.label }}</label>
+            </div>
+            <div id="errorsLastname" class="form-text text-danger">
+              {% for error in form.last_name.errors %}{{ error }}{% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Email input -->
+      <div class="mb-4">
+        <div class="form-outline" data-mdb-input-init>
+          {{ form.email }}
+          <label class="form-label" for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
+        </div>
+        <div id="errorsEmail" class="form-text text-danger">
+          {% for error in form.email.errors %}{{ error }}{% endfor %}
+        </div>
+      </div>
+      <!-- Username input -->
+      <div class="mb-4">
+        <div class="form-outline" data-mdb-input-init>
+          {{ form.username }}
+          <label class="form-label" for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>
+        </div>
+        <div id="errorsUsername" class="form-text text-danger">
+          {% for error in form.username.errors %}{{ error }}{% endfor %}
+        </div>
+      </div>
+      <!-- Passwords input -->
+      <div class="row">
+        <div class="col-md-6">
+          <div class="mb-4">
+            <div class="form-outline" data-mdb-input-init>
+              {{ form.password1 }}
+              <label class="form-label" for="{{ form.password1.id_for_label }}">{{ form.password1.label }}</label>
+            </div>
+            <div id="errorsPassword1" class="form-text text-danger">
+              {% for error in form.password1.errors %}{{ error }}{% endfor %}
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="mb-4">
+            <div class="form-outline" data-mdb-input-init>
+              {{ form.password2 }}
+              <label class="form-label" for="{{ form.password2.id_for_label }}">{{ form.password2.label }}</label>
+            </div>
+            <div id="errorsPassword2" class="form-text text-danger">
+              {% for error in form.password2.errors %}{{ error }}{% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Checkbox -->
+      <div class="form-check d-flex justify-content-center mb-4">
+        {{ form.agree_terms }}
+        <label class="form-check-label opacity-85"
+               for="{{ form.agree_terms.id_for_label }}">{{ form.agree_terms.label }}</label>
+      </div>
+      <!-- Submit button -->
+      <button type="submit"
+              class="btn btn-primary btn-rounded btn-lg px-5"
+              data-mdb-ripple-init>Zarejestruj się</button>
+    </form>
+  </div>
+  <div class="text-center">
+    <p class="text-muted mt-5 mb-0">
+      Masz już konto?
+      <a href="{% url 'login' %}" class="fw-bold">Zaloguj się</a>
+    </p>
+  </div>
+{% endblock %}

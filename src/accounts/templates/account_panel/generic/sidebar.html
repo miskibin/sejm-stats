@@ -1,0 +1,52 @@
+{% load static %}
+{% load permission_tags %}
+<nav id="main-sidenav"
+     data-mdb-sidenav-init
+     class="sidenav  shadow-1 sidenav-sm sidebar"
+     data-mdb-hidden="false"
+     data-mdb-accordion="true">
+  <a class="navbar-brand nav-item d-flex justify-content-center align-items-center mx-3 mt-4 "
+     href="/">
+    <img src="{% static 'img/logo.png' %}"
+         alt="logo"
+         width="40"
+         height="40"
+         class="d-inline-block align-middle">
+    <p class="mx-1 m-0  text-center  position-relative">
+      <span class="fs-4 pt-2">Sejm-Stats</span>
+      <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill badge-primary">Beta</span>
+    </p>
+  </a>
+  <hr class="hr">
+  <ul class="sidenav-menu px-2 pb-5">
+    <li class="sidenav-item">
+      <a class="sidenav-link" href="{% url 'home' %}">
+        <i class="fas fa-home-alt fa-fw me-3"></i><span>Strona główna</span></a>
+    </li>
+    <li class="sidenav-item pt-3">
+      <span class="sidenav-subheading text-muted text-uppercase fw-bold">Użytkownik</span>
+    </li>
+    <li class="sidenav-item">
+      <a class="sidenav-link" href="{% url 'profile' %}">
+        <i class="fas fa-user fa-fw me-3"></i><span>Profil</span></a>
+    </li>
+    <li class="sidenav-item">
+      <a class="sidenav-link" href="{% url 'change_password' %}">
+        <i class="fas fa-lock fa-fw me-3"></i><span>Zmień hasło</span></a>
+    </li>
+    {% if user|has_role:'journalist' %}
+      <li class="sidenav-item pt-3">
+        <span class="sidenav-subheading text-muted text-uppercase fw-bold">Dziennikarz</span>
+      </li>
+      <li class="sidenav-item">
+        <a class="sidenav-link" href="{% url 'article_list' %}">
+          <i class="fas fa-newspaper fa-fw me-3"></i><span>Artykuły</span></a>
+      </li>
+    {% endif %}
+  </ul>
+</nav>
+<script>
+    let sidebarIsOpen = localStorage.getItem('sidebarIsOpen') === 'true';
+    let sidebar = document.getElementById('main-sidenav');
+    sidebar.setAttribute('data-mdb-hidden', !sidebarIsOpen);
+</script>

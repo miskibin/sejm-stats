@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" data-mdb-theme="light">
+  <head>
+    {% include 'generic/head.html' %}
+    {% include 'generic/styles.html' %}
+    <title>Sejm-Stats - Panel</title>
+  </head>
+  <body class="d-flex flex-column vh-100">
+    {% include 'account_panel/generic/sidebar.html' %}
+    {% include 'generic/navbar.html' %}
+    <!--Main layout-->
+    <main class="mb-5 flex-grow-1">
+      <!-- Container for demo purpose -->
+      <div class="container container-fluid mt-2 py-5 h-100">
+        <div class="row d-flex justify-content-center">
+          {% block content %}
+          {% endblock content %}
+        </div>
+      </div>
+      <!-- Container for demo purpose -->
+    </main>
+    <!--Main layout-->
+    <!--Footer-->
+    <footer>
+    </footer>
+    <!--Footer-->
+  </body>
+  {% include 'generic/scripts.html' %}
+</html>

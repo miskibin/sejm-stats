@@ -1,0 +1,15 @@
+# Use the official PostgreSQL image as a base
+FROM postgres:latest
+
+# Set the working directory
+WORKDIR /tmp
+
+# Copy the polish dictionary files into the container
+COPY tsearch_data/polish.affix /tmp/polish.affix
+COPY tsearch_data/polish.dict /tmp/polish.dict
+COPY tsearch_data/polish.stop /tmp/polish.stop
+
+# Run the commands to set up the full-text search dictionary
+RUN cp polish.affix $(pg_config --sharedir)/tsearch_data/ \
+    && cp polish.dict $(pg_config --sharedir)/tsearch_data/ \
+    && cp polish.stop $(pg_config --sharedir)/tsearch_data/

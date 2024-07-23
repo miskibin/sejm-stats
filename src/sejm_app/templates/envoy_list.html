@@ -1,0 +1,120 @@
+{% extends "generic/base.html" %}
+{% block content %}
+  <div class="modal fade"
+       id="helpEnvoy"
+       tabindex="-1"
+       aria-labelledby="envoyModalLabel"
+       aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="envoyModalLabel">Kim jest poseł Poseł?</h5>
+          <button type="button"
+                  class="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <blockquote class="text-muted fst-italic">
+            Członek Sejmu, wybrany w wyborach powszechnych, równych, bezpośrednich i proporcjonalnych w tajnem głosowaniu. Dodatkowe wyjaśnienia metodologiczne: Posłowie są przedstawicielami Narodu.
+          </blockquote>
+          Obowiązki i Wynagrodzenie
+          <hr />
+          <ul>
+            <li>
+              <strong>Tworzenie prawa:</strong> W skład sejmu wchodzi 460 posłów, którzy tworzą prawo w Polsce.
+            </li>
+            <li>
+              <strong>Reprezentacja obywateli:</strong> Posłowie reprezentują obywateli w Sejmie.
+            </li>
+            <li>
+              <strong>Wynagrodzenie:</strong> Poseł zarabia miesięcznie 9892,30 zł brutto.
+            </li>
+          </ul>
+          <a href="https://en.wikipedia.org/wiki/Law_of_Poland" target="_blank">Informacje pochodzą z wikipedii</a>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Zamknij</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="container container-fluid mt-4">
+    <div class="d-flex justify-content-between">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item">
+            <a href="/"><i class="fa-solid fa-house"></i></a>
+          </li>
+          <li class="breadcrumb-item">
+            <a href="{% url 'envoys' %}">Posłowie</a>
+          </li>
+        </ol>
+      </nav>
+      <span>
+        <i class="fa-solid fa-circle-info mx-1 fs-3 text-primary"
+           data-bs-toggle="modal"
+           data-bs-target="#helpEnvoy"></i>
+      </span>
+    </div>
+    <hr class='my-4' />
+    <div class="row">
+      <div class="col-12 col-md-9 row m-0 p-0">
+        {% include "_envoy_snippet.html" %}
+        <hr />
+      </div>
+      <div class="col-lg-3 mb-4">
+        <!--Section: Sidebar-->
+        <section class="sticky-top" style="top: 80px;z-index:500;">
+          <!-- Section: Filter -->
+          <section class="card rounded-5 p-4">
+            <h5 class="card-title mb-4">Filtruj</h5>
+            <form method="get">
+              <input type="text"
+                     id="searchBar"
+                     placeholder="wyszukaj posła..."
+                     name="searchEnvoys"
+                     class="form-control mb-3" />
+              <label for="club" class="text-center fs-4 my-2">Klub</label>
+              {% for club in clubs %}
+                <div class="form-check mx-2">
+                  <input class="form-check-input"
+                         type="checkbox"
+                         name="club"
+                         value="{{ club.id }}"
+                         id="club-{{ forloop.counter }}"
+                         {% if club.id|stringformat:'s' in selected_clubs %}checked{% endif %}>
+                  <label class="form-check-label " for="club-{{ forloop.counter }}">
+                    {{ club.id }}
+                    <span class=" fst-italic ">({{ club.membersCount }})</span>
+                  </label>
+                </div>
+              {% endfor %}
+              <label for="district" class="text-center fs-4 my-2">Okręg wyborczy</label>
+              <select class="form-select my-3" name="district" id="district">
+                <option value="all" {% if 'all' in selected_districts %}selected{% endif %}>Wszystkie</option>
+                {% for district in districts %}
+                  <option value="{{ district.districtName }}"
+                          {% if district.districtName in selected_districts %}selected{% endif %}>
+                    {{ district.districtName }}
+                  </option>
+                {% endfor %}
+              </select>
+              <div class="form-check-group mx-2">
+                <input class="form-check-input"
+                       type="checkbox"
+                       name="most_active"
+                       id="most_active">
+                <label for="most_active" class="form-check-label">Najbardziej aktywni</label>
+              </div>
+              <button type="submit" class="btn btn-primary mt-3 mx-2">Filtruj</button>
+              <button type="reset" class="btn btn-secondary mt-3  mx-2 disabled">Resetuj</button>
+            </form>
+          </section>
+          <!-- Section: Filter -->
+        </section>
+        <!--Section: Sidebar-->
+      </div>
+    </div>
+  </div>
+{% endblock %}

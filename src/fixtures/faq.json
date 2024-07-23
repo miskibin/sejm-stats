@@ -1,0 +1,50 @@
+[
+    {
+        "model": "sejm_app.faq",
+        "pk": 1,
+        "fields": {
+            "question": "Jaką mam pewność, że dane na stronie są poprawne?",
+            "answer": "Dane wyświetlane na stronie pobierane są bezpośrednio z oficjalnego API Sejmu RP. To API dostarcza rzetelnych i aktualnych informacji na temat działalności parlamentu, w tym szczegółów dotyczących posłów, klubów i głosowań. Dane są regularnie aktualizowane w celu zapewnienia dokładności. Jednak, jak w przypadku każdej aplikacji opartej na danych, poprawność danych zależy od źródła, w tym przypadku od oficjalnego API Sejmu. Jeśli dane podawane przez API są dokładne, dane wyświetlane na stronie również będą dokładne. <b>Wyjątkiem są dane o aferach.</b> Te wpisywane są na podstawie przez administratorów i walidowane przez społeczność.",
+            "url1": "https://api.sejm.gov.pl/",
+            "url2": null
+        }
+    },
+    {
+        "model": "sejm_app.faq",
+        "pk": 2,
+        "fields": {
+            "question": "Kto finansuje aplikację?",
+            "answer": "Aplikacja jest finansowana głównie przez wspierających na platformie Patronite, co pozwala na pokrycie bieżących kosztów utrzymania i rozwój. Pozostałą część finansowania pokrywam prywatnie, co obejmuje koszty serwerów, licencje oraz niezbędne narzędzia programistyczne. Jeśli chcesz wspierać projekt, zapraszam na stronę naszego Patronite.",
+            "url1": "https://patronite.pl/sejm-stats",
+            "url2": null
+        }
+    },
+    {
+        "model": "sejm_app.faq",
+        "pk": 3,
+        "fields": {
+            "question": "Skąd pomysł?",
+            "answer": "Moim głównym celem było zwiększenie transparentności danych i umożliwienie społeczeństwu dokładniejszego przyglądania się działaniom rządu. Na początku projekt miał być małą aplikacją, używaną tylko przez mnie do śledzenia działalności Sejmu. Jednak z czasem, widząc rosnące zainteresowanie i potencjał dla szerokiej publiczności, postanowiłem rozwinąć projekt, aby służył jako kompleksowe narzędzie informacyjne dla każdego, kto chce lepiej zrozumieć działania parlamentu.",
+            "url1": null,
+            "url2": null
+        }
+    },
+    {
+        "model": "sejm_app.faq",
+        "pk": 4,
+        "fields": {
+            "question": "Czy mogę przyczynić się do rozwoju aplikacji?",
+            "answer": "Oczywiście! Każda forma wsparcia jest mile widziana, czy to poprzez finansowanie na Patronite, zgłaszanie błędów, proponowanie nowych funkcji, czy też udział w testach beta nowych wersji. Zachęcam również do dzielenia się aplikacją ze znajomymi i promowania jej na różnych platformach społecznościowych. Jeśli jesteś programistą i chciałbyś bezpośrednio przyczynić się do kodu aplikacji, skontaktuj się ze mną przez formularz kontaktowy na stronie. Wspólnie możemy sprawić, że Sejm Stats stanie się jeszcze lepszym narzędziem.",
+            "url1": "https://patronite.pl/sejm-stats",
+            "url2": null
+        }
+    },
+    {
+        "model": "sejm_app.faq",
+        "pk": 5,
+        "fields": {
+            "question": "Dlaczego projekt nie jest otwarto-źródłowy?",
+            "answer": "Projekt Sejm Stats nie jest otwarto-źródłowy z kilku ważnych powodów:</br>Istnieje ryzyko, że kod źródłowy mógłby być wykorzystywany do celów zarobkowych przez osoby trzecie, co byłoby sprzeczne z pierwotnymi założeniami projektu. Dlatego zdecydowałem się na utrzymanie kodu jako zamkniętego źródła, aby zapobiec nieautoryzowanemu użyciu komercyjnemu.</br>Używam w projekcie biblioteki MDB Pro, której licencja ogranicza możliwości udostępniania kodu źródłowego aplikacji, która z niej korzysta. Zgodnie z warunkami licencyjnymi, rozpowszechnianie kodu, który bezpośrednio wykorzystuje elementy tej biblioteki, może być niezgodne z umową licencyjną.</br>Dodatkowo, aby zapewnić przejrzystość rozwoju projektu, wspierający na platformie Patronite mają dostęp do prywatnego repozytorium kodu. Dzięki temu mogą śledzić postępy i mieć realny wpływ na kierunek, w jakim rozwija się aplikacja, co jest formą podziękowania za ich wsparcie i zaangażowanie w projekt."
+        }
+    }
+]

@@ -1,0 +1,107 @@
+{% extends "generic/base.html" %}
+{% load static %}
+{% block extra_head %}
+  <link rel="stylesheet"
+        href="{% static 'css/steps.css' %}"
+        type="text/css"
+        media="screen,projection" />
+{% endblock %}
+{% block content %}
+  <div class="container fluid mt-4">
+    <div class="row mt-5">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item">
+            <a href="/"><i class="fa-solid fa-house"></i></a>
+          </li>
+          <li class="breadcrumb-item">
+            <a href="{% url 'processes' %}">Procesy</a>
+          </li>
+          <li class="breadcrumb-item active" aria-current="page">{{ process.title }}</li>
+        </ol>
+      </nav>
+      <hr class="mt-4 mb-0">
+      <div class="col-xl-7 col-12 p-5">
+        <div class="p-1 mb-4">
+          <span class="badge badge-primary p-2 m-2">{{ process.documentType }}</span>
+          <span class="badge badge-danger p-2 m-2">{{ process.length_tag }} ({{ process.pagesCount }} stron/y)</span>
+          {% if process.createdBy %}
+            <span class="badge badge-primary p-2 m-2">Złożony przez: <i>{{ process.createdBy }}</i></span>
+          {% endif %}
+          <span class="badge badge-primary p-2 m-2">Wniesiono: <i>{{ process.documentDate }}</i></span>
+        </div>
+        <div class="border rounded card p-2">
+          <p class="lead mb-0">Komentarz:</p>
+          <code>{{ process.comments }}</code>
+        </div>
+        <div class=" rounded  my-3 p-2">
+          <p class="lead mb-0">Opis:</p>
+          <p>{{ process.description }}</p>
+        </div>
+        {% comment %} druki {% endcomment %}
+        <div class="my-3 ">
+          <div class="fs-4 my-4">Powiązane druki</div>
+          <div data-mdb-treeview-init class="treeview">
+            <ul>
+              <li>
+                {% for print in prints %}
+                  {% if forloop.first %}
+                    <a href="{{ print.pdf_url }}" class="my-2">
+                      <span class="fw-bold">{{ print }}   <i class="fas fa-external-link-alt"></i></span>
+                    </a>
+                    <ul class="show">
+                    {% else %}
+                      <li>
+                        <a href="{{ print.pdf_url }}" class="my-2">{{ print }}  <i class="fas fa-external-link-alt"></i></a>
+                      </li>
+                    {% endif %}
+                  {% endfor %}
+                </ul>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="col-xl-5 col-12 px-4">
+        <div class="row my-1">
+          <ul class="stepper m-5 mx-1"
+              data-mdb-stepper-init
+              data-mdb-stepper-type="vertical">
+            {% for stage in stages %}
+              <li class="stepper-step {% if forloop.first %}stepper-active{% endif %}">
+                <div class="stepper-head">
+                  <span class="stepper-head-icon">{{ forloop.counter }}</span>
+                  <span class="stepper-head-text">{{ stage.stageName }}</span>
+                </div>
+                <div class="stepper-content py-3">
+                  {% if stage.date %}
+                    <code>
+                    {{ stage.date }}</code>
+                    <br>
+                  {% endif %}
+                  {% if stage.comment %}{{ stage.comment }}{% endif %}
+                  {% if stage.voting %}
+                    <a href="{% url 'voting_detail' stage.voting.id %}">Głosowanie</a>
+                    <br>
+                  {% endif %}
+                  {% if stage.decision %}
+                    <p>
+                      {{ stage.decision }}
+                      {% if stage.result == "PASS" %}
+                        <i class="fas fa-check text-success mx-2"></i>
+                      {% elif stage.result == "FAIL" %}
+                        <i class="fas fa-times-circle  text-danger mx-2"></i>
+                      {% endif %}
+                    </p>
+                  {% endif %}
+                </div>
+              </li>
+            {% empty %}
+              <p>No stages found</p>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock content %}

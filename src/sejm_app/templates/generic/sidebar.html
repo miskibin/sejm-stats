@@ -1,0 +1,113 @@
+{% load static %}
+<!-- Sidenav -->
+<!-- Sidenav -->
+<nav id="main-sidenav"
+     data-mdb-sidenav-init
+     class="sidenav  shadow-1 sidenav-sm sidebar"
+     data-mdb-hidden="false"
+     data-mdb-accordion="true">
+  <a class="navbar-brand nav-item d-flex justify-content-center align-items-center mx-3 mt-4 "
+     href="/">
+    <img src="{% static 'img/logo.png' %}"
+         alt="logo"
+         width="40"
+         height="40"
+         class="d-inline-block align-middle">
+    <p class="mx-1 m-0  text-center  position-relative">
+      <span class = "fs-4 pt-2">Sejm-Stats</span>
+      <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill badge-primary">Beta</span>
+    </p>
+  </a>
+  <hr class="hr">
+  <ul class="sidenav-menu px-2 pb-5">
+    {% with request.resolver_match.url_name as current_view %}
+      <li class="sidenav-item {% if current_view == 'home' %}show{% endif %}">
+        <a class="sidenav-link " href="{% url 'home' %}">
+          <i class="fas fa-home fa-fw me-3"></i><span>Strona główna</span>
+        </a>
+      </li>
+      <li class="sidenav-item pt-3">
+        <span class="sidenav-subheading text-muted text-uppercase fw-bold">Dane oficjalne</span>
+      </li>
+      <li class="sidenav-item">
+        <a class="sidenav-link {% if current_view == 'envoys' %}text-primary{% endif %}"
+           href="{% url 'envoys' %}">
+          <i class="fas fa-users fa-fw me-3"></i><span>Posłowie</span>
+        </a>
+      </li>
+      <li class="sidenav-item ">
+        <a class="sidenav-link " href="{% url 'votings' %}">
+          <i class="fas fa-vote-yea fa-fw me-3"></i><span>Głosowania</span>
+        </a>
+      </li>
+      <li class="sidenav-item">
+        <a class="sidenav-link {% if current_view == 'processes' %}active{% endif %}"
+           href="{% url 'processes' %}">
+          <i class="fas fa-cogs fa-fw me-3"></i><span>Procesy legislacyjne</span>
+        </a>
+      </li>
+      <li class="sidenav-item">
+        <a class="sidenav-link {% if current_view == 'committees' %}active{% endif %}"
+           href="{% url 'committees' %}">
+          <i class="fas fa-people-group fa-fw me-3"></i><span>Komisje sejmowe</span>
+        </a>
+      </li>
+      <li class="sidenav-item">
+        <a class="sidenav-link {% if current_view == 'clubs' %}active{% endif %}"
+           href="{% url 'clubs' %}">
+          <i class="fas fa-handshake fa-fw me-3"></i><span>Kluby parlamentarne</span>
+        </a>
+      </li>
+      <li class="sidenav-item">
+        <a class="sidenav-link {% if current_view == 'interpellations' %}active{% endif %}"
+           href="{% url 'interpellations' %}">
+          <i class="fas fa-comment fa-fw me-3"></i><span>Interpelacje</span>
+        </a>
+      </li>
+      <li class="sidenav-item">
+        <a class="sidenav-link {% if current_view == 'acts' %}active{% endif %}"
+           href="{% url 'acts' %}">
+          <i class="fas fa-book fa-fw me-3"></i><span>Dziennik ustaw</span>
+        </a>
+      </li>
+      <li class="sidenav-item pt-3">
+        <span class="sidenav-subheading text-muted text-uppercase fw-bold">Społeczność</span>
+      </li>
+      <li class="sidenav-item">
+        <a class="sidenav-link {% if current_view == 'scandals' %}active{% endif %}"
+           href="{% url 'articles' %}">
+          <i class="fas fa-newspaper fa-fw me-3"></i><span>Artykuły</span>
+        </a>
+      </li>
+      <li class="sidenav-item">
+        <a class="sidenav-link {% if current_view == 'faq' %}active{% endif %}"
+           href="{% url 'faq' %}">
+          <i class="fas fa-circle-info fa-fw me-3"></i><span>O projekcie</span>
+        </a>
+      </li>
+      <li class="sidenav-item pt-3">
+        <span class="sidenav-subheading text-muted text-uppercase fw-bold">social media</span>
+      </li>
+      <li class="sidenav-item">
+        <a class="sidenav-link" href="https://patronite.pl/sejm-stats">
+          <i class="fas fa-heart fa-fw me-3 text-danger"></i><span>Patronite</span>
+        </a>
+      </li>
+      <li class="sidenav-item">
+        <a class="sidenav-link" href="https://www.youtube.com/@sejm-stats">
+          <i class="fab fa-youtube fa-fw me-3 text-danger"></i><span>YouTube</span>
+        </a>
+      </li>
+      <li class="sidenav-item">
+        <a class="sidenav-link" href="https://discord.com/invite/zH2J3z5Wbf">
+          <i class="fab fa-discord fa-fw me-3 text-primary"></i><span>Discord</span>
+        </a>
+      </li>
+    {% endwith %}
+  </ul>
+</nav>
+<script>
+    let sidebarIsOpen = localStorage.getItem('sidebarIsOpen') === 'true';
+    let sidebar = document.getElementById('main-sidenav'); 
+    sidebar.setAttribute('data-mdb-hidden', !sidebarIsOpen);
+</script>

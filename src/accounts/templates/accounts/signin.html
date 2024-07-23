@@ -1,0 +1,71 @@
+{% extends 'accounts/generic/base.html' %}
+{% block body %}
+  <div class="mb-md-5 mt-md-4 text-center">
+    <h2 class="fw-bold mb-2 text-primary">Zaloguj</h2>
+    <p class="mb-5 opacity-70">Podaj login i hasło!</p>
+    {% for message in messages %}
+      {% if message.tags == 'error' %}<div class="alert alert-danger m-xl-3 p-2 mb-0">{{ message }}</div>{% endif %}
+      {% if message.tags == 'success' %}<div class="alert alert-success m-xl-3 p-2 mb-0">{{ message }}</div>{% endif %}
+    {% endfor %}
+    {% if form.non_field_errors %}
+      <div class="alert alert-danger m-4 p-2" role="alert">
+        {% for error in form.non_field_errors %}{{ error }}{% endfor %}
+      </div>
+    {% endif %}
+    <form method="post">
+      {% csrf_token %}
+      <!-- Username input -->
+      <div class="mb-4">
+        <div class="form-outline" data-mdb-input-init>
+          {{ form.username }}
+          <label class="form-label" for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>
+        </div>
+        <div id="errorsUsername" class="form-text text-danger">
+          {% for error in form.username.errors %}{{ error }}{% endfor %}
+        </div>
+      </div>
+      <!-- Password input -->
+      <div class="mb-4">
+        <div class="form-outline" data-mdb-input-init>
+          {{ form.password }}
+          <label class="form-label" for="{{ form.password.id_for_label }}">{{ form.password.label }}</label>
+        </div>
+        <div id="errorsPassword" class="form-text text-danger">
+          {% for error in form.password.errors %}{{ error }}{% endfor %}
+        </div>
+      </div>
+      <!-- 2 column grid layout -->
+      <div class="row mb-4 pb-lg-2">
+        <div class="col-md-6 d-flex justify-content-center">
+          <!-- Remember me input -->
+          <div class="form-check mb-3 mb-md-0">
+            {{ form.remember_me }}
+            <label class="form-check-label opacity-85"
+                   for="{{ form.remember_me.id_for_label }}">{{ form.remember_me.label }}</label>
+          </div>
+        </div>
+        <div class="col-md-6 d-flex justify-content-center">
+          <!-- Forgot password link -->
+          <p class="small">
+            <a class="text-secondary" href="{% url "password-reset" %}">Nie pamiętasz hasła?</a>
+          </p>
+        </div>
+      </div>
+      <!-- Submit button -->
+      <button type="submit"
+              class="btn btn-primary btn-rounded btn-lg px-5"
+              data-mdb-ripple-init>Zaloguj się</button>
+    </form>
+    <div class="d-flex justify-content-center text-center mt-4 pt-1">
+      <a href="#!" class="text-primary opacity-90"><i class="fab fa-facebook-f fa-lg"></i></a>
+      <a href="#!" class="text-primary opacity-90"><i class="fab fa-twitter fa-lg mx-4 px-2"></i></a>
+      <a href="#!" class="text-primary opacity-90"><i class="fab fa-google fa-lg"></i></a>
+    </div>
+  </div>
+  <div class="text-center">
+    <p class="text-muted mt-5 mb-0">
+      Nie masz konta?
+      <a href="{% url 'register' %}" class="fw-bold">Zarejestruj się!</a>
+    </p>
+  </div>
+{% endblock %}

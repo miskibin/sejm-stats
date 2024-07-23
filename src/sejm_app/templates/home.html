@@ -1,0 +1,123 @@
+{% extends 'generic/base.html' %}
+{% load static %}
+{% load cache %}
+{% block extra_head %}
+  <script src="{% static 'js/home.js' %}"></script>
+{% endblock extra_head %}
+{% cache 600 home %}
+{% block content %}
+  <div class="cookie-consent-banner text-center fixed-bottom mb-0 shadow-3-strong p-lg-3 px-1  alert alert-warning"
+       style="z-index: 10000">
+    Ta strona używa plików cookies. <a href="{% url 'privacy_policy' %}" class="text-primary">Polityka prywatności</a>.
+    <button type="button"
+            class="btn btn-primary btn-sm ms-3 my-1"
+            id="acceptCookies">Akceptuję</button>
+    <button type="button"
+            class="btn btn-danger btn-sm ms-3  my-1"
+            id="rejectCookies">Odrzucam</button>
+  </div>
+  <div id="toastContainer"
+       class="position-fixed top-5 end-0 p-lg-3 p-1"
+       style="z-index: 11"></div>
+  <div class="row border-bottom bg-banner mx-0 pt-4 ">
+    <div class="offset-lg-1 col-xl-6 col-12 my-5 pt-3">
+      <b class="display-3 mb-4">Parlament Pod Lupą</b>
+      <p class=" text-muted lead my-2">
+        <b>Kompleksowy przegląd aktywności sejmowej</b>
+      </p>
+      <div class="col-md-8 col-auto my-4">
+        <div class="input-group ">
+          <div class="form-outline  " data-mdb-input-init>
+            <input id="search-focus" type="search" class="form-control " />
+            <label class="form-label" for="form1">Wpisz hasła odzielone przecinkami</label>
+          </div>
+          <button type="button"
+                  id="search-button"
+                  class="btn btn-outline-primary"
+                  data-mdb-ripple-init>
+            <i class="fas fa-search"></i>
+          </button>
+        </div>
+      </div>
+      <div class=" d-flex justify-content-start my-4 mb-5">
+        <a href="{% url 'envoys' %}" class="me-lg-2 me-3 btn btn-primary ">Przegląd posłów</a>
+        <a href="{% url 'faq' %}" class="mx-lg-2 mx-1  btn btn-outline-primary ">O zespole</a>
+      </div>
+    </div>
+    <div class="col-xl-5 pe-5 pt-1 d-flex flex-column justify-content-end d-xl-flex d-sm-none">
+      <p id="quote-box" class="lead my-3">
+        <p id="quote" class="fw-bolder text-end pb-0 mb-0"></p>
+        <p id="author" class="text-end"></p>
+      </p>
+    </div>
+  </div>
+  <div class="container mt-4">
+    <div class="row my-4 ">
+      <div class="col-lg-6 my-4 pe-3 ">
+        <div class="row ">
+          <h1 class="mb-4  p-1">Statystyki</h1>
+          {% for card in cards %}
+            <div class="col-md-6 mb-md-0 ">
+              <div class="card mb-lg-4 mb-2  home-card-shadow">
+                <div class="card-body">
+                  <p class="text-muted mb-1">{{ card.title }}</p>
+                  <h1 class="mb-0 fw-bolder counter {{ card.color }}">{{ card.count }}</h1>
+                </div>
+                <div class="card-footer p-2">
+                  <a class="btn btn-link m-0 fw-bolder"
+                     href="{{ card.url }}"
+                     role="button"
+                     data-mdb-ripple-init
+                     data-ripple-color="primary">Pokaż więcej<i class="fas fa-arrow-right  ms-2"></i></a>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="col-lg-6 my-4 ">
+        <h1 class="mb-4  p-1">Ostatnie Głosowania</h1>
+        <div class="list-group list-group-light">
+          {% for voting in latest_votings %}
+            <a href="{% url 'voting_detail' voting.id %}"
+               class="list-group-item list-group-item-action rounded border-0  home-card-shadow px-3 mb-2 "
+               aria-current="true">
+              <div class="row align-items-center">
+                <div class="col-1 pe-2 d-none d-md-block">
+                  {% if voting.success %}
+                    <i class="fa text-success fa-2x fa-check"></i>
+                  {% else %}
+                    <i class="fa text-danger  fa-2x  fa-x"></i>
+                  {% endif %}
+                </div>
+                <div class="col-md-10 col-11 pe-0">{{ voting.summary|truncatewords:16 }}</div>
+                <div class="col-1 ps-0 pe-2 text-primary ">
+                  {% if voting.category == 'WHOLE_PROJECT' %}<i class="fa-lg fa-solid fa-circle-exclamation"></i>{% endif %}
+                </div>
+              </div>
+            </a>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    <div class="alert alert-info text-center text-muted fst-italic mb-5 p-2">
+      Aplikacja zbudowana w technologii <i class="fa-brands fa-mdb fa-2x  text-primary align-middle"></i> .
+      Jeśli potrzebujesz profesjonalnych rozwiązań internetowych -
+      <a href="https://mdbootstrap.com/services/"
+         class="text-primary mx-1 fw-bold">zgłoś się do ekspertów z MDBootstrap</a>
+    </div>
+    <h1 class="display-5">Aktualności</h1>
+    <hr class='my-4' />
+    <section id="articles" class="row">
+    </section>
+    <div class="row text-center" id="spinner" style="display: none;">
+      <div class="col-md-12">
+        <div class="spinner-border mx-auto"></div>
+      </div>
+    </div>
+  </div>
+{% endblock content %}
+{% block extra_js %}
+  <script src="{% static 'js/articlesLoader.js' %}"></script>
+{% endblock %}
+{% endcache %}

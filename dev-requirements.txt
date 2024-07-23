@@ -1,0 +1,9 @@
+astroid==3.1.0
+dill==0.3.8
+isort==5.13.2
+mccabe==0.7.0
+platformdirs==4.2.1
+pylint==3.1.0
+setuptools==69.5.1
+tomlkit==0.12.5
+wheel==0.43.0

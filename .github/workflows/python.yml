@@ -1,0 +1,54 @@
+name: Test&lint Python codebase
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - synchronize
+      - reopened
+      - ready_for_review
+jobs:
+  test-and-lint-python:
+    name: Test&lint Python codebase
+    timeout-minutes: 10
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-22.04
+    services:
+      pgsql:
+        image: postgres:16
+        env:
+          POSTGRES_DB: example
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          PGPASSWORD: postgres
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.12
+          cache: "pip"
+
+      - name: Install dependencies
+        run: |
+          cat requirements.txt dev-requirements.txt > combined-requirements.txt
+          pip install -r combined-requirements.txt
+
+      #      - name: Run Pylint
+      #        working-directory: src
+      #        run: |
+      #          pylint sejm_app
+
+      - name: Run tests
+        working-directory: src
+        run: |
+          cp ../.env.dist ./.env
+          python manage.py migrate
+          python manage.py test

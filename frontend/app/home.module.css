@@ -1,0 +1,19 @@
+.bgBanner {
+    position: relative;
+    overflow: hidden;
+}
+
+.bgBanner::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 111px;
+    width: 100%;
+    height: 100%;
+    background-image: linear-gradient(to right, rgba(255, 255, 255, 0.9) 25%, rgba(255, 255, 255, 0.5) 100%),
+        url('/sejm.webp');
+    background-size: cover;
+    background-position: 50% 25%;
+    filter: blur(5px);
+    z-index: 1;
+}

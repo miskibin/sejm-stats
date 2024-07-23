@@ -1,0 +1,11 @@
+---
+name: Other Issue
+description: Other kind of the issue
+body:
+  - type: textarea
+    id: AC
+    attributes:
+      label: AC
+      description: Any precise description of the issue
+    validations:
+      required: true

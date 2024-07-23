@@ -1,0 +1,24 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" data-mdb-theme="light">
+  <head>
+    {% include 'generic/head.html' %}
+    {% include 'generic/styles.html' %}
+    {% block extra_head %}
+    {% endblock extra_head %}
+  </head>
+  <body class="d-flex flex-column vh-100">
+    {% include "generic/navbar.html" %}
+    {% include "generic/sidebar.html" %}
+    <main class="mb-5 flex-grow-1">
+      {% block content %}
+      {% endblock content %}
+    </main>
+    <footer class="row pt-3  my-4 mx-0 border-top">
+      {% include 'generic/footer.html' %}
+    </footer>
+  </body>
+  {% include 'generic/scripts.html' %}
+  {% block extra_js %}
+  {% endblock extra_js %}
+</html>

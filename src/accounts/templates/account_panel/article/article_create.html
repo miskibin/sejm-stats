@@ -1,0 +1,89 @@
+{% extends "account_panel/generic/base.html" %}
+{% load static %}
+{% block content %}
+  <div class="col-md-10 mb-4 mb-md-0">
+    <div class="alert alert-info " role="alert">
+      UWAGA:
+      <ul class="mb-0">
+        <li>Pamiętaj, że artykuł nie może być większy niż 10 MB.</li>
+        <li>
+          Wklejanie zdjęć korzystając z ctrl+v może spowodować niedogodności w edycji artykułu.
+          W miarę możliwości używaj opcji <i class="fas fa-image"></i> z paska narzędzi.
+        </li>
+        <li>
+          W polu z napisem <code>Choose file</code> wybierz zdjęcie, które chcesz dodać jako okładkę artykułu.
+        </li>
+      </ul>
+    </p>
+  </div>
+  <div class="card shadow-4 mb-5">
+    <div class="card-header py-4 mb-3">
+      <h4>Dodaj artykuł</h4>
+    </div>
+    <div class="card-body pt-4">
+      {% for message in messages %}
+        {% if message.tags == 'error' %}<div class="alert alert-danger m-xl-3 p-2 mb-0">{{ message }}</div>{% endif %}
+        {% if message.tags == 'success' %}<div class="alert alert-success m-xl-3 p-2 mb-0">{{ message }}</div>{% endif %}
+      {% endfor %}
+      {% if form.non_field_errors %}
+        <div class="alert alert-danger m-xl-3 p-2 mb-0" role="alert">{{ form.non_field_errors }}</div>
+      {% endif %}
+      <form method="post" class="mb-4" enctype="multipart/form-data">
+        {% csrf_token %}
+        <!-- Title input -->
+        <div class="mb-4">
+          <div class="form-outline" data-mdb-input-init>
+            {{ form.title }}
+            <label class="form-label" for="{{ form.title.id_for_label }}">{{ form.title.label }}</label>
+          </div>
+          <div id="errorsTitle" class="form-text text-danger">
+            {% for error in form.tile_password.errors %}{{ error }}{% endfor %}
+          </div>
+        </div>
+        <!-- Image input -->
+        <div class="mb-4">
+          <div class="form-outline" data-mdb-input-init>
+            {{ form.image }}
+            <label class="form-label" for="{{ form.image.id_for_label }}">{{ form.image.label }}</label>
+          </div>
+          <div id="errorsImage" class="form-text text-danger">
+            {% for error in form.image.errors %}{{ error }}{% endfor %}
+          </div>
+        </div>
+        <!-- Content input -->
+        <div class="mb-4">
+          <div id={{ form.content.id_for_label }} class="wysiwyg" data-mdb-wysiwyg-init  data-mdb-wysiwyg-fixed="true">
+            {{ form.content.initial|safe }}
+          </div>
+          <label class="form-label" for="{{ form.content.id_for_label }}">{{ form.content.label }}</label>
+          <div id="errorsContent" class="form-text text-danger">
+            {% for error in form.content.errors %}{{ error }}{% endfor %}
+          </div>
+        </div>
+        <!-- Club input -->
+        <div class="mb-4">
+          <div class="form-outline">
+            {{ form.clubs }}
+            <label class="form-label select-label" for="{{ form.club.id_for_label }}">{{ form.clubs.label }}</label>
+          </div>
+          <div id="errorsClub" class="form-text text-danger">
+            {% for error in form.clubs.errors %}{{ error }}{% endfor %}
+          </div>
+        </div>
+        <!-- Envoy input -->
+        <div class="mb-4">
+          <div class="form-outline">
+            {{ form.envoys }}
+            <label class="form-label select-label" for="{{ form.envoys.id_for_label }}">{{ form.envoys.label }}</label>
+          </div>
+          <div id="errorsEnvoy" class="form-text text-danger">
+            {% for error in form.envoys.errors %}{{ error }}{% endfor %}
+          </div>
+        </div>
+        <!-- Submit button -->
+        <button type="submit" class="btn btn-primary" data-mdb-ripple-init>Zapisz</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock content %}

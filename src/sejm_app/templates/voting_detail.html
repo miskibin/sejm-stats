@@ -1,0 +1,189 @@
+{% extends "generic/base.html" %}
+{% load static %}
+{% block extra_head %}
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="{% static 'js/votingDetail.js' %}"></script>
+  <link rel="stylesheet" href="{% static 'css/parliament.css' %}">
+  <script src="{% static 'js/votingByClubChart.js' %}"></script>
+  <script src="{% static 'js/generic/loadDataTable.js' %}"></script>
+  <script>loadDataTable('singleVotingTable', ["poseł", "głos"]);</script>
+{% endblock %}
+{% block content %}
+  <div class="container fluid mt-4">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+          <a href="/"><i class="fa-solid fa-house"></i></a>
+        </li>
+        <li class="breadcrumb-item">
+          <a href="{% url 'votings' %}">Głosowania</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">
+          Głosowanie {{ voting.votingNumber }} na posiedzeniu {{ voting.sitting }}
+        </li>
+      </ol>
+    </nav>
+    <p class="lead">{{ voting.topic }}</p>
+    <hr class="my-4">
+    {% if voting.kind == voting.Kind.ON_LIST %}
+      <div class="alert alert-warning" role="alert">
+        <i class="fa-solid fa-exclamation-triangle me-2"></i>
+        Statystyki niedostępne dla głosowań na liście.
+      </div>
+    {% endif %}
+    <div class="row">
+      <div class="col-lg-7 col-md-12 mb-3 p-0 p-md-2 ">
+        {% comment %} <div class=" p-0">
+                <figure class="highcharts-figure" id="clubsChart" data-chart="{{ club_votes }}">
+                    <div id="container"></div>
+                </figure>
+        </div> {% endcomment %}
+        <div class="card p-0">
+          <div class="card-header fs-4">Głosowanie ze względu na klub parlamentarny</div>
+          <div class="card-body   m-1 p-0 ">
+            <canvas id="votingByClubChart" data-chart="{{ club_votes }}"></canvas>
+          </div>
+        </div>
+        <div class="card my-4">
+          <div class="card-header fs-4">Głosy posłów</div>
+          <div class="card-body   m-1 p-0 ">
+            <div data-mdb-input-init class="form-outline mt-4">
+              <input type="text" class="form-control" id="datatable-search-input" />
+              <label class="form-label" for="datatable-search-input">Szukaj</label>
+            </div>
+            <div id="singleVotingTable"
+                 data-mdb-striped="true"
+                 data-mdb-fixed-header="true"
+                 data-mdb-entries="2"
+                 data-mdb-clickable-rows="true"
+                 data-mdb-multi="true"></div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="my-3"></div>
+          <div class="col-lg-6 col-12 p-2">
+            <div class="card">
+              <div class="card-header fs-4">Wyniki głosowania</div>
+              <div class="card-body p-0 p-md-3">
+                <canvas id="voting-chart"
+                        class="m-0"
+                        data-mdb-chart-init
+                        data-mdb-chart="pie"
+                        data-mdb-dataset-label="Głosowania"
+                        data-mdb-labels="{{ total_labels }}"
+                        data-mdb-dataset-data="{{ total_data }}"
+                        data-mdb-dataset-background-color="{{ total_colors }}"></canvas>
+              </div>
+            </div>
+          </div>
+          <div class=" col-lg-6 col-12 p-2">
+            <div class="card">
+              <div class="card-header fs-4">Ze względu na płeć</div>
+              <div class="card-body p-0 p-md-3">
+                <canvas id="sexChart" class="m-0 py-0" data-chart="{{ sex_votes }}"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-5 col-12 mb-3 p-3">
+        <div class="fs-4">Dane o głosowaniu</div>
+        <table class="table table-striped table-responsive">
+          <tbody>
+            {% if voting.title %}
+              <tr>
+                <td>Tytuł</td>
+                <td>{{ voting.title }}</td>
+              </tr>
+            {% endif %}
+            {% if voting.description %}
+              <tr>
+                <td>Opis</td>
+                <td>{{ voting.description }}</td>
+              </tr>
+            {% endif %}
+            {% if voting.topic %}
+              <tr>
+                <td>Temat</td>
+                <td>{{ voting.topic }}</td>
+              </tr>
+            {% endif %}
+            <tr>
+              <td>Rodzaj</td>
+              <td>{{ voting.get_kind_display }}</td>
+            </tr>
+            <tr>
+              <td>Data</td>
+              <td>{{ voting.date }}</td>
+            </tr>
+            <tr>
+              <td>Posiedzenie</td>
+              <td>{{ voting.sitting }} dzień {{ voting.sittingDay }}</td>
+            </tr>
+            <tr>
+              <td>Za</td>
+              <td>{{ voting.yes }}</td>
+            </tr>
+            <tr>
+              <td>Przeciw</td>
+              <td>{{ voting.no }}</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="my-4 ">
+          <div class="fs-4 my-2">Powiązane druki</div>
+          <div>
+            <ul class="list-group list-group-light ">
+              {% for print in voting.prints.all %}
+                {% if print.processPrint %}
+                  <li class="list-group-item ps-4">
+                    <a href="{{ print.pdf_url }}">
+                      <i class="fa-solid fa-caret-right fa-xl me-2"></i>
+                      {{ print }}
+                    </a>
+                  </li>
+                {% else %}
+                  <li class="list-group-item">
+                    <a href="{{ print.pdf_url }}">
+                      <span class="fw-bold">{{ print }}</span>
+                    </a>
+                  </li>
+                {% endif %}
+              {% endfor %}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% if similar_votings %}
+      <div class=" mt-4">
+        <div>
+          <h2 class="fs-4 my-2">Powiązane głosowania</h2>
+        </div>
+        <hr class="my-4">
+        <ul class="list-group-light">
+          {% for voting in similar_votings %}
+            <li class="my-2">
+              <a href="{% url 'voting_detail' voting.id %}">{{ voting }}</a>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+    {% if processes %}
+      <div class="mt-4">
+        <div>
+          <h2 class="fs-4 my-2">Powiązane procesy</h2>
+        </div>
+        <hr class="my-4">
+        <ul class="list-group-light">
+          {% for process in processes %}
+            <li class="my-2">
+              <a href="{% url 'process_detail' process.id %}">{{ process }}</a>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+  </div>
+{% endblock %}

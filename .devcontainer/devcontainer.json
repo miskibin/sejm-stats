@@ -1,0 +1,36 @@
+{
+    "name": "transparlament",
+    "workspaceFolder": "/code",
+    "dockerComposeFile": [
+        "../docker-compose.yml"
+    ],
+    "service": "app",
+    "shutdownAction": "stopCompose",
+    "runServices": [
+        "db",
+        "app",
+        "redis"
+    ],
+    "postCreateCommand": "pip install -r /code/requirements.txt && pip install djlint isort black",
+    "postStartCommand": "isort . && black . && djlint . --indent=2 --ignore='H013,H006,H021,D018,T003' --reformat && /usr/local/bin/python /code/src/manage.py runserver 0.0.0.0:8000",
+    "forwardPorts": [
+        8000
+    ],
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-python.python",
+                "ms-azuretools.vscode-docker",
+                "monosans.djlint",
+                "ms-python.black-formatter",
+                "streetsidesoftware.code-spell-checker",
+                "mcright.auto-save",
+                "ChakrounAnas.turbo-console-log"
+            ],
+            "settings": {
+                "terminal.integrated.shell.linux": "/bin/bash",
+                "python.pythonPath": "/usr/local/bin/python"
+            }
+        }
+    }
+}

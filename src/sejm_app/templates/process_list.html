@@ -1,0 +1,48 @@
+{% extends 'generic/base.html' %}
+{% load static %}
+{% block extra_head %}
+  <script src="{% static 'js/generic/loadDataTable.js' %}"></script>
+  <script>  loadDataTable('processesTable', [{"label": "tytuł", "width": 800},
+            {"label": "Ostatnia modyfikacja", "width": 100} ]);
+  </script>
+  {{ form.media.js }}
+  {{ form.media.css }}
+{% endblock %}
+{% block content %}
+  <div class="container fluid mt-4">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb ">
+        <li class="breadcrumb-item">
+          <a href="/"><i class="fa-solid fa-house"></i></a>
+        </li>
+        <li class="breadcrumb-item">
+          <a href="#">Procesy</a>
+        </li>
+      </ol>
+    </nav>
+    <hr class="my-4" />
+    <div class="row">
+      <div class="col-md-3 p-md-2 p-0 pt-0 ">
+        {% load crispy_forms_tags %}
+        <form method="get" class="rounded border p-3" novalidate>
+          <h4 class="text-danger">Filtruj</h4>
+          <hr class="my-4 text-danger" />
+          {{ form|crispy }}
+          <button type="submit" class="btn btn-primary m-2">Filtruj</button>
+          <button type="reset" class="btn btn-secondary m-2">Resetuj filtry</button>
+        </form>
+      </div>
+      <div class="col-lg-9 col-12 ">
+        <div data-mdb-input-init class="form-outline my-2">
+          <input type="text" class="form-control" id="datatable-search-input" />
+          <label class="form-label" for="datatable-search-input">Szukaj</label>
+        </div>
+        <div id="processesTable"
+             data-mdb-striped="true"
+             data-mdb-fixed-header="true"
+             data-mdb-clickable-rows="true"
+             data-mdb-multi="true"></div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

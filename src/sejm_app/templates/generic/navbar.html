@@ -1,0 +1,81 @@
+{% load static %}
+<nav id="main-navbar"
+     class="navbar navbar-expand-lg p-3 navbar-light sticky-top shadow-1 border-bottom border-2 border-danger">
+  <div class="container-fluid">
+    <!-- Toggler -->
+    <button id="sidebarToggleBtn"
+            data-mdb-toggle="sidenav"
+            data-mdb-target="#main-sidenav"
+            class="btn shadow-0 p-0 me-3 d-block d-xxl-none"
+            data-mdb-ripple-init
+            aria-controls="#main-sidenav"
+            aria-haspopup="true">
+      <i class="fas fa-bars fa-2x mx-3 my-1"></i>
+    </button>
+    <!-- Brand and toggle are grouped for better mobile display -->
+    <!-- Right elements -->
+    <!-- Search form -->
+    <div class="d-flex ms-auto">
+      {% if user.is_authenticated %}
+        {% if user.is_superuser %}
+          <button id="updateButton"
+                  type="submit"
+                  class="nav-link btn-link text-muted mx-3"
+                  title="Update"
+                  data-csrf='{% csrf_token %}'
+                  data-href="{% url 'update' %}">
+            <i class="fas text-danger fa-sync-alt fa-lg"></i>
+          </button>
+        {% endif %}
+        {% if user.is_superuser %}
+          <a class="text-muted mx-3" href="{% url 'admin:index' %}" title="admin">
+            <i class="fas fa-user-tie fa-lg"></i>
+          </a>
+        {% endif %}
+        <div class="nav-item dropdown mx-3">
+          <a class="nav-link dropdown-toggle hidden-arrow d-flex align-items-center"
+             href="#"
+             id="navbarDropdownMenuLink"
+             role="button"
+             data-mdb-dropdown-init
+             aria-expanded="false">
+            <img src="{{ request.user.get_profile.get_avatar_url }}"
+                 class="rounded-circle"
+                 height="22"
+                 width="22"
+                 alt="Avatar"
+                 loading="lazy"
+                 style="object-fit: cover" />
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end"
+              aria-labelledby="navbarDropdownMenuLink">
+            <li>
+              <a class="dropdown-item " href="{% url 'profile' %}"><i class="px-1 fas fa-user"></i>Mój profil </a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="{% url 'article_create' %}"><i class="px-1 text-primary fa-solid fa-circle-plus"></i>Napisz artykuł </a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="{% url 'article_list' %}"> <i class="px-1 fas fa-newspaper"></i>Moje artykuły</a>
+            </li>
+            <li>
+              <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="dropdown-item">
+                  <i class="px-1 fas fa-sign-out-alt"></i>Wyloguj
+                </button>
+              </form>
+            </li>
+          </ul>
+        </div>
+      {% else %}
+        <a class="text-muted mx-3" href="{% url 'login' %}" title="Zaloguj">
+          <i class="fas fa-sign-in-alt fa-lg"></i>
+        </a>
+      {% endif %}
+      <a id="theme-toggle" class="text-muted mx-3" style="cursor: pointer;">
+        <i id="theme-toggle-icon" class="fas fa-lg fa-moon"></i>
+      </a>
+    </div>
+  </div>
+</nav>

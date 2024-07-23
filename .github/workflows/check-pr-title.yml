@@ -1,0 +1,19 @@
+name: Check PR Title
+on:
+  pull_request:
+    types:
+      - opened
+      - edited
+      - synchronize
+      - ready_for_review
+      - reopened
+
+jobs:
+  check-pr-title:
+    name: Check PR title
+    timeout-minutes: 10
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: blumilksoftware/action-pr-title@v1.2.0

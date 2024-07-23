@@ -1,0 +1,12 @@
+version: 2
+
+updates:
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: monthly
+      time: "07:30"
+    commit-message:
+      prefix: "# - (python) "
+    target-branch: main
+    open-pull-requests-limit: 2

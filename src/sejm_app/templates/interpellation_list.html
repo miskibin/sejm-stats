@@ -1,0 +1,62 @@
+{% extends 'generic/base.html' %}
+{% block extra_head %}
+  {% load static %}
+  <script src="{% static 'js/generic/loadDataTable.js' %}"></script>
+  <script>
+  loadDataTable('interpellationTable', [{"label": "tytuł", "width": 800}, 
+            {"label": "Ostatnia modyfikacja", "width": 100} ]);
+  </script>
+  {{ form.media.js }}
+  {{ form.media.css }}
+{% endblock %}
+{% block content %}
+  <div class="container container-fluid mt-4">
+    <div class="d-flex justify-content-between">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+          <li class="breadcrumb-item">
+            <a href="/"><i class="fa-solid fa-house"></i></a>
+          </li>
+          <li class="breadcrumb-item">
+            <a href="#">Interpelacje</a>
+          </li>
+        </ol>
+      </nav>
+      <span>
+        <!-- Modal Trigger -->
+        <i class="fa-solid fa-circle-info mx-1 fs-3 text-primary"
+           data-bs-toggle="modal"
+           data-bs-target="#helpInterpellation"></i>
+      </span>
+    </div>
+    <hr class="my-4" />
+    <div class="row">
+      <div class="col-lg-3 col-md-12 p-2 pt-0">
+        <form method="get" class="rounded border mt-2 px-2 py-3">
+          <h4 class="text-danger">Filtruj</h4>
+          <hr class="my-4 text-danger" />
+          <label for="author" class="text-center fs-4 my-2">Autor</label>
+          <select class="form-select my-3" name="author" id="author">
+            {% for envoy in form.fromMember_id.field.queryset %}
+              <option value="{{ envoy.pk }}">{{ envoy.firstName }} {{ envoy.lastName }}</option>
+            {% endfor %}
+          </select>
+          <button type="submit" class="btn btn-primary mt-3 mx-2">Filtruj</button>
+          <button type="reset" class="btn btn-secondary mt-3 mx-3 disabled">Resetuj filtry</button>
+        </form>
+      </div>
+      <div class="col-md-9 col-12">
+        <div data-mdb-input-init class="form-outline my-2">
+          <input type="text" class="form-control" id="datatable-search-input" />
+          <label class="form-label" for="datatable-search-input">Szukaj</label>
+        </div>
+        <div id="interpellationTable"
+             class="table-responsive"
+             data-mdb-striped="true"
+             data-mdb-fixed-header="true"
+             data-mdb-clickable-rows="true"
+             data-mdb-multi="true"></div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,35 @@
+{% for envoy in envoys %}
+  <div class="col-12 col-md-6 col-lg-6 col-xl-4">
+    <a href='{% url "envoy_detail" envoy.id %}'
+       style="text-decoration: none;
+              color: inherit"
+       class="card clickable-card flex-row mb-4 shadow {% if envoy.numberOfVotes > 100000 %}border-top border-primary{% endif %}">
+      <img src='{{ envoy.photo.url }}'
+           loading="lazy"
+           class="card-img-left"
+           alt="{{ envoy.firstName }} {{ envoy.lastName }}">
+      <div class="card-body">
+        <div class="d-flex justify-content-between">
+          <h5 class="card-title fs-6">{{ envoy.firstName }} {{ envoy.lastName|truncatechars:15 }}</h5>
+        </div>
+        <span class="badge bg-white rounded p-1 ">
+          {% if envoy.club.photo and envoy.club.photo.url %}
+            <img src="{{ envoy.club.photo.url }}"
+                 loading="lazy"
+                 alt="Club Photo"
+                 style="width: 40px;
+                        height: 40px">
+          {% endif %}
+        </span>
+        {% comment %} {% if envoy.total_activity > 100 %}
+                        <p class="col-5 m-1 my-2 badge  text-danger badge border border-dagner pb-0">aktywny/a</p>
+        {% endif %} {% endcomment %}
+        {% comment %} głosy: {{ envoy.number_of_votes }} {% endcomment %}
+      </div>
+    </a>
+  </div>
+{% empty %}
+  <div class="col">
+    <p>Nie znaleziono żadnego posła.</p>
+  </div>
+{% endfor %}
