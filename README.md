@@ -1,11 +1,6 @@
-
-![Docs](https://img.shields.io/badge/docs-passing-green.svg)
-![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)
-![Issues](https://img.shields.io/github/issues/michalskibinski109/sejm-stats)
+Thank you for providing the updated information. I'll revise the README to reflect these changes. Here's an updated version:
 
 # [Sejm Stats](https://sejm-stats.pl/)
-
-
 <img src="src/sejm_app/static/img/logo.png" alt="Sejm Stats logo" width="200"/>
 
 Welcome to Sejm-stats, a project aimed at making POLISH parliamentary data more accessible and understandable. This project provides a clear and concise view of complex parliamentary data, making it easier for citizens to stay informed about the actions and decisions of their representatives.
@@ -17,85 +12,71 @@ Welcome to Sejm-stats, a project aimed at making POLISH parliamentary data more 
 - [YouTube Channel](https://www.youtube.com/@sejm-stats)
 
 ---
-# Development setup with Docker
 
-If you have problem with makefile please install this dependency for [Windows](http://gnuwin32.sourceforge.net/packages/make.htm)
+# Development Setup
 
-## List all commands in the makefile
+The project is now split into two environments: one for the backend and one for the frontend.
 
-- `make help`
+## Backend Development
 
-### Dependencies
+1. Create a `.env` file in the root directory with the following content:
 
-- Docker installation
-- free ports (defined in `.env` file):
-   - 8000 for the app server
-   - 5432 for main Postgres database
-
-### Setup
-
-Run `make install` or follow the steps below:
-
-- build and run containers:
-
-        make install
-        make start
-or
-
-- initialize `.env` file and customize if needed:
-
-        cp .env.dist .env
-
-- build without makefile:
-
-      docker-compose up --build -d
-
-- Download [db_dump.sql](https://drive.google.com/file/d/1S5u3bNQ_LoYJqmvgiNFdL860HnKb7AgF/view?usp=sharing) and restore the database (docker ps -> and replace db_container_id with db container id):
-  ```bash
-   docker exec -it <db_container_id> psql -U postgres -c "DROP DATABASE IF EXISTS transparlament"
-   docker exec -it <db_container_id> psql -U postgres -c "CREATE DATABASE transparlament"
-   docker cp ./db_dump.sql <db_container_id>:/db_dump.sql
-   docker exec -it <db_container_id> psql -U postgres -d transparlament -f /db_dump.sql
-  ```
-
-
-App will be available on [localhost:8000](http://localhost:8000).
-
-### Production
-
-Deploy using docker-compose:
-```bash
-git pull origin main
-docker-compose -f docker-compose.yml up
+```
+POSTGRES_DB=example
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+POSTGRES_PORT=5432
+DATABASE_HOST=db
+DEBUG=true
+SECRET_KEY=does_not_matter
+EMAIL_HOST_PASSWORD=only_used_when_debug_is_false
+BUILD_TARGET=prod
+C_FORCE_ROOT=true
 ```
 
-> **Caution:** Unauthorized downloading of MDBootstrap files is prohibited.
+2. Use Visual Studio Code and open the project in a devcontainer.
 
-### Containers
+3. Run the server:
+   ```
+   python manage.py runserver 0.0.0.0:8000
+   ```
 
-You can enter the container shells with `make bash` commands.
-To control the environment you can use `make stop`, `make start` and `make kill-all` commands.
+4. To update data, run the Celery worker:
+   ```
+   celery -A core worker -l info
+   ```
 
-Available containers:
+Note: The UI for the Django part is obsolete and will be removed soon.
 
-| Service  | Container Name   | Default External Port |
-|----------|------------------|---------------------|
-| App      | (not specified)  | 80               |
-| Database | (not specified)  | 5432                |
-| Redis    | (not specified)  | (not exposed)       |
+## Frontend Development
 
-### Pull Requests
+> [!TIP]
+> If you don't want to run the backend locally, you can use the production API at `https://sejm-stats.pl/api`. in `frontend/lib/api.tsx` file
 
-When creating a pull request, we enforce a specific title format using [blumilksoftware/action-pr-title](https://github.com/blumilksoftware/action-pr-title) github action. The rules are:
+1. Navigate to the frontend directory:
+   ```
+   cd ./frontend
+   ```
 
+2. Install dependencies:
+   ```
+   npm install
+   ```
+
+3. Run the development server:
+   ```
+   npm run dev
+   ```
+
+
+## Contributing
+
+When creating a pull request, we enforce a specific title format using [blumilksoftware/action-pr-title](https://github.com/blumilksoftware/action-pr-title) GitHub action. The rules are:
 - `#123 - Some PR title` - for PRs that deal with a specific issue, where `123` is the issue number
 - `- Some PR title` - for PRs that don't have a related issue
 
-
-### Features
-Sejm 2.0 offers an intuitive interface with numerous features such as detailed MP profiles, bill tracking, and more. For a full list of features, visit our documentation.
-
-### Motivation
-Sejm Stats is committed to providing unbiased and detailed parliamentary information to enhance public knowledge and engagement.
-
 For any inquiries or contributions, please refer to our [GitHub repository](https://github.com/michalskibinski109/sejm-stats) or join our Discord server. Your support through Patronite or feedback on YouTube is also highly appreciated.
+
+
+> [!TIP]
+> If you have any questions feel free to ask on [discord](https://discord.com/invite/zH2J3z5Wbf)
