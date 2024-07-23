@@ -1,5 +1,3 @@
-Thank you for providing the updated information. I'll revise the README to reflect these changes. Here's an updated version:
-
 # [Sejm Stats](https://sejm-stats.pl/)
 <img src="src/sejm_app/static/img/logo.png" alt="Sejm Stats logo" width="200"/>
 
