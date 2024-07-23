@@ -27,7 +27,7 @@ django-celery-beat==2.6.0
 django-celery-results==2.5.1
 django-redis==5.4.0
 django-debug-toolbar==4.4.2
-djangorestframework==3.15.1
+djangorestframework==3.15.2
 drf-redesign==0.3.9
 django-ckeditor==6.7.1
 django-role-permissions==3.2.0
