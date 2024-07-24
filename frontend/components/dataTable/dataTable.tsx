@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -28,28 +28,45 @@ import {
 
 import { DataTablePagination } from "./pagination";
 import { Input } from "@/components/ui/input";
-import Link from "next/link";
+import { DataTableViewOptions } from "./toggle";
+import { DataTableFilter } from "./dataTableFilter";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  filters?: {
+    columnKey: string;
+    title: string;
+  }[];
 }
-const globalFilterFn: FilterFn<any> = (row, columnId, filterValue: string) => {
-  const search = filterValue.toLowerCase();
-  return (
-    row.getValue(columnId)?.toString().toLowerCase().includes(search) || false
-  );
-};
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  filters = [],
 }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = useState({});
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
+  const [filterOptions, setFilterOptions] = useState<
+    Record<string, { label: string; value: string }[]>
+  >({});
+
+  useEffect(() => {
+    const options: Record<string, { label: string; value: string }[]> = {};
+    filters.forEach((filter) => {
+      const uniqueValues = Array.from(
+        new Set(data.map((item: any) => item[filter.columnKey]))
+      );
+      options[filter.columnKey] = uniqueValues.map((value) => ({
+        label: String(value),
+        value: String(value),
+      }));
+    });
+    setFilterOptions(options);
+  }, [data, filters]);
 
   const table = useReactTable({
     data,
@@ -73,17 +90,30 @@ export function DataTable<TData, TValue>({
     getSortedRowModel: getSortedRowModel(),
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
-    globalFilterFn: globalFilterFn,
   });
 
   return (
     <div className="space-y-4">
-      <Input
-        placeholder="Wpisz cokolwiek..."
-        value={globalFilter ?? ""}
-        onChange={(event) => setGlobalFilter(String(event.target.value))}
-        className="max-w-sm"
-      />
+      <div className="flex items-center justify-between">
+        <Input
+          placeholder="Wpisz cokolwiek..."
+          value={globalFilter ?? ""}
+          onChange={(event) => setGlobalFilter(String(event.target.value))}
+          className="max-w-sm"
+        />
+        <div className="flex items-center space-x-2">
+          {filters.map((filter) => (
+            <DataTableFilter
+              key={filter.columnKey}
+              column={table.getColumn(filter.columnKey)}
+              title={filter.title}
+              options={filterOptions[filter.columnKey] || []}
+            />
+          ))}
+          <DataTableViewOptions table={table} />
+        </div>
+      </div>
+
       <div className="rounded-md border">
         <Table>
           <TableHeader>
@@ -113,12 +143,12 @@ export function DataTable<TData, TValue>({
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </TableCell>
-                    ))}
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </TableCell>
+                  ))}
                 </TableRow>
               ))
             ) : (
@@ -127,7 +157,7 @@ export function DataTable<TData, TValue>({
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  No results.
+                  Brak wyników.
                 </TableCell>
               </TableRow>
             )}

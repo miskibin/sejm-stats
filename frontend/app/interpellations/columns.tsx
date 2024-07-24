@@ -22,11 +22,17 @@ export const columns: ColumnDef<Interpellation>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Autor" />
     ),
+    filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id));
+    },
   },
   {
     accessorKey: "sentDate",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Data wysłania" />
     ),
+    filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id));
+    },
   },
 ];
