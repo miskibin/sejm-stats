@@ -11,7 +11,7 @@ interface ClubsListProps {
 const ClubsList: React.FC<ClubsListProps> = ({ clubs }) => {
   return (
     <ul className="space-y-2">
-      {clubs.map((club) => (
+      {clubs.sort((a, b) => b.membersCount - a.membersCount).map((club) => (
         <li key={club.id}>
           <Link
             href={`/club/${club.id}`}
