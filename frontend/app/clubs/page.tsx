@@ -3,7 +3,7 @@ import { fetchClubs } from "@/lib/api";
 import ClubsList from "@/components/clubList";
 import ClubsChart from "@/components/clubChart";
 import { LoadingSpinner } from "@/components/ui/spinner";
-import LoadableContainer from "@/components/card";
+import LoadableContainer from "@/components/loadableContainer";
 
 export default async function ClubsPage() {
   const clubsData = await fetchClubs();

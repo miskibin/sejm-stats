@@ -1,15 +1,23 @@
 import { DataTable } from "@/components/dataTable/dataTable";
 import { columns } from "./columns";
-import { fetchAllInterpellations } from "@/lib/api";
-import { LoadingSpinner } from "@/components/ui/spinner";
-import { Suspense } from "react";
-import LoadableContainer from "@/components/card";
+import { useEffect, useState } from "react";
+import { fetchAllInterpellations, Interpellation } from "@/lib/api";
+import LoadableContainer from "@/components/loadableContainer";
 
 async function InterpellationsTable() {
   const interpellations = await fetchAllInterpellations();
 
-  return <DataTable columns={columns} data={interpellations} />;
+  const filters = [
+    { columnKey: "member", title: "Autor" },
+    { columnKey: "sentDate", title: "Data wysłania" },
+  ];
+  return (
+    <>
+      <DataTable columns={columns} data={interpellations} filters={filters} />;
+    </>
+  );
 }
+
 
 export default async function InterpellationsPage() {
   return (
@@ -18,3 +26,4 @@ export default async function InterpellationsPage() {
     </LoadableContainer>
   );
 }
+
