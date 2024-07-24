@@ -1,4 +1,5 @@
 import "server-only";
+import { Act, Club, Interpellation } from "./types";
 
 // const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://sejm-stats.pl/api";
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
@@ -24,15 +25,7 @@ export async function fetchEnvoys(page: number = 1) {
 
   return res.json();
 }
-export interface Club {
-  id: string;
-  name: string;
-  phone: string;
-  fax: string;
-  email: string;
-  membersCount: number;
-  photo_url: string;
-}
+
 
 export interface ClubsResponse {
   count: number;
@@ -51,12 +44,6 @@ export async function fetchClubs(): Promise<ClubsResponse> {
   return res.json();
 }
 
-export interface Interpellation {
-  id: number;
-  title: string;
-  member: number;
-  sentDate: string;
-}
 
 export interface InterpellationsResponse {
   count: number;
@@ -84,4 +71,34 @@ export async function fetchAllInterpellations(): Promise<Interpellation[]> {
   }
 
   return allInterpellations;
+}
+
+
+export interface ActsResponse {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: Act[];
+}
+
+// Add this function to fetch all acts
+export async function fetchAllActs(): Promise<Act[]> {
+  let allActs: Act[] = [];
+  let nextPage: string | null = `${API_URL}/acts/`;
+
+  while (nextPage) {
+    const res = await fetch(nextPage, {
+      next: { revalidate: 60 },
+    });
+
+    if (!res.ok) {
+      throw new Error("Failed to fetch acts data");
+    }
+
+    const data: ActsResponse = await res.json();
+    allActs = [...allActs, ...data.results];
+    nextPage = data.next;
+  }
+
+  return allActs;
 }

@@ -101,7 +101,7 @@ export function DataTable<TData, TValue>({
           onChange={(event) => setGlobalFilter(String(event.target.value))}
           className="max-w-sm"
         />
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-1">
           {filters.map((filter) => (
             <DataTableFilter
               key={filter.columnKey}
@@ -166,5 +166,5 @@ export function DataTable<TData, TValue>({
       </div>
       <DataTablePagination table={table} />
     </div>
-  );
+  )
 }

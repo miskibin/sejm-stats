@@ -12,8 +12,12 @@ import {
   FaCommentDots,
   FaBook,
   FaBars,
+  FaHeart,
+  FaYoutube,
+  FaDiscord,
+  FaGithub,
 } from "react-icons/fa";
-import { FiYoutube, FiHeart } from "react-icons/fi";
+import { FiYoutube, FiHeart, FiGithub } from "react-icons/fi";
 import { SiDiscord } from "react-icons/si";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
@@ -74,17 +78,22 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     {
       href: "https://patronite.pl/sejm-stats",
       label: "Patronite",
-      icon: <FiHeart className="w-5 h-5 text-red-600" />,
+      icon: <FaHeart className="w-5 h-5 text-red-600" />,
     },
     {
       href: "https://www.youtube.com/@sejm-stats",
       label: "YouTube",
-      icon: <FiYoutube className="w-5 h-5 text-red-600" />,
+      icon: <FaYoutube className="w-5 h-5 text-red-600" />,
     },
     {
       href: "https://discord.com/invite/zH2J3z5Wbf",
       label: "Discord",
-      icon: <SiDiscord className="w-5 h-5 text-blue-600" />,
+      icon: <FaDiscord className="w-5 h-5 text-blue-600" />,
+    },
+    {
+      href: "https://github.com/miskibin/sejm-stats",
+      label: "Github",
+      icon: <FaGithub className="w-5 h-5 text-gray-600" />,
     },
   ];
 

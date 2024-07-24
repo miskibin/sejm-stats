@@ -7,7 +7,7 @@ interface LoadableContainerProps {
 
 const LoadableContainer: React.FC<LoadableContainerProps> = ({ children }) => {
   return (
-    <div className="container mx-auto bg-white rounded shadow-md my-4 p-4 ">
+    <div className="mx-auto bg-white rounded shadow-md my-4 md:mx-3 2xl:mx-16 md:px-4 max-md:px-1 py-3">
       <Suspense fallback={<LoadingSpinner />}>{children}</Suspense>
     </div>
   );
