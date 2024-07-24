@@ -2,7 +2,12 @@ import { DataTable } from "@/components/dataTable/dataTable";
 import { fetchAllActs } from "@/lib/api";
 import LoadableContainer from "@/components/loadableContainer";
 import { columns } from "./columns";
+import { Metadata } from "next";
 
+export const metadata: Metadata = {
+  title: 'Akty prawne - Sejm-stats',
+  description: 'Lista aktów prawnych',
+}
 
 async function ActsTable() {
   const acts = await fetchAllActs();

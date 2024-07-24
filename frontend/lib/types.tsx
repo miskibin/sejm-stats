@@ -46,3 +46,14 @@ export interface Act {
   releasedBy: string;
   url: string;
 }
+
+export interface Committee {
+  name: string;
+  nameGenitive: string;
+  code: string;
+  appointmentDate: string;
+  compositionDate: string;
+  phone: string;
+  scope: string;
+  type: string;
+}

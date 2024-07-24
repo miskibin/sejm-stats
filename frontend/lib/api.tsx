@@ -102,3 +102,35 @@ export async function fetchAllActs(): Promise<Act[]> {
 
   return allActs;
 }
+
+import { Committee } from "./types";
+
+// Add this interface
+export interface CommitteesResponse {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: Committee[];
+}
+
+// Add this function to fetch all committees
+export async function fetchAllCommittees(): Promise<Committee[]> {
+  let allCommittees: Committee[] = [];
+  let nextPage: string | null = `${API_URL}/committees/`;
+
+  while (nextPage) {
+    const res = await fetch(nextPage, {
+      next: { revalidate: 60 },
+    });
+
+    if (!res.ok) {
+      throw new Error("Failed to fetch committees data");
+    }
+
+    const data: CommitteesResponse = await res.json();
+    allCommittees = [...allCommittees, ...data.results];
+    nextPage = data.next;
+  }
+
+  return allCommittees;
+}
