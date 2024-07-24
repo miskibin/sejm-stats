@@ -1,12 +1,15 @@
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters, serializers
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.viewsets import ReadOnlyModelViewSet
-from rest_framework import serializers
 
 from sejm_app.models.interpellation import Interpellation
 
 
 class InterpellationPagination(PageNumberPagination):
-    page_size = 100
+    page_size = 500
     page_size_query_param = "page_size"
     max_page_size = 100
 
@@ -21,8 +24,6 @@ class InterpellationSerializer(serializers.ModelSerializer):
         model = Interpellation
         fields = [
             "id",
-            "term",
-            "num",
             "title",
             "receiptDate",
             "lastModified",
@@ -30,11 +31,20 @@ class InterpellationSerializer(serializers.ModelSerializer):
             "member",
             "to",
             "sentDate",
-            "repeatedInterpellation",
         ]
 
 
 class InterpellationViewSet(ReadOnlyModelViewSet):
-    pagination_class = InterpellationPagination
     queryset = Interpellation.objects.all()
     serializer_class = InterpellationSerializer
+    pagination_class = InterpellationPagination
+
+    ordering = ["-receiptDate"]  # Default to most recently received
+
+    @method_decorator(cache_page(60 * 15))  # Cache for 15 minutes
+    def list(self, request, *args, **kwargs):
+        return super().list(request, *args, **kwargs)
+
+    @method_decorator(cache_page(60 * 60))  # Cache for 1 hour
+    def retrieve(self, request, *args, **kwargs):
+        return super().retrieve(request, *args, **kwargs)

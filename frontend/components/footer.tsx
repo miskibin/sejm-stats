@@ -23,7 +23,7 @@ const Footer: React.FC<FooterProps> = ({ links }) => {
             height={24}
             className="mr-2"
           />
-          <span className="text-sm text-neutral-700">
+          <span className="text-sm text-neutral-700 pe-2">
             © 2024 Michał Skibiński. Wszelkie prawa zastrzeżone.
           </span>
         </div>
@@ -32,7 +32,7 @@ const Footer: React.FC<FooterProps> = ({ links }) => {
             <Link
               key={index}
               href={link.href}
-              className="text-gray-300 hover:text-white px-2"
+              className="text-gray-300 hover:text-white sm:px-1 md:px-2"
             >
               {link.icon}
             </Link>

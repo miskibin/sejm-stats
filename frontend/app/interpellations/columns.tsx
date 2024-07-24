@@ -1,7 +1,7 @@
 "use client";
 
 import { DataTableColumnHeader } from "@/components/columns";
-import { Interpellation } from "@/lib/api";
+import { Interpellation } from "@/lib/types";
 import { ColumnDef } from "@tanstack/react-table";
 
 export const columns: ColumnDef<Interpellation>[] = [

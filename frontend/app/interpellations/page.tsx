@@ -1,7 +1,7 @@
 import { DataTable } from "@/components/dataTable/dataTable";
 import { columns } from "./columns";
 import { useEffect, useState } from "react";
-import { fetchAllInterpellations, Interpellation } from "@/lib/api";
+import { fetchAllInterpellations } from "@/lib/api";
 import LoadableContainer from "@/components/loadableContainer";
 
 async function InterpellationsTable() {
