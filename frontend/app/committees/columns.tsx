@@ -1,7 +1,7 @@
 "use client";
 
 import { DataTableColumnHeader } from "@/components/columns";
-import { Committee } from "@/lib/api";
+import { Committee } from "@/lib/types";
 import { ColumnDef } from "@tanstack/react-table";
 
 export const columns: ColumnDef<Committee>[] = [

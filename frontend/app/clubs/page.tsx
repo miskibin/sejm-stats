@@ -1,12 +1,12 @@
 import { Suspense } from "react";
-import { fetchClubs } from "@/lib/api";
 import ClubsList from "@/components/clubList";
 import ClubsChart from "@/components/clubChart";
 import { LoadingSpinner } from "@/components/ui/spinner";
 import LoadableContainer from "@/components/loadableContainer";
+import { fetchAllActs, fetchAllClubs } from "@/lib/api";
 
 export default async function ClubsPage() {
-  const clubsData = await fetchClubs();
+  const clubsData = await fetchAllClubs();
 
   return (
     <div className="container mx-auto mt-4 px-4">
