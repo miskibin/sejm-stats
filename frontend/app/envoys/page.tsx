@@ -147,7 +147,7 @@ export default function EnvoysPage() {
 
   useEffect(() => {
     const shouldSearch =
-      search || educationFilter !== "all" || clubFilter !== "all";
+      !!search || educationFilter !== "all" || clubFilter !== "all";
     setIsSearching(shouldSearch);
     if (shouldSearch) {
       loadEnvoys(true); // Force refresh when searching
@@ -158,7 +158,10 @@ export default function EnvoysPage() {
   }, [search, educationFilter, clubFilter]);
 
   const educationLevels = useMemo(() => {
-    return ["all", ...new Set(envoys.map((envoy) => envoy.educationLevel))];
+    return [
+      "all",
+      ...Array.from(new Set(envoys.map((envoy) => envoy.educationLevel))),
+    ];
   }, [envoys]);
 
   const clubs = useMemo(() => {

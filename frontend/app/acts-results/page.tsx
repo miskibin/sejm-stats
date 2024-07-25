@@ -15,7 +15,9 @@ export default function ActsResultsPage() {
     async function fetchActs() {
       setIsLoading(true);
       try {
-        const response = await fetch(`http://127.0.0.1:8000/api/acts/?${searchParams.toString()}`);
+        const response = await fetch(
+          `http://127.0.0.1:8000/api/acts/?${searchParams?.toString()}`
+        );
         const data = await response.json();
         setActs(data.results);
       } catch (error) {
