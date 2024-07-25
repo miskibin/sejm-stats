@@ -38,6 +38,7 @@ ALLOWED_HOSTS = [
     "145.239.29.193",
     "localhost",
     "127.0.0.1",
+    "127.0.0.1:3000",
     "sejm.aleksander-kowalski.pl",
 ]
 
@@ -66,6 +67,7 @@ INSTALLED_APPS = [
     "drf_redesign",
     "rest_framework",
     "crispy_forms",
+        'corsheaders',
     "django_filters",
     "django_celery_results",
     "crispy_bootstrap5",
@@ -90,10 +92,16 @@ MIDDLEWARE = [
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
+    "django.middleware.common.CommonMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
+CORS_ALLOW_ALL_ORIGINS = True
+
+
 if DEBUG:
     MIDDLEWARE += ["debug_toolbar.middleware.DebugToolbarMiddleware"]
 
