@@ -26,19 +26,11 @@ export const columns: ColumnDef<Committee>[] = [
       return value.includes(row.getValue(id));
     },
   },
-  {
-    accessorKey: "appointmentDate",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Data powołania" />
-    ),
-    filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id));
-    },
-  },
+
   {
     accessorKey: "compositionDate",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Data składu" />
+      <DataTableColumnHeader column={column} title="Data powołania" />
     ),
     filterFn: (row, id, value) => {
       return value.includes(row.getValue(id));

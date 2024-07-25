@@ -3,6 +3,7 @@ import { columns } from "./columns";
 import { useEffect, useState } from "react";
 import { fetchAllInterpellations } from "@/lib/api";
 import LoadableContainer from "@/components/loadableContainer";
+import { max } from "date-fns";
 
 async function InterpellationsTable() {
   const interpellations = await fetchAllInterpellations();
@@ -18,7 +19,6 @@ async function InterpellationsTable() {
   );
 }
 
-
 export default async function InterpellationsPage() {
   return (
     <LoadableContainer>
@@ -26,4 +26,3 @@ export default async function InterpellationsPage() {
     </LoadableContainer>
   );
 }
-

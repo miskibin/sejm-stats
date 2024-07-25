@@ -20,16 +20,17 @@ interface ActsMeta {
   keywords: MetaItem[];
   actStatuses: MetaItem[];
   institutions: MetaItem[];
+  years: MetaItem[];
 }
 
 const steps: StepItem[] = [
-  { label: "Wydawcy", optional: true },
   { label: "Słowa kluczowe", optional: true },
+  { label: "Wydawcy", optional: true },
   { label: "Status aktu", optional: true },
   { label: "Instytucje", optional: true },
+  { label: "Lata", optional: true },
   { label: "Podsumowanie" },
 ];
-
 
 export default function StepperDemo() {
   const [actsMeta, setActsMeta] = useState<ActsMeta>({
@@ -37,6 +38,7 @@ export default function StepperDemo() {
     keywords: [],
     actStatuses: [],
     institutions: [],
+    years: [],
   });
   const [selectedPublishers, setSelectedPublishers] = useState<string[]>([]);
   const [selectedKeywords, setSelectedKeywords] = useState<string[]>([]);
@@ -44,6 +46,7 @@ export default function StepperDemo() {
   const [selectedInstitutions, setSelectedInstitutions] = useState<string[]>(
     []
   );
+  const [selectedYears, setselectedYears] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -71,23 +74,6 @@ export default function StepperDemo() {
           orientation="horizontal"
           variant="circle-alt"
         >
-          <Step label="Wydawcy">
-            <div className="my-4">
-              {isLoading ? (
-                <div>Ładowanie...</div>
-              ) : (
-                <MultiSelect
-                  options={actsMeta.publishers.map(
-                    (p) => `${p.name} (${p.count})`
-                  )}
-                  selected={selectedPublishers}
-                  onChange={setSelectedPublishers}
-                  placeholder="Wybierz wydawców"
-                />
-              )}
-            </div>
-            <Footer />
-          </Step>
           <Step label="Słowa kluczowe">
             <div className="my-4">
               {isLoading ? (
@@ -100,6 +86,23 @@ export default function StepperDemo() {
                   selected={selectedKeywords}
                   onChange={setSelectedKeywords}
                   placeholder="Wybierz słowa kluczowe"
+                />
+              )}
+            </div>
+            <Footer />
+          </Step>
+          <Step label="Wydawcy">
+            <div className="my-4">
+              {isLoading ? (
+                <div>Ładowanie...</div>
+              ) : (
+                <MultiSelect
+                  options={actsMeta.publishers.map(
+                    (p) => `${p.name} (${p.count})`
+                  )}
+                  selected={selectedPublishers}
+                  onChange={setSelectedPublishers}
+                  placeholder="Wybierz wydawców"
                 />
               )}
             </div>
@@ -134,6 +137,21 @@ export default function StepperDemo() {
                   selected={selectedInstitutions}
                   onChange={setSelectedInstitutions}
                   placeholder="Wybierz instytucje"
+                />
+              )}
+            </div>
+            <Footer />
+          </Step>
+          <Step label="Lata">
+            <div className="my-4">
+              {isLoading ? (
+                <div>Ładowanie...</div>
+              ) : (
+                <MultiSelect
+                  options={actsMeta.years.map((i) => `${i.name} (${i.count})`)}
+                  selected={selectedYears}
+                  onChange={setselectedYears}
+                  placeholder="Wybierz Lata"
                 />
               )}
             </div>
@@ -219,6 +237,7 @@ export default function StepperDemo() {
                   selectedPublishers={selectedPublishers}
                   selectedKeywords={selectedKeywords}
                   selectedStatuses={selectedStatuses}
+                  selectedYears={selectedYears}
                   selectedInstitutions={selectedInstitutions}
                 />
               </div>

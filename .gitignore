@@ -7,7 +7,8 @@ mdb/
 /.pnp
 .pnp.js
 .yarn/install-state.gz
-
+*.sock
+/src/static/
 # testing
 /coverage
 

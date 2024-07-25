@@ -12,13 +12,14 @@ interface PaginatedResponse<T> {
 
 async function fetchAllPaginated<T>(
   endpoint: string,
-  pageSize: number = 10000
+  pageSize: number = 10000,
+  maxPages: number = 100
 ): Promise<T[]> {
   let allItems: T[] = [];
   let page = 1;
   let hasMore = true;
 
-  while (hasMore) {
+  while (hasMore && page <= maxPages) {
     const res = await fetch(
       `${API_URL}/${endpoint}/?page=${page}&page_size=${pageSize}`,
       {
@@ -45,11 +46,15 @@ export async function fetchAllActs(pageSize: number = 10000): Promise<Act[]> {
 }
 
 export async function fetchAllInterpellations(
-  pageSize: number = 1000
+  pageSize: number = 1000,
+  maxPages: number = 1
 ): Promise<Interpellation[]> {
-  return fetchAllPaginated<Interpellation>("interpellations", pageSize);
+  return fetchAllPaginated<Interpellation>(
+    "interpellations",
+    pageSize,
+    maxPages
+  );
 }
-
 
 export async function fetchAllCommittees(
   pageSize: number = 10000
@@ -61,10 +66,14 @@ export async function fetchAllClubs(pageSize: number = 1000): Promise<Club[]> {
   return fetchAllPaginated<Club>("clubs", pageSize);
 }
 
-export async function fetchAllKeywords(pageSize: number = 1000): Promise<string[]> {
+export async function fetchAllKeywords(
+  pageSize: number = 1000
+): Promise<string[]> {
   return fetchAllPaginated<string>("keywords", pageSize);
 }
-export async function fetchAllPublishers(pageSize: number = 1000): Promise<string[]> {
+export async function fetchAllPublishers(
+  pageSize: number = 1000
+): Promise<string[]> {
   return fetchAllPaginated<string>("publishers", pageSize);
 }
 

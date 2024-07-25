@@ -12,9 +12,9 @@ from eli_app.models import Act, ActStatus, Institution, Keyword, Publisher
 
 
 class ActPagination(PageNumberPagination):
-    page_size = 1000
+    page_size = 1500
     page_size_query_param = "page_size"
-    max_page_size = 1000
+    max_page_size = 1500
 
 
 class ActSerializer(serializers.ModelSerializer):
@@ -49,17 +49,23 @@ class ActFilter(django_filters.FilterSet):
     end_date = django_filters.DateFilter(
         field_name="announcementDate", lookup_expr="lte"
     )
+    years = django_filters.CharFilter(method="filter_years")
 
     class Meta:
         model = Act
         fields = [
             "publishers",
             "keywords",
+            "years",
             "statuses",
             "institutions",
             "start_date",
             "end_date",
         ]
+
+    def filter_years(self, queryset, name, value):
+        years = value.split(",")
+        return queryset.filter(year__in=years)
 
     def filter_publishers(self, queryset, name, value):
         publishers = value.split(",")
@@ -107,16 +113,30 @@ class ActViewSet(ReadOnlyModelViewSet):
 class ActsMetaViewSet(ViewSet):
     @method_decorator(cache_page(60 * 15))  # Cache for 15 minutes
     def list(self, request):
-        keywords = Keyword.objects.annotate(act_count=Count("act")).filter(
-            act_count__gt=1
-        ).order_by('-act_count')
-        publishers = Publisher.objects.annotate(act_count=Count("act")).order_by('-act_count')
-        act_statuses = ActStatus.objects.annotate(act_count=Count("act")).filter(
-            act_count__gt=0
-        ).order_by('-act_count')
-        institutions = Institution.objects.annotate(act_count=Count("act")).filter(
-            act_count__gt=0
-        ).order_by('-act_count')
+        keywords = (
+            Keyword.objects.annotate(act_count=Count("act"))
+            .filter(act_count__gt=1)
+            .order_by("-act_count")
+        )
+        publishers = Publisher.objects.annotate(act_count=Count("act")).order_by(
+            "-act_count"
+        )
+        act_statuses = (
+            ActStatus.objects.annotate(act_count=Count("act"))
+            .filter(act_count__gt=0)
+            .order_by("-act_count")
+        )
+        institutions = (
+            Institution.objects.annotate(act_count=Count("act"))
+            .filter(act_count__gt=0)
+            .order_by("-act_count")
+        )
+        years = (
+            Act.objects.values("year")
+            .annotate(count=Count("year"))
+            .order_by("year")
+            .distinct()
+        )
 
         return Response(
             {
@@ -135,6 +155,9 @@ class ActsMetaViewSet(ViewSet):
                 "institutions": [
                     {"name": institution.name, "count": institution.act_count}
                     for institution in institutions
+                ],
+                "years": [
+                    {"name": year["year"], "count": year["count"]} for year in years
                 ],
             }
         )
