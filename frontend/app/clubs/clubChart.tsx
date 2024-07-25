@@ -25,7 +25,6 @@ const clubColors: { [key: string]: string } = {
   "Kukiz'15": "#000000",
   "PSL-TD": "#17A42B",
   "Polska2050-TD": "#FCD300",
-  // Add more clubs and their colors as needed
 };
 
 const ClubsChart: React.FC<ClubsChartProps> = ({ clubs }) => {
@@ -60,12 +59,14 @@ const ClubsChart: React.FC<ClubsChartProps> = ({ clubs }) => {
             type: "item",
             name: "Mandaty",
             keys: ["name", "y", "color", "label"],
-            data: clubs.sort((a,b) => b.membersCount - a.membersCount).map((club) => [
-              club.id,
-              club.membersCount,
-              clubColors[club.id] || "#CCCCCC", // Use predefined color or default to gray
-              club.id,
-            ]),
+            data: clubs
+              .sort((a, b) => b.membersCount - a.membersCount)
+              .map((club) => [
+                club.id,
+                club.membersCount,
+                clubColors[club.id] || "#CCCCCC", // Use predefined color or default to gray
+                club.id,
+              ]),
             dataLabels: {
               enabled: true,
               format: "{point.label}",
@@ -81,8 +82,7 @@ const ClubsChart: React.FC<ClubsChartProps> = ({ clubs }) => {
             innerSize: "20%",
           },
         ],
-        plotOptions: {
-        },
+        plotOptions: {},
         tooltip: {
           headerFormat: "",
           pointFormat:
@@ -93,11 +93,10 @@ const ClubsChart: React.FC<ClubsChartProps> = ({ clubs }) => {
           rules: [
             {
               condition: {
-                maxWidth: 500,
+                maxWidth: 600,
               },
               chartOptions: {
-                series: [
-                ],
+                series: [],
               },
             },
           ],

@@ -5,17 +5,16 @@ import { columns } from "./columns";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: 'Komisje sejmowe - Sejm-stats',
-  description: 'Lista komisji sejmowych',
-}
+  title: "Komisje sejmowe - Sejm-stats",
+  description: "Lista komisji sejmowych",
+};
 
 async function CommitteesTable() {
   const committees = await fetchAllCommittees();
 
   const filters = [
     { columnKey: "type", title: "Typ" },
-    { columnKey: "appointmentDate", title: "Data powołania" },
-    { columnKey: "compositionDate", title: "Data składu" },
+    { columnKey: "compositionDate", title: "Data powołania" },
   ];
 
   return (

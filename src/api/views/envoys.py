@@ -5,9 +5,9 @@ from sejm_app.models.envoy import Envoy
 
 
 class StandardResultsSetPagination(PageNumberPagination):
-    page_size = 100
+    page_size = 80
     page_size_query_param = "page_size"
-    max_page_size = 100
+    max_page_size = 500
 
 
 class EnvoyListSerializer(serializers.ModelSerializer):
@@ -16,7 +16,15 @@ class EnvoyListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Envoy
-        fields = ["firstName", "lastName", "photo", "active", "club_photo"]
+        fields = [
+            "firstName",
+            "lastName",
+            "educationLevel",
+            "numberOfVotes",
+            "photo",
+            "active",
+            "club_photo",
+        ]
 
     def get_club_photo(self, obj):
         return obj.club.photo.url if obj.club.photo else None
