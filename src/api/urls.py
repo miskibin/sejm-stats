@@ -28,7 +28,8 @@ router.register(
     basename="committee-member",
 )
 router.register(r"committees", views.CommitteeViewSet, basename="committee")
-
+router.register(r"votings", views.VotingViewSet, basename="votings")
+router.register(r"votings-meta", views.VotingsMetaViewSet, basename="voting-meta")
 app_name = "api"
 
 urlpatterns = [
