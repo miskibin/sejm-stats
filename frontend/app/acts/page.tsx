@@ -1,32 +1,35 @@
 "use client";
 import { useEffect, useState } from "react";
 import LoadableContainer from "@/components/loadableContainer";
-import {
-  Step,
-  Stepper,
-  useStepper,
-  type StepItem,
-} from "@/components/ui/stepper";
+import { Step, Stepper, type StepItem } from "@/components/ui/stepper";
 import { MultiSelect } from "@/components/ui/multiSelect";
-import { Button } from "@/components/ui/button";
+import Footer from "@/components/ui/stepper-footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import Footer from "@/components/ui/footer";
+import { Button } from "@/components/ui/button";
+import router from "next/router";
+import ConfirmButton from "./confirm";
 
-const steps = [
-  { label: "Wydawcy" },
-  { label: "Słowa kluczowe", optional: true },
-  { label: "Status aktu" },
-  { label: "Instytucje" },
-  { label: "Podsumowanie" },
-] satisfies StepItem[];
+interface MetaItem {
+  name: string;
+  count: number;
+}
 
 interface ActsMeta {
-  publishers: string[];
-  keywords: string[];
-  actStatuses: string[];
-  institutions: string[];
+  publishers: MetaItem[];
+  keywords: MetaItem[];
+  actStatuses: MetaItem[];
+  institutions: MetaItem[];
 }
+
+const steps: StepItem[] = [
+  { label: "Wydawcy", optional: true },
+  { label: "Słowa kluczowe", optional: true },
+  { label: "Status aktu", optional: true },
+  { label: "Instytucje", optional: true },
+  { label: "Podsumowanie" },
+];
+
 
 export default function StepperDemo() {
   const [actsMeta, setActsMeta] = useState<ActsMeta>({
@@ -38,7 +41,9 @@ export default function StepperDemo() {
   const [selectedPublishers, setSelectedPublishers] = useState<string[]>([]);
   const [selectedKeywords, setSelectedKeywords] = useState<string[]>([]);
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
-  const [selectedInstitutions, setSelectedInstitutions] = useState<string[]>([]);
+  const [selectedInstitutions, setSelectedInstitutions] = useState<string[]>(
+    []
+  );
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -60,168 +65,166 @@ export default function StepperDemo() {
   return (
     <div className="mx-auto max-w-4xl">
       <LoadableContainer>
-        <div className="flex w-full flex-col gap-4">
-          <Stepper
-            initialStep={0}
-            steps={steps}
-            orientation="vertical"
-            variant="circle-alt"
-            size="lg"
-          >
-            <Step label="Wydawcy">
-              <div className="my-4">
-                {isLoading ? (
-                  <div>Ładowanie...</div>
-                ) : (
-                  <MultiSelect
-                    options={actsMeta.publishers}
-                    selected={selectedPublishers}
-                    onChange={setSelectedPublishers}
-                    placeholder="Wybierz wydawców"
-                  />
-                )}
-              </div>
-              <Footer />
-            </Step>
-            <Step label="Słowa kluczowe">
-              <div className="my-4">
-                {isLoading ? (
-                  <div>Ładowanie...</div>
-                ) : (
-                  <MultiSelect
-                    options={actsMeta.keywords}
-                    selected={selectedKeywords}
-                    onChange={setSelectedKeywords}
-                    placeholder="Wybierz słowa kluczowe"
-                  />
-                )}
-              </div>
-              <Footer />
-            </Step>
-            <Step label="Status aktu">
-              <div className="my-4">
-                {isLoading ? (
-                  <div>Ładowanie...</div>
-                ) : (
-                  <MultiSelect
-                    options={actsMeta.actStatuses}
-                    selected={selectedStatuses}
-                    onChange={setSelectedStatuses}
-                    placeholder="Wybierz status aktu"
-                  />
-                )}
-              </div>
-              <Footer />
-            </Step>
-            <Step label="Instytucje">
-              <div className="my-4">
-                {isLoading ? (
-                  <div>Ładowanie...</div>
-                ) : (
-                  <MultiSelect
-                    options={actsMeta.institutions}
-                    selected={selectedInstitutions}
-                    onChange={setSelectedInstitutions}
-                    placeholder="Wybierz instytucje"
-                  />
-                )}
-              </div>
-              <Footer />
-            </Step>
-            <Step label="Podsumowanie">
-              <div className="my-4 space-y-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Wybrani wydawcy</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    {selectedPublishers.length === 0 ? (
-                      <p className="text-gray-500 italic">Nie wybrano żadnych wydawców</p>
-                    ) : (
-                      <div className="flex flex-wrap gap-2">
-                        {selectedPublishers.map((publisher) => (
-                          <Badge key={publisher} variant="secondary">
-                            {publisher}
+        <Stepper
+          initialStep={0}
+          steps={steps}
+          orientation="horizontal"
+          variant="circle-alt"
+        >
+          <Step label="Wydawcy">
+            <div className="my-4">
+              {isLoading ? (
+                <div>Ładowanie...</div>
+              ) : (
+                <MultiSelect
+                  options={actsMeta.publishers.map(
+                    (p) => `${p.name} (${p.count})`
+                  )}
+                  selected={selectedPublishers}
+                  onChange={setSelectedPublishers}
+                  placeholder="Wybierz wydawców"
+                />
+              )}
+            </div>
+            <Footer />
+          </Step>
+          <Step label="Słowa kluczowe">
+            <div className="my-4">
+              {isLoading ? (
+                <div>Ładowanie...</div>
+              ) : (
+                <MultiSelect
+                  options={actsMeta.keywords.map(
+                    (k) => `${k.name} (${k.count})`
+                  )}
+                  selected={selectedKeywords}
+                  onChange={setSelectedKeywords}
+                  placeholder="Wybierz słowa kluczowe"
+                />
+              )}
+            </div>
+            <Footer />
+          </Step>
+          <Step label="Status aktu">
+            <div className="my-4">
+              {isLoading ? (
+                <div>Ładowanie...</div>
+              ) : (
+                <MultiSelect
+                  options={actsMeta.actStatuses.map(
+                    (s) => `${s.name} (${s.count})`
+                  )}
+                  selected={selectedStatuses}
+                  onChange={setSelectedStatuses}
+                  placeholder="Wybierz status aktu"
+                />
+              )}
+            </div>
+            <Footer />
+          </Step>
+          <Step label="Instytucje">
+            <div className="my-4">
+              {isLoading ? (
+                <div>Ładowanie...</div>
+              ) : (
+                <MultiSelect
+                  options={actsMeta.institutions.map(
+                    (i) => `${i.name} (${i.count})`
+                  )}
+                  selected={selectedInstitutions}
+                  onChange={setSelectedInstitutions}
+                  placeholder="Wybierz instytucje"
+                />
+              )}
+            </div>
+            <Footer />
+          </Step>
+          <Step label="Podsumowanie">
+            <div className="my-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Podsumowanie wyboru</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <h3 className="font-semibold mb-2">
+                        Wydawcy ({selectedPublishers.length})
+                      </h3>
+                      <div className="flex flex-wrap gap-1">
+                        {selectedPublishers.map((item) => (
+                          <Badge
+                            key={item}
+                            variant="secondary"
+                            className="text-xs"
+                          >
+                            {item.split(" (")[0]}
                           </Badge>
                         ))}
                       </div>
-                    )}
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Wybrane słowa kluczowe</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    {selectedKeywords.length === 0 ? (
-                      <p className="text-gray-500 italic">Nie wybrano żadnych słów kluczowych</p>
-                    ) : (
-                      <div className="flex flex-wrap gap-2">
-                        {selectedKeywords.map((keyword) => (
-                          <Badge key={keyword} variant="secondary">
-                            {keyword}
+                    </div>
+                    <div>
+                      <h3 className="font-semibold mb-2">
+                        Słowa kluczowe ({selectedKeywords.length})
+                      </h3>
+                      <div className="flex flex-wrap gap-1">
+                        {selectedKeywords.map((item) => (
+                          <Badge
+                            key={item}
+                            variant="secondary"
+                            className="text-xs"
+                          >
+                            {item.split(" (")[0]}
                           </Badge>
                         ))}
                       </div>
-                    )}
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Wybrane statusy aktów</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    {selectedStatuses.length === 0 ? (
-                      <p className="text-gray-500 italic">Nie wybrano żadnych statusów</p>
-                    ) : (
-                      <div className="flex flex-wrap gap-2">
-                        {selectedStatuses.map((status) => (
-                          <Badge key={status} variant="secondary">
-                            {status}
+                    </div>
+                    <div>
+                      <h3 className="font-semibold mb-2">
+                        Statusy aktów ({selectedStatuses.length})
+                      </h3>
+                      <div className="flex flex-wrap gap-1">
+                        {selectedStatuses.map((item) => (
+                          <Badge
+                            key={item}
+                            variant="secondary"
+                            className="text-xs"
+                          >
+                            {item.split(" (")[0]}
                           </Badge>
                         ))}
                       </div>
-                    )}
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Wybrane instytucje</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    {selectedInstitutions.length === 0 ? (
-                      <p className="text-gray-500 italic">Nie wybrano żadnych instytucji</p>
-                    ) : (
-                      <div className="flex flex-wrap gap-2">
-                        {selectedInstitutions.map((institution) => (
-                          <Badge key={institution} variant="secondary">
-                            {institution}
+                    </div>
+                    <div>
+                      <h3 className="font-semibold mb-2">
+                        Instytucje ({selectedInstitutions.length})
+                      </h3>
+                      <div className="flex flex-wrap gap-1">
+                        {selectedInstitutions.map((item) => (
+                          <Badge
+                            key={item}
+                            variant="secondary"
+                            className="text-xs"
+                          >
+                            {item.split(" (")[0]}
                           </Badge>
                         ))}
                       </div>
-                    )}
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Podsumowanie wyboru</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p>Liczba wybranych wydawców: <span className="font-semibold">{selectedPublishers.length}</span></p>
-                    <p>Liczba wybranych słów kluczowych: <span className="font-semibold">{selectedKeywords.length}</span></p>
-                    <p>Liczba wybranych statusów: <span className="font-semibold">{selectedStatuses.length}</span></p>
-                    <p>Liczba wybranych instytucji: <span className="font-semibold">{selectedInstitutions.length}</span></p>
-                  </CardContent>
-                </Card>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              <div className="mt-4 flex justify-end">
+                <ConfirmButton
+                  selectedPublishers={selectedPublishers}
+                  selectedKeywords={selectedKeywords}
+                  selectedStatuses={selectedStatuses}
+                  selectedInstitutions={selectedInstitutions}
+                />
               </div>
-              <Footer />
-            </Step>
-          </Stepper>
-        </div>
+            </div>
+          </Step>
+        </Stepper>
       </LoadableContainer>
     </div>
   );

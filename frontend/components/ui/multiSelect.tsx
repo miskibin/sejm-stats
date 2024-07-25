@@ -22,7 +22,7 @@ interface MultiSelectProps {
 export function MultiSelect({ options, selected, onChange, placeholder }: MultiSelectProps) {
   return (
     <div className="w-full  p-4">
-      <h3 className="text-lg font-semibold mb-2">{placeholder}</h3>
+      {/* <h3 className="text-lg font-semibold mb-2">{placeholder}</h3> */}
       <div className="flex flex-wrap gap-2 mb-4">
         {selected.length === 0 ? (
           <span className="text-gray-500">Nic nie wybrano</span>
@@ -31,7 +31,7 @@ export function MultiSelect({ options, selected, onChange, placeholder }: MultiS
             <Badge
               key={item}
               variant="secondary"
-              className="py-1 px-2 text-sm flex items-center"
+              className="py-1 px-2 text-xs flex items-center"
             >
               {item}
               <Button
