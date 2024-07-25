@@ -1,8 +1,10 @@
+/* eslint-disable */
+
 "use client";
 
 import React, { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
-import { Club } from "@/lib/api";
+import { Club } from "@/lib/types";
 
 const HighchartsReact = dynamic(() => import("highcharts-react-official"), {
   ssr: false,
