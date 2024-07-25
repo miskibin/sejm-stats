@@ -16,13 +16,13 @@ export default async function ClubsPage() {
           <h2 className="text-2xl font-normal text-gray-700  mb-4">
             Lista Klubów
           </h2>
-          <ClubsList clubs={clubsData.results} />
+          <ClubsList clubs={clubsData} />
         </LoadableContainer>
         <LoadableContainer>
           <h2 className="text-2xl font-normal text-gray-700 mb-4">
             Rozkład mandatów{" "}
           </h2>
-          <ClubsChart clubs={clubsData.results} />
+          <ClubsChart clubs={clubsData} />
         </LoadableContainer>
       </div>
     </div>

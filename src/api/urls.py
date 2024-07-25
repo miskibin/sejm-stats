@@ -11,13 +11,12 @@ router.register(r"voting/(?P<voting_id>\d+)", views.VotesViewSet, basename="voti
 router.register(r"articles", views.ArticleViewSet, basename="article")
 router.register(r"search", SearchViewSet, basename="search")
 router.register(r"envoys", views.EnvoyViewSet, basename="envoy")
-router.register(r"publishers", views.PublisherViewSet, basename="publisher")
 router.register(
     r"interpellations", views.InterpellationViewSet, basename="interpellation"
 )
 router.register(r"clubs", views.ClubViewSet, basename="club")
 router.register(r"acts", views.ActViewSet, basename="act")
-router.register(r"keywords", views.KeywordViewSet, basename="keyword")
+router.register(r"acts-meta", views.ActsMetaViewSet, basename="act-meta")
 router.register(
     r"committeeSittings/(?P<code>\d+)",
     views.CommitteeSittingViewSet,
