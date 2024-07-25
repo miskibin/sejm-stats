@@ -1,8 +1,8 @@
 "use client";
 
+import { Club } from "@/lib/types";
 import Image from "next/image";
 import Link from "next/link";
-import { Club } from "@/lib/api";
 
 interface ClubsListProps {
   clubs: Club[];
