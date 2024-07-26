@@ -6,56 +6,45 @@ import { MultiSelect } from "@/components/ui/multiSelect";
 import Footer from "@/components/ui/stepper-footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import router from "next/router";
 import ConfirmButton from "@/components/ui/confirm";
 
 interface MetaItem {
   name: string;
+  label: string;
   count: number;
 }
 
-interface ActsMeta {
-  publishers: MetaItem[];
-  keywords: MetaItem[];
-  actStatuses: MetaItem[];
-  institutions: MetaItem[];
+interface VotingsMeta {
+  categories: MetaItem[];
+  kinds: MetaItem[];
   years: MetaItem[];
 }
 
 const steps: StepItem[] = [
-  { label: "Słowa kluczowe", optional: true },
-  { label: "Wydawcy", optional: true },
-  { label: "Status aktu", optional: true },
-  { label: "Instytucje", optional: true },
+  { label: "Kategorie", optional: true },
+  { label: "Rodzaje głosowań", optional: true },
   { label: "Lata", optional: true },
   { label: "Podsumowanie" },
 ];
 
-export default function StepperDemo() {
-  const [actsMeta, setActsMeta] = useState<ActsMeta>({
-    publishers: [],
-    keywords: [],
-    actStatuses: [],
-    institutions: [],
+export default function VotingStepperDemo() {
+  const [votingsMeta, setVotingsMeta] = useState<VotingsMeta>({
+    categories: [],
+    kinds: [],
     years: [],
   });
-  const [selectedPublishers, setSelectedPublishers] = useState<string[]>([]);
-  const [selectedKeywords, setSelectedKeywords] = useState<string[]>([]);
-  const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
-  const [selectedInstitutions, setSelectedInstitutions] = useState<string[]>(
-    []
-  );
-  const [selectedYears, setselectedYears] = useState<string[]>([]);
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedKinds, setSelectedKinds] = useState<string[]>([]);
+  const [selectedYears, setSelectedYears] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function fetchData() {
       setIsLoading(true);
       try {
-        const response = await fetch("http://127.0.0.1:8000/api/acts-meta/");
+        const response = await fetch("http://127.0.0.1:8000/api/votings-meta/");
         const data = await response.json();
-        setActsMeta(data);
+        setVotingsMeta(data);
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
@@ -74,69 +63,35 @@ export default function StepperDemo() {
           orientation="horizontal"
           variant="circle-alt"
         >
-          <Step label="Słowa kluczowe">
+          <Step label="Kategorie">
             <div className="my-4">
               {isLoading ? (
                 <div>Ładowanie...</div>
               ) : (
                 <MultiSelect
-                  options={actsMeta.keywords.map(
-                    (k) => `${k.name} (${k.count})`
+                  options={votingsMeta.categories.map(
+                    (c) => `${c.label} (${c.count})`
                   )}
-                  selected={selectedKeywords}
-                  onChange={setSelectedKeywords}
-                  placeholder="Wybierz słowa kluczowe"
+                  selected={selectedCategories}
+                  onChange={setSelectedCategories}
+                  placeholder="Wybierz kategorie"
                 />
               )}
             </div>
             <Footer />
           </Step>
-          <Step label="Wydawcy">
+          <Step label="Rodzaje głosowań">
             <div className="my-4">
               {isLoading ? (
                 <div>Ładowanie...</div>
               ) : (
                 <MultiSelect
-                  options={actsMeta.publishers.map(
-                    (p) => `${p.name} (${p.count})`
+                  options={votingsMeta.kinds.map(
+                    (k) => `${k.label} (${k.count})`
                   )}
-                  selected={selectedPublishers}
-                  onChange={setSelectedPublishers}
-                  placeholder="Wybierz wydawców"
-                />
-              )}
-            </div>
-            <Footer />
-          </Step>
-          <Step label="Status aktu">
-            <div className="my-4">
-              {isLoading ? (
-                <div>Ładowanie...</div>
-              ) : (
-                <MultiSelect
-                  options={actsMeta.actStatuses.map(
-                    (s) => `${s.name} (${s.count})`
-                  )}
-                  selected={selectedStatuses}
-                  onChange={setSelectedStatuses}
-                  placeholder="Wybierz status aktu"
-                />
-              )}
-            </div>
-            <Footer />
-          </Step>
-          <Step label="Instytucje">
-            <div className="my-4">
-              {isLoading ? (
-                <div>Ładowanie...</div>
-              ) : (
-                <MultiSelect
-                  options={actsMeta.institutions.map(
-                    (i) => `${i.name} (${i.count})`
-                  )}
-                  selected={selectedInstitutions}
-                  onChange={setSelectedInstitutions}
-                  placeholder="Wybierz instytucje"
+                  selected={selectedKinds}
+                  onChange={setSelectedKinds}
+                  placeholder="Wybierz rodzaje głosowań"
                 />
               )}
             </div>
@@ -148,10 +103,12 @@ export default function StepperDemo() {
                 <div>Ładowanie...</div>
               ) : (
                 <MultiSelect
-                  options={actsMeta.years.map((i) => `${i.name} (${i.count})`)}
+                  options={votingsMeta.years.map(
+                    (y) => `${y.name} (${y.count})`
+                  )}
                   selected={selectedYears}
-                  onChange={setselectedYears}
-                  placeholder="Wybierz Lata"
+                  onChange={setSelectedYears}
+                  placeholder="Wybierz lata"
                 />
               )}
             </div>
@@ -167,10 +124,10 @@ export default function StepperDemo() {
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <h3 className="font-semibold mb-2">
-                        Wydawcy ({selectedPublishers.length})
+                        Kategorie ({selectedCategories.length})
                       </h3>
                       <div className="flex flex-wrap gap-1">
-                        {selectedPublishers.map((item) => (
+                        {selectedCategories.map((item) => (
                           <Badge
                             key={item}
                             variant="secondary"
@@ -183,10 +140,10 @@ export default function StepperDemo() {
                     </div>
                     <div>
                       <h3 className="font-semibold mb-2">
-                        Słowa kluczowe ({selectedKeywords.length})
+                        Rodzaje głosowań ({selectedKinds.length})
                       </h3>
                       <div className="flex flex-wrap gap-1">
-                        {selectedKeywords.map((item) => (
+                        {selectedKinds.map((item) => (
                           <Badge
                             key={item}
                             variant="secondary"
@@ -199,26 +156,10 @@ export default function StepperDemo() {
                     </div>
                     <div>
                       <h3 className="font-semibold mb-2">
-                        Statusy aktów ({selectedStatuses.length})
+                        Lata ({selectedYears.length})
                       </h3>
                       <div className="flex flex-wrap gap-1">
-                        {selectedStatuses.map((item) => (
-                          <Badge
-                            key={item}
-                            variant="secondary"
-                            className="text-xs"
-                          >
-                            {item.split(" (")[0]}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                    <div>
-                      <h3 className="font-semibold mb-2">
-                        Instytucje ({selectedInstitutions.length})
-                      </h3>
-                      <div className="flex flex-wrap gap-1">
-                        {selectedInstitutions.map((item) => (
+                        {selectedYears.map((item) => (
                           <Badge
                             key={item}
                             variant="secondary"
@@ -234,12 +175,10 @@ export default function StepperDemo() {
               </Card>
               <div className="mt-4 flex justify-end">
                 <ConfirmButton
-                  url="acts-results"
-                  selectedPublishers={selectedPublishers}
-                  selectedKeywords={selectedKeywords}
-                  selectedStatuses={selectedStatuses}
+                  url="votings-results"
+                  selectedCategories={selectedCategories}
+                  selectedKinds={selectedKinds}
                   selectedYears={selectedYears}
-                  selectedInstitutions={selectedInstitutions}
                 />
               </div>
             </div>

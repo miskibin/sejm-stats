@@ -18,10 +18,11 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 
 type ConfirmButtonProps = {
+  url: string;
   [key: string]: string[];
 };
 
-export default function ConfirmButton(props: ConfirmButtonProps) {
+function ConfirmButton({ url, ...props }: ConfirmButtonProps) {
   const router = useRouter();
 
   const handleConfirm = () => {
@@ -35,8 +36,10 @@ export default function ConfirmButton(props: ConfirmButtonProps) {
       }
     });
 
-    router.push(`/acts-results?${params.toString()}`);
+    router.push(`/${url}?${params.toString()}`);
   };
 
-  return <Button onClick={handleConfirm}>Wyszukaj akty</Button>;
+  return <Button onClick={handleConfirm}>Wyszukaj</Button>;
 }
+
+export default ConfirmButton;
