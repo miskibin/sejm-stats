@@ -3,12 +3,11 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { DataTable } from "@/components/dataTable/dataTable";
 import LoadableContainer from "@/components/loadableContainer";
-import { Process } from "@/lib/types";
 import { columns } from "./columns";
 
 export default function ProcessesResultsPage() {
   const searchParams = useSearchParams();
-  const [processes, setProcesses] = useState<Process[]>([]);
+  const [processes, setProcesses] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {

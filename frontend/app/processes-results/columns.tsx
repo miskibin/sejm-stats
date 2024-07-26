@@ -1,10 +1,10 @@
 "use client";
 
 import { DataTableColumnHeader } from "@/components/columns";
-import { Process } from "@/lib/types";
+// import { Process } from "@/lib/types";
 import { ColumnDef } from "@tanstack/react-table";
 
-export const columns: ColumnDef<Process>[] = [
+export const columns: ColumnDef<any>[] = [
   // {
   //   accessorKey: "id",
   //   header: ({ column }) => (

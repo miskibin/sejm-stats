@@ -1,10 +1,10 @@
 "use client";
 
 import { DataTableColumnHeader } from "@/components/columns";
-import { Voting } from "@/lib/types";
+// import { Voting } from "@/lib/types";
 import { ColumnDef } from "@tanstack/react-table";
 
-export const columns: ColumnDef<Voting>[] = [
+export const columns: ColumnDef<any>[] = [
 
   {
     accessorKey: "title",

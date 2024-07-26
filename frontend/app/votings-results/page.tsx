@@ -3,12 +3,12 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { DataTable } from "@/components/dataTable/dataTable";
 import LoadableContainer from "@/components/loadableContainer";
-import { Voting } from "@/lib/types";
+// import { Voting } from "@/lib/types";
 import { columns } from "./columns";
 
 export default function VotingResultsPage() {
   const searchParams = useSearchParams();
-  const [votings, setVotings] = useState<Voting[]>([]);
+  const [votings, setVotings] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
