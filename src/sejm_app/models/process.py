@@ -6,7 +6,6 @@ from loguru import logger
 
 from sejm_app.utils import camel_to_snake, parse_all_dates
 
-from .club import Club
 from .envoy import Envoy
 from .print_model import PrintModel
 from .stage import Stage
@@ -53,7 +52,7 @@ class Process(models.Model):
     urgencyStatus = models.CharField(max_length=20)
     MPs = models.ManyToManyField(Envoy, related_name="processes", blank=True)
     club = models.ForeignKey(
-        Club, on_delete=models.CASCADE, related_name="processes", null=True, blank=True
+        "Club", on_delete=models.CASCADE, related_name="processes", null=True, blank=True
     )
     createdBy = models.CharField(
         max_length=20,

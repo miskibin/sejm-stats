@@ -6,6 +6,7 @@ import {
   RefreshCcw,
   CheckCircle,
   SkipForward,
+  ListChecks,
 } from "lucide-react";
 
 const Footer = () => {
@@ -17,18 +18,17 @@ const Footer = () => {
     hasCompletedAllSteps,
     isLastStep,
     isOptionalStep,
+    setStep,
+    steps,
   } = useStepper();
+
+  const goToSummary = () => {
+    setStep(steps.length - 1); // Assuming the last step is the summary
+  };
 
   return (
     <div className="mt-8">
-      {hasCompletedAllSteps ? (
-        <div className="mb-6 p-6 bg-green-100 border border-green-300 text-green-700 rounded-lg flex items-center justify-center">
-          <CheckCircle className="w-6 h-6 mr-2" />
-          <h2 className="text-xl font-semibold">
-            Hurra! Wszystkie kroki ukończone! 🎉
-          </h2>
-        </div>
-      ) : null}
+      
       <div className="w-full flex justify-between items-center">
         <div>
           {!hasCompletedAllSteps && (
@@ -45,6 +45,12 @@ const Footer = () => {
           )}
         </div>
         <div className="flex gap-3">
+          {!isLastStep && !hasCompletedAllSteps && (
+            <Button variant="secondary" size="sm" onClick={goToSummary}>
+              <ListChecks className="w-4 h-4 mr-2" />
+              Przejdź do podsumowania
+            </Button>
+          )}
           {hasCompletedAllSteps ? (
             <Button variant="outline" size="sm" onClick={resetSteps}>
               <RefreshCcw className="w-4 h-4 mr-2" />
@@ -55,7 +61,7 @@ const Footer = () => {
               {isOptionalStep && (
                 <Button variant="secondary" size="sm" onClick={nextStep}>
                   <SkipForward className="w-4 h-4 mr-2" />
-                  Pokaż wszystkie
+                  Pomiń
                 </Button>
               )}
               <Button size="sm" onClick={nextStep}>

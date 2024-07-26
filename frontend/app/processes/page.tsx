@@ -13,38 +13,47 @@ import { format } from "date-fns";
 
 interface MetaItem {
   name: string;
-  label: string;
+  label?: string;
   count: number;
 }
 
-interface VotingsMeta {
-  categories: MetaItem[];
-  kinds: MetaItem[];
+interface ProcessesMeta {
+  createdBy: MetaItem[];
+  documentTypes: MetaItem[];
+  years: MetaItem[];
+  lengthTags: MetaItem[];
+  clubs: MetaItem[];
 }
 
 const steps: StepItem[] = [
-  { label: "Kategorie", optional: true },
+  { label: "Autor", optional: true },
+  { label: "Typ dokumentu", optional: true },
+  { label: "Kluby", optional: true },
   { label: "Zakres dat", optional: true },
   { label: "Podsumowanie" },
 ];
 
-export default function VotingStepperDemo() {
-  const [votingsMeta, setVotingsMeta] = useState<VotingsMeta>({
-    categories: [],
-    kinds: [],
+export default function ProcessStepperDemo() {
+  const [processesMeta, setProcessesMeta] = useState<ProcessesMeta>({
+    createdBy: [],
+    documentTypes: [],
+    years: [],
+    lengthTags: [],
+    clubs: [],
   });
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [selectedKinds, setSelectedKinds] = useState<string[]>([]);
+  const [selectedCreatedBy, setSelectedCreatedBy] = useState<string[]>([]);
+  const [selectedDocumentTypes, setSelectedDocumentTypes] = useState<string[]>([]);
+  const [selectedLengthTags, setSelectedLengthTags] = useState<string[]>([]);
+  const [selectedClubs, setSelectedClubs] = useState<string[]>([]);
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [isLoading, setIsLoading] = useState(true);
-
   useEffect(() => {
     async function fetchData() {
       setIsLoading(true);
       try {
-        const response = await fetch("http://127.0.0.1:8000/api/votings-meta/");
+        const response = await fetch("http://127.0.0.1:8000/api/processes-meta/");
         const data = await response.json();
-        setVotingsMeta(data);
+        setProcessesMeta(data);
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
@@ -63,24 +72,58 @@ export default function VotingStepperDemo() {
           orientation="horizontal"
           variant="circle-alt"
         >
-          <Step label="Kategorie">
+          <Step label="Autor">
             <div className="my-4">
               {isLoading ? (
                 <div>Ładowanie...</div>
               ) : (
                 <MultiSelect
-                  options={votingsMeta.categories.map(
-                    (c) => `${c.label} (${c.count})`
+                  options={processesMeta.createdBy.map(
+                    (c) => `${c.name|| "Nieznany"} (${c.count})`
                   )}
-                  selected={selectedCategories}
-                  onChange={setSelectedCategories}
-                  placeholder="Wybierz kategorie"
+                  selected={selectedCreatedBy}
+                  onChange={setSelectedCreatedBy}
+                  placeholder="Wybierz autora"
+                />
+              )}
+            </div>
+            <Footer />
+          </Step>
+          <Step label="Typ dokumentu">
+            <div className="my-4">
+              {isLoading ? (
+                <div>Ładowanie...</div>
+              ) : (
+                <MultiSelect
+                  options={processesMeta.documentTypes.map(
+                    (d) => `${d.name} (${d.count})`
+                  )}
+                  selected={selectedDocumentTypes}
+                  onChange={setSelectedDocumentTypes}
+                  placeholder="Wybierz typ dokumentu"
                 />
               )}
             </div>
             <Footer />
           </Step>
          
+          <Step label="Kluby">
+            <div className="my-4">
+              {isLoading ? (
+                <div>Ładowanie...</div>
+              ) : (
+                <MultiSelect
+                  options={processesMeta.clubs.map(
+                    (c) => `${c.name} (${c.count})`
+                  )}
+                  selected={selectedClubs}
+                  onChange={setSelectedClubs}
+                  placeholder="Wybierz kluby"
+                />
+              )}
+            </div>
+            <Footer />
+          </Step>
           <Step label="Zakres dat">
             <div className="my-4">
               <DatePickerWithRange
@@ -101,10 +144,10 @@ export default function VotingStepperDemo() {
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <h3 className="font-semibold mb-2">
-                        Kategorie ({selectedCategories.length})
+                        Autor ({selectedCreatedBy.length})
                       </h3>
                       <div className="flex flex-wrap gap-1">
-                        {selectedCategories.map((item) => (
+                        {selectedCreatedBy.map((item) => (
                           <Badge
                             key={item}
                             variant="secondary"
@@ -117,10 +160,42 @@ export default function VotingStepperDemo() {
                     </div>
                     <div>
                       <h3 className="font-semibold mb-2">
-                        Rodzaje głosowań ({selectedKinds.length})
+                        Typ dokumentu ({selectedDocumentTypes.length})
                       </h3>
                       <div className="flex flex-wrap gap-1">
-                        {selectedKinds.map((item) => (
+                        {selectedDocumentTypes.map((item) => (
+                          <Badge
+                            key={item}
+                            variant="secondary"
+                            className="text-xs"
+                          >
+                            {item.split(" (")[0]}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                    <div>
+                      <h3 className="font-semibold mb-2">
+                        Długość ({selectedLengthTags.length})
+                      </h3>
+                      <div className="flex flex-wrap gap-1">
+                        {selectedLengthTags.map((item) => (
+                          <Badge
+                            key={item}
+                            variant="secondary"
+                            className="text-xs"
+                          >
+                            {item.split(" (")[0]}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                    <div>
+                      <h3 className="font-semibold mb-2">
+                        Kluby ({selectedClubs.length})
+                      </h3>
+                      <div className="flex flex-wrap gap-1">
+                        {selectedClubs.map((item) => (
                           <Badge
                             key={item}
                             variant="secondary"
@@ -156,9 +231,11 @@ export default function VotingStepperDemo() {
               </Card>
               <div className="mt-4 flex justify-end">
                 <ConfirmButton
-                  url="votings-results"
-                  selectedCategories={selectedCategories}
-                  selectedKinds={selectedKinds}
+                  url="processes-results"
+                  selectedCreatedBy={selectedCreatedBy}
+                  selectedDocumentTypes={selectedDocumentTypes}
+                  selectedLengthTags={selectedLengthTags}
+                  selectedClubs={selectedClubs}
                   selectedStart_date={dateRange?.from ? format(dateRange.from, "yyyy-MM-dd") : undefined}
                   selectedEnd_date={dateRange?.to ? format(dateRange.to, "yyyy-MM-dd") : undefined}
                 />

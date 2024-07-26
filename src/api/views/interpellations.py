@@ -9,9 +9,9 @@ from sejm_app.models.interpellation import Interpellation
 
 
 class InterpellationPagination(PageNumberPagination):
-    page_size = 500
+    page_size = 3000
     page_size_query_param = "page_size"
-    max_page_size = 100
+    max_page_size = 5000
 
 
 class InterpellationSerializer(serializers.ModelSerializer):

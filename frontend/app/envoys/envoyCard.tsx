@@ -25,7 +25,7 @@ const EnvoyCard: React.FC<EnvoyCardProps> = ({
         <div className="flex flex-row">
           <div className="w-1/3 relative">
             <Image
-              src={`${photo}`}
+              src={photo ? `${photo}` : '/placeholder.jpg'}
               alt={`${firstName} ${lastName}`}
               width={120}
               height={160}

@@ -14,3 +14,4 @@ from .committees import (
     CommitteeSittingViewSet,
     CommitteeMemberViewSet,
 )
+from .processes import ProcessViewSet, ProcessesMetaViewSet
