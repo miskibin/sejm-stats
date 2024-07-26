@@ -36,7 +36,7 @@ class HomeViewSet(APIView):
                 "count": sum(
                     not process.is_finished for process in Process.objects.all()
                 ),
-                "color": "text-danger",
+                "color": "text-blue-500",
                 "url": reverse("processes") + "?state=on",
             },
         ]
