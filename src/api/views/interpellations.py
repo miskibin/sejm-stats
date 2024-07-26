@@ -5,39 +5,17 @@ from rest_framework import filters, serializers
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
+from api.pagination import ApiViewPagination
+from api.serializers.list_serializers import InterpellationListSerializer
 from sejm_app.models.interpellation import Interpellation
 
 
-class InterpellationPagination(PageNumberPagination):
-    page_size = 3000
-    page_size_query_param = "page_size"
-    max_page_size = 5000
-
-
-class InterpellationSerializer(serializers.ModelSerializer):
-    member = serializers.SerializerMethodField()
-
-    def get_member(self, obj):
-        return str(obj.fromMember)
-
-    class Meta:
-        model = Interpellation
-        fields = [
-            "id",
-            "title",
-            "receiptDate",
-            "lastModified",
-            "bodyLink",
-            "member",
-            "to",
-            "sentDate",
-        ]
 
 
 class InterpellationViewSet(ReadOnlyModelViewSet):
     queryset = Interpellation.objects.all()
-    serializer_class = InterpellationSerializer
-    pagination_class = InterpellationPagination
+    serializer_class = InterpellationListSerializer
+    pagination_class = ApiViewPagination
 
     ordering = ["-receiptDate"]  # Default to most recently received
 

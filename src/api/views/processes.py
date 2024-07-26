@@ -9,6 +9,8 @@ from rest_framework.response import Response
 from django_filters import rest_framework as django_filters
 from django.utils import timezone
 from django.utils.formats import date_format
+from api.serializers.detail_serializers import ProcessDetailSerializer
+from api.serializers.list_serializers import ProcessListSerializer
 from sejm_app.models import Process, Club, Envoy
 from sejm_app.models.process import CreatedByEnum
 
@@ -18,60 +20,6 @@ class ProcessPagination(PageNumberPagination):
     page_size_query_param = "page_size"
     max_page_size = 1500
 
-
-class ProcessSerializer(serializers.ModelSerializer):
-    createdBy = serializers.SerializerMethodField()
-    documentDate = serializers.SerializerMethodField()
-    processStartDate = serializers.SerializerMethodField()
-    changeDate = serializers.SerializerMethodField()
-    MPs_from_club = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Process
-        fields = [
-            "id",
-            "comments",
-            "number",
-            "term",
-            "webGeneratedDate",
-            "changeDate",
-            "description",
-            "documentDate",
-            "documentType",
-            "legislativeCommittee",
-            "processStartDate",
-            "title",
-            "MPs_from_club",
-            "club",
-            "createdBy",
-            "pagesCount",
-            "length_tag",
-        ]
-
-    def get_createdBy(self, obj):
-        return obj.get_createdBy_display()
-
-    def get_documentDate(self, obj):
-        return self.format_date(obj.documentDate)
-
-    def get_processStartDate(self, obj):
-        return self.format_date(obj.processStartDate)
-
-
-    def get_changeDate(self, obj):
-        return self.format_date(obj.changeDate)
-
-    def get_MPs_from_club(self, obj):
-        return list(
-            Club.objects.filter(envoys__processes=obj)
-            .distinct()
-            .values_list("id", flat=True)
-        )
-
-    def format_date(self, date):
-        if date:
-            return date_format(date, format="d E Y", use_l10n=True)
-        return None
 
 
 class ProcessFilter(django_filters.FilterSet):
@@ -128,10 +76,8 @@ class ProcessFilter(django_filters.FilterSet):
             Q(club__id__in=club_ids) | Q(MPs__club__id__in=club_ids)
         ).distinct()
 
-
 class ProcessViewSet(ReadOnlyModelViewSet):
     queryset = Process.objects.all()
-    serializer_class = ProcessSerializer
     pagination_class = ProcessPagination
     filterset_class = ProcessFilter
     filter_backends = [
@@ -142,6 +88,11 @@ class ProcessViewSet(ReadOnlyModelViewSet):
     search_fields = ["title", "description"]
     ordering = ["-processStartDate"]
 
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return ProcessListSerializer
+        return ProcessDetailSerializer
+
     @method_decorator(cache_page(60 * 15))  # Cache for 15 minutes
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
@@ -149,7 +100,6 @@ class ProcessViewSet(ReadOnlyModelViewSet):
     @method_decorator(cache_page(60 * 60))  # Cache for 1 hour
     def retrieve(self, request, *args, **kwargs):
         return super().retrieve(request, *args, **kwargs)
-
 
 class ProcessesMetaViewSet(ViewSet):
     @method_decorator(cache_page(60 * 15))  # Cache for 15 minutes

@@ -4,7 +4,7 @@ import { useSearchParams } from "next/navigation";
 import { DataTable } from "@/components/dataTable/dataTable";
 import LoadableContainer from "@/components/loadableContainer";
 // import { Voting } from "@/lib/types";
-import { columns } from "./columns";
+import { columns, getColumnsWithClickHandler } from "./columns";
 
 export default function VotingResultsPage() {
   const searchParams = useSearchParams();
@@ -35,13 +35,13 @@ export default function VotingResultsPage() {
     { columnKey: "date", title: "Data głosowania" },
     { columnKey: "success", title: "Status" },
   ];
-
+  const columnsWithClickHandler = getColumnsWithClickHandler();
   return (
     <LoadableContainer>
       {isLoading ? (
         <div>Ładowanie...</div>
       ) : (
-        <DataTable columns={columns} data={votings} filters={filters} />
+        <DataTable columns={columnsWithClickHandler} data={votings} filters={filters} />
       )}
     </LoadableContainer>
   );

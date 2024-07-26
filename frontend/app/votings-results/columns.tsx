@@ -3,6 +3,7 @@
 import { DataTableColumnHeader } from "@/components/columns";
 // import { Voting } from "@/lib/types";
 import { ColumnDef } from "@tanstack/react-table";
+import { useRouter } from "next/navigation";
 
 export const columns: ColumnDef<any>[] = [
 
@@ -65,3 +66,19 @@ export const columns: ColumnDef<any>[] = [
     },
   },
 ];
+
+export const getColumnsWithClickHandler = () => {
+  const router = useRouter();
+  
+  return columns.map(column => ({
+    ...column,
+    cell: ({ row }) => (
+      <div
+        onClick={() => router.push(`/votings/${row.original.id}`)}
+        className="cursor-pointer"
+      >
+        {row.getValue(column.accessorKey as string)}
+      </div>
+    ),
+  }));
+};

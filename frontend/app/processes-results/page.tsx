@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { DataTable } from "@/components/dataTable/dataTable";
 import LoadableContainer from "@/components/loadableContainer";
-import { columns } from "./columns";
+import { getColumnsWithClickHandler } from "./columns";
 
 export default function ProcessesResultsPage() {
   const searchParams = useSearchParams();
@@ -30,17 +30,15 @@ export default function ProcessesResultsPage() {
 
   const filters = [
     { columnKey: "documentType", title: "Typ dokumentu" },
-    { columnKey: "processStartDate", title: "Data rozpoczęcia" },
+    { columnKey: "createdBy", title: "Autorzy" },
     { columnKey: "length_tag", title: "Długość" },
   ];
 
+  const columnsWithClickHandler = getColumnsWithClickHandler();
+
   return (
     <LoadableContainer>
-      {isLoading ? (
-        <div>Ładowanie...</div>
-      ) : (
-        <DataTable columns={columns} data={processes} filters={filters} />
-      )}
+        <DataTable columns={columnsWithClickHandler} data={processes} filters={filters} />
     </LoadableContainer>
   );
 }

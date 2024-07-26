@@ -1,16 +1,10 @@
 "use client";
 
 import { DataTableColumnHeader } from "@/components/columns";
-// import { Process } from "@/lib/types";
 import { ColumnDef } from "@tanstack/react-table";
+import { useRouter } from "next/navigation";
 
 export const columns: ColumnDef<any>[] = [
-  // {
-  //   accessorKey: "id",
-  //   header: ({ column }) => (
-  //     <DataTableColumnHeader column={column} title="ID" />
-  //   ),
-  // },
   {
     accessorKey: "title",
     header: ({ column }) => (
@@ -18,25 +12,16 @@ export const columns: ColumnDef<any>[] = [
     ),
   },
   {
-    accessorKey: "documentType",
+    accessorKey: "createdBy",
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Typ dokumentu" />
+      <DataTableColumnHeader column={column} title="Złożono przez" />
     ),
     filterFn: (row, id, value) => {
       return value.includes(row.getValue(id));
     },
   },
-  // {
-  //   accessorKey: "createdBy",
-  //   header: ({ column }) => (
-  //     <DataTableColumnHeader column={column} title="Autor" />
-  //   ),
-  //   filterFn: (row, id, value) => {
-  //     return value.includes(row.getValue(id));
-  //   },
-  // },
   {
-    accessorKey: "processStartDate",
+    accessorKey: "documentDate",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Data rozpoczęcia" />
     ),
@@ -53,5 +38,20 @@ export const columns: ColumnDef<any>[] = [
       return value.includes(row.getValue(id));
     },
   },
-
 ];
+
+export const getColumnsWithClickHandler = () => {
+  const router = useRouter();
+  
+  return columns.map(column => ({
+    ...column,
+    cell: ({ row }) => (
+      <div
+        onClick={() => router.push(`/processes/${row.original.id}`)}
+        className="cursor-pointer"
+      >
+        {row.getValue(column.accessorKey as string)}
+      </div>
+    ),
+  }));
+};

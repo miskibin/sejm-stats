@@ -1,12 +1,12 @@
-from rest_framework.views import APIView
+from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework import status
 from django.urls import reverse
 from sejm_app.models import Club, Process, Voting, Committee
 
 
-class HomeViewSet(APIView):
-    def get(self, request):
+class HomeViewSet(ViewSet):
+    def list(self, request):
         latest_votings = Voting.objects.order_by("-date")[:5].values(
             "id", "title", "success", "category"
         )

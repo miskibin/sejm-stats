@@ -1,8 +1,6 @@
 from community_app.serializers import ArticleSerializer
 
-from .article import ArticlePageNumberPagination, ArticleViewSet
 from .search import SearchViewSet
-from .votes import VotesViewSet
 from .home import HomeViewSet
 from .envoys import EnvoyViewSet
 from .clubs import ClubViewSet
@@ -11,7 +9,5 @@ from .acts import ActViewSet, ActsMetaViewSet
 from .votings import VotingViewSet, VotingsMetaViewSet
 from .committees import (
     CommitteeViewSet,
-    CommitteeSittingViewSet,
-    CommitteeMemberViewSet,
 )
 from .processes import ProcessViewSet, ProcessesMetaViewSet

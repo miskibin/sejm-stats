@@ -8,6 +8,8 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
 from django_filters import rest_framework as django_filters
 from django.db.models import Count
+from api.serializers.detail_serializers import VotingDetailSerializer
+from api.serializers.list_serializers import VotingListSerializer
 from sejm_app.models import Voting
 from django.db.models import Q
 
@@ -19,48 +21,8 @@ class VotingPagination(PageNumberPagination):
 
 
 from rest_framework import serializers
-from django.utils import timezone
 from django.utils.formats import date_format
 
-
-class VotingSerializer(serializers.ModelSerializer):
-    category = serializers.SerializerMethodField()
-    kind = serializers.SerializerMethodField()
-    date = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Voting
-        fields = [
-            "id",
-            "yes",
-            "no",
-            "abstain",
-            "category",
-            "term",
-            "sitting",
-            "sittingDay",
-            "votingNumber",
-            "date",
-            "title",
-            "description",
-            "topic",
-            "prints",
-            "kind",
-            "success",
-        ]
-
-    def get_category(self, obj):
-        return obj.get_category_display()
-
-    def get_kind(self, obj):
-        return obj.get_kind_display()
-
-    def get_date(self, obj):
-        if obj.date:
-            return date_format(
-                timezone.localtime(obj.date), format="d E Y, H:i", use_l10n=True
-            )
-        return None
 
 
 class VotingFilter(django_filters.FilterSet):
@@ -101,7 +63,6 @@ class VotingFilter(django_filters.FilterSet):
 
 class VotingViewSet(ReadOnlyModelViewSet):
     queryset = Voting.objects.all()
-    serializer_class = VotingSerializer
     pagination_class = VotingPagination
     filterset_class = VotingFilter
     filter_backends = [
@@ -111,6 +72,11 @@ class VotingViewSet(ReadOnlyModelViewSet):
     ]
     search_fields = ["title", "topic"]
     ordering = ["-date"]
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            return VotingListSerializer
+        return VotingDetailSerializer
 
     @method_decorator(cache_page(60 * 15))  # Cache for 15 minutes
     def list(self, request, *args, **kwargs):
