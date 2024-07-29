@@ -155,11 +155,12 @@ class ActListSerializer(serializers.ModelSerializer):
     publisher = serializers.CharField(source="publisher.name")
     status = serializers.CharField(source="status.name")
     releasedBy = serializers.SerializerMethodField()
-
+    url = serializers.SerializerMethodField()
     class Meta:
         model = Act
         fields = [
             "ELI",
+            "url",
             "publisher",
             "status",
             "title",
@@ -167,6 +168,8 @@ class ActListSerializer(serializers.ModelSerializer):
             "announcementDate",
             "entryIntoForce",
         ]
+    def get_url(self, obj):
+        return obj.url
 
     def get_releasedBy(self, obj):
         return obj.releasedBy.name if obj.releasedBy else None

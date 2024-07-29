@@ -54,3 +54,23 @@ export const columns: ColumnDef<Act>[] = [
     },
   },
 ];
+
+export const getColumnsWithClickHandler = () => {
+  return columns.map((column) => ({
+    ...column,
+    cell: ({ row }) => (
+      <a
+        href={row.original.url}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="cursor-pointer"
+        onClick={(e) => {
+          e.preventDefault();
+          window.open(row.original.url, "_blank", "noopener,noreferrer");
+        }}
+      >
+        {row.getValue(column.accessorKey as string)}
+      </a>
+    ),
+  }));
+};

@@ -4,7 +4,7 @@ import { useSearchParams } from "next/navigation";
 import { DataTable } from "@/components/dataTable/dataTable";
 import LoadableContainer from "@/components/loadableContainer";
 import { Act } from "@/lib/types";
-import { columns } from "./columns";
+import { getColumnsWithClickHandler } from "./columns";
 
 export default function ActsResultsPage() {
   const searchParams = useSearchParams();
@@ -27,6 +27,7 @@ export default function ActsResultsPage() {
       }
     }
     fetchActs();
+
   }, [searchParams]);
 
   const filters = [
@@ -41,7 +42,7 @@ export default function ActsResultsPage() {
       {isLoading ? (
         <div>Ładowanie...</div>
       ) : (
-        <DataTable columns={columns} data={acts} filters={filters} />
+        <DataTable columns={getColumnsWithClickHandler()} data={acts} filters={filters} />
       )}
     </LoadableContainer>
   );

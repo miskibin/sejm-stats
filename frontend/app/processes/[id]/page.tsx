@@ -35,7 +35,7 @@ const ProcessDetail: React.FC = () => {
   if (!process) return <LoadableContainer>Nie znaleziono procesu.</LoadableContainer>;
 
   return (
-      <div className="container mx-auto p-8 max-w-4xl">
+      <div className="container mx-auto md:max-2xl:p-16 max-w-7xl">
         <h1 className="text-3xl font-bold mb-6">{process.title}</h1>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
