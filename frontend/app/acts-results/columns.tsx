@@ -55,10 +55,17 @@ export const columns: ColumnDef<Act>[] = [
   },
 ];
 
+type RowType = {
+  original: {
+    url: string;
+  };
+  getValue: (accessorKey: string) => string;
+};
+
 export const getColumnsWithClickHandler = () => {
   return columns.map((column) => ({
     ...column,
-    cell: ({ row }) => (
+    cell: ({ row }: { row: RowType }) => (
       <a
         href={row.original.url}
         target="_blank"

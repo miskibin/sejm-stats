@@ -2,6 +2,8 @@ from rest_framework import serializers
 from django.utils.formats import date_format
 from django.db.models import Q, Case, When, BooleanField
 from sejm_app.models import Process, Club, Envoy, PrintModel, Stage, Voting
+from sejm_app.models.committee import CommitteeMember
+from sejm_app.models.interpellation import Interpellation
 from sejm_app.models.vote import ClubVote
 from .list_serializers import (
     PrintListSerializer,
@@ -146,24 +148,164 @@ class ClubVoteSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ClubVote
-        fields = ['club', 'yes', 'no', 'abstain']
+        fields = ["club", "yes", "no", "abstain"]
+
 
 from rest_framework import serializers
+from django.conf import settings
+from collections import defaultdict
+
+colors = settings.COLORS
+
+
+class CommitteeMembershipSerializer(serializers.ModelSerializer):
+    committee_name = serializers.CharField(source="committee.name")
+    committee_code = serializers.CharField(source="committee.code")
+
+    class Meta:
+        model = CommitteeMember
+        fields = ["committee_name", "committee_code", "function"]
+
+
+class VotingSerializer(serializers.ModelSerializer):
+    envoy_vote = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Voting
+        fields = ["id", "title", "date", "envoy_vote"]
+
+    def get_envoy_vote(self, obj):
+        envoy = self.context.get("envoy")
+        if envoy:
+            vote = obj.votes.filter(MP=envoy).last()
+            return vote.vote_label if vote else None
+        return None
+
+
+class InterpellationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Interpellation
+        fields = ["id", "title", "lastModified", "bodyLink"]
+
+
+class EnvoyDetailSerializer(serializers.ModelSerializer):
+    club_photo = serializers.SerializerMethodField()
+    photo = serializers.SerializerMethodField()
+    latest_votings = serializers.SerializerMethodField()
+    discipline_ratio = serializers.SerializerMethodField()
+    committee_memberships = serializers.SerializerMethodField()
+    activity_percentage = serializers.SerializerMethodField()
+    interpellations = InterpellationSerializer(many=True, read_only=True)
+    processes = ProcessListSerializer(many=True)
+    class Meta:
+        model = Envoy
+        fields = [
+            "id",
+            "firstName",
+            "secondName",
+            "lastName",
+            "email",
+            "active",
+            "inactiveCause",
+            "waiverDesc",
+            "districtNum",
+            "districtName",
+            "voivodeship",
+            "club",
+            "birthDate",
+            "birthLocation",
+            "profession",
+            "educationLevel",
+            "numberOfVotes",
+            "biography",
+            "biography_source",
+            "isFemale",
+            "total_activity",
+            "processes",
+            "title",
+            "full_name",
+            "photo",
+            "club_photo",
+            "latest_votings",
+            "discipline_ratio",
+            "committee_memberships",
+            "activity_percentage",
+            "interpellations",
+        ]
+
+    def get_club_photo(self, obj):
+        return obj.club.photo.url if obj.club and obj.club.photo else None
+
+    def get_photo(self, obj):
+        return obj.photo.url if obj.photo else None
+
+    def get_latest_votings(self, obj):
+        votes = obj.votes.all()
+        votings = (
+            Voting.objects.filter(votes__in=votes).distinct().order_by("-date")[:5]
+        )
+        return VotingSerializer(votings, many=True, context={"envoy": obj}).data
+
+    def get_discipline_ratio(self, obj):
+        votes = obj.votes.all()
+        votings = Voting.objects.filter(votes__in=votes).distinct().order_by("-date")
+        club = obj.club
+        voting_dict = defaultdict(int)
+
+        for voting in votings:
+            try:
+                club_vote = voting.club_votes.get(club=club)
+                most_popular = (
+                    VoteOption.NO if club_vote.no > club_vote.yes else VoteOption.YES
+                )
+                envoy_vote = obj.votes.get(voting=voting).vote
+
+                if envoy_vote in [
+                    VoteOption.ABSENT,
+                    VoteOption.VOTE_VALID,
+                    VoteOption.ABSTAIN,
+                ]:
+                    voting_dict["brak głosu"] += 1
+                elif most_popular == envoy_vote:
+                    voting_dict["zgodnie"] += 1
+                else:
+                    voting_dict["niezgodnie"] += 1
+            except (ClubVote.MultipleObjectsReturned, ClubVote.DoesNotExist):
+                continue
+
+        return {
+            "labels": list(voting_dict.keys()),
+            "values": list(voting_dict.values()),
+            "colors": [colors.SUCCESS, colors.WARNING, colors.DANGER],
+        }
+
+    def get_committee_memberships(self, obj):
+        memberships = CommitteeMember.objects.filter(envoy=obj)
+        return CommitteeMembershipSerializer(memberships, many=True).data
+
+    def get_activity_percentage(self, obj):
+        # TODO this is temp.
+        # get max activity from all envoys
+        # max_activity = max([envoy.total_activity for envoy in Envoy.objects.all()])
+        # print(max_activity)
+        return int(obj.total_activity / 2.75)
+
 
 class VoteSerializer(serializers.ModelSerializer):
     MP = serializers.SerializerMethodField()
-    vote = serializers.CharField(source='get_vote_display')
+    vote = serializers.CharField(source="get_vote_display")
+
     class Meta:
         model = Vote
-        fields = ['MP', 'vote']
+        fields = ["MP", "vote"]
 
     def get_MP(self, obj):
         return str(obj.MP)
-    
+
 
 class VotingDetailSerializer(serializers.ModelSerializer):
-    category = serializers.CharField(source='get_category_display')
-    kind = serializers.CharField(source='get_kind_display')
+    category = serializers.CharField(source="get_category_display")
+    kind = serializers.CharField(source="get_kind_display")
     prints = PrintListSerializer(many=True)
     votes = VoteSerializer(many=True)
     club_votes = ClubVoteSerializer(many=True)
@@ -177,11 +319,31 @@ class VotingDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = Voting
         fields = [
-            'id', 'yes', 'no', 'abstain', 'category', 'term', 'sitting',
-            'sittingDay', 'votingNumber', 'date', 'title', 'description',
-            'topic', 'prints', 'pdfLink', 'kind', 'success', 'summary',
-            'club_votes', 'total_data', 'total_labels', 
-            'sex_votes', 'processes', 'similar_votings',"votes"
+            "id",
+            "yes",
+            "no",
+            "abstain",
+            "category",
+            "term",
+            "sitting",
+            "sittingDay",
+            "votingNumber",
+            "date",
+            "title",
+            "description",
+            "topic",
+            "prints",
+            "pdfLink",
+            "kind",
+            "success",
+            "summary",
+            "club_votes",
+            "total_data",
+            "total_labels",
+            "sex_votes",
+            "processes",
+            "similar_votings",
+            "votes",
         ]
 
     def get_total_data(self, obj):
@@ -194,18 +356,29 @@ class VotingDetailSerializer(serializers.ModelSerializer):
     def get_total_labels(self, obj):
         return ["Za", "Przeciw", "Wstrzymał się"]
 
-
     def get_sex_votes(self, obj):
         male_votes = obj.votes.filter(MP__isFemale=False).aggregate(
-            yes=Count(Case(When(vote=VoteOption.YES, then=1), output_field=IntegerField())),
-            no=Count(Case(When(vote=VoteOption.NO, then=1), output_field=IntegerField())),
-            abstain=Count(Case(When(vote=VoteOption.ABSTAIN, then=1), output_field=IntegerField())),
+            yes=Count(
+                Case(When(vote=VoteOption.YES, then=1), output_field=IntegerField())
+            ),
+            no=Count(
+                Case(When(vote=VoteOption.NO, then=1), output_field=IntegerField())
+            ),
+            abstain=Count(
+                Case(When(vote=VoteOption.ABSTAIN, then=1), output_field=IntegerField())
+            ),
         )
 
         female_votes = obj.votes.filter(MP__isFemale=True).aggregate(
-            yes=Count(Case(When(vote=VoteOption.YES, then=1), output_field=IntegerField())),
-            no=Count(Case(When(vote=VoteOption.NO, then=1), output_field=IntegerField())),
-            abstain=Count(Case(When(vote=VoteOption.ABSTAIN, then=1), output_field=IntegerField())),
+            yes=Count(
+                Case(When(vote=VoteOption.YES, then=1), output_field=IntegerField())
+            ),
+            no=Count(
+                Case(When(vote=VoteOption.NO, then=1), output_field=IntegerField())
+            ),
+            abstain=Count(
+                Case(When(vote=VoteOption.ABSTAIN, then=1), output_field=IntegerField())
+            ),
         )
 
         return {"male": male_votes, "female": female_votes}
@@ -217,7 +390,7 @@ class VotingDetailSerializer(serializers.ModelSerializer):
 
     def get_similar_votings(self, obj):
         prints = obj.prints.filter(processPrint__isnull=True)
-        similar_prints = prints.values_list('id', flat=True)
+        similar_prints = prints.values_list("id", flat=True)
         similar_votings = (
             Voting.objects.filter(prints__in=similar_prints)
             .exclude(id=obj.id)
