@@ -142,6 +142,7 @@ class EnvoyListSerializer(serializers.ModelSerializer):
             "numberOfVotes",
             "photo",
             "active",
+            "club",
             "club_photo",
         ]
 

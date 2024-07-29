@@ -326,7 +326,7 @@ const EnvoyDetail: React.FC = () => {
             <CardContent>
               <ul className="space-y-2">
                 {envoy.committee_memberships.map((membership, index) => (
-                  <li key={index} className="flex justify-between items-center">
+                  <li key={index} className="flex justify-between items-center border-b py-3">
                     <Link
                       href={`/committees/${membership.committee_code}`}
                       className="hover:underline"

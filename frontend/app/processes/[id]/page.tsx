@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { ExternalLink, FileText, Users, Calendar, Info } from "lucide-react";
+import { Envoy } from "@/lib/types";
 
 const ProcessDetail: React.FC = () => {
   const [process, setProcess] = useState<any | null>(null);
@@ -137,11 +138,10 @@ const ProcessDetail: React.FC = () => {
                 <Users className="mr-2" /> Posłowie
               </h2>
               <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {process.MPs.map((envoy: any) => (
+                {process.MPs.map((envoy: Envoy) => (
                   <li key={`${envoy.firstName}-${envoy.lastName}`} className="space-y-1">
                     <p className="font-semibold">{envoy.firstName} {envoy.lastName}</p>
-                    <p className="text-sm text-gray-600">{envoy.educationLevel}</p>
-                    <p className="text-sm">Liczba głosów: {envoy.numberOfVotes.toLocaleString()}</p>
+                    <p className="text-sm">{envoy.club}</p>
                   </li>
                 ))}
               </ul>

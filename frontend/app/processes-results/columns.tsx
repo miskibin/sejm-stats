@@ -1,10 +1,11 @@
 "use client";
 
 import { DataTableColumnHeader } from "@/components/columns";
+import { ColumnDefE } from "@/lib/types";
 import { ColumnDef } from "@tanstack/react-table";
 import { useRouter } from "next/navigation";
 
-export const columns: ColumnDef<any>[] = [
+export const columns: ColumnDefE<any>[] = [
   {
     accessorKey: "title",
     header: ({ column }) => (
@@ -40,12 +41,19 @@ export const columns: ColumnDef<any>[] = [
   },
 ];
 
-export const getColumnsWithClickHandler = () => {
+export const useColumnsWithClickHandler = () => {
   const router = useRouter();
-  
-  return columns.map(column => ({
+
+  return columns.map((column) => ({
     ...column,
-    cell: ({ row }) => (
+    cell: ({
+      row,
+    }: {
+      row: {
+        original: any;
+        getValue: (accessorKey: string) => string;
+      };
+    }) => (
       <div
         onClick={() => router.push(`/processes/${row.original.id}`)}
         className="cursor-pointer"

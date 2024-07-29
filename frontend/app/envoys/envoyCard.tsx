@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 
 interface EnvoyCardProps {
@@ -8,6 +9,7 @@ interface EnvoyCardProps {
   numberOfVotes: number;
   photo: string;
   clubPhoto: string;
+  id: number;
 }
 
 const EnvoyCard: React.FC<EnvoyCardProps> = ({
@@ -17,10 +19,19 @@ const EnvoyCard: React.FC<EnvoyCardProps> = ({
   numberOfVotes,
   photo,
   clubPhoto,
+  id,
 }) => {
-  // TODO THIS IS TEMPORARY FIX
+  const router = useRouter();
+
+  const handleClick = () => {
+    router.push(`/envoys/${id}`);
+  };
+
   return (
-    <Card className="hover:shadow-lg transition-shadow bg-neutral-50  border-2 overflow-hidden">
+    <Card
+      className="hover:shadow-lg transition-shadow bg-neutral-50 border-2 overflow-hidden cursor-pointer"
+      onClick={handleClick}
+    >
       <CardContent className="p-0">
         <div className="flex flex-row">
           <div className="w-1/3 relative">
@@ -40,7 +51,7 @@ const EnvoyCard: React.FC<EnvoyCardProps> = ({
                 alt="Club logo"
                 width={40}
                 height={40}
-                className="rounded-sm  border-gray-200"
+                className="rounded-sm border-gray-200"
               />
             </div>
             <p className="text-sm text-gray-600 mb-1">{educationLevel}</p>

@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { DataTable } from "@/components/dataTable/dataTable";
 import LoadableContainer from "@/components/loadableContainer";
-import { getColumnsWithClickHandler } from "./columns";
+import { useColumnsWithClickHandler } from "./columns";
 
 export default function ProcessesResultsPage() {
   const searchParams = useSearchParams();
@@ -34,7 +34,7 @@ export default function ProcessesResultsPage() {
     { columnKey: "length_tag", title: "Długość" },
   ];
 
-  const columnsWithClickHandler = getColumnsWithClickHandler();
+  const columnsWithClickHandler = useColumnsWithClickHandler();
 
   return (
     <LoadableContainer>
