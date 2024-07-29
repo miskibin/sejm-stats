@@ -24,7 +24,7 @@ export const EnvoyList: React.FC<EnvoyListProps> = ({ initialData }) => {
   if (!data) return <div>Loading...</div>;
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div className="grid grid-cols-1 lg:grid-cols-2 3xl:grid-cols-3 4xl:grid-cols-4 gap-4">
       {data.results.map((envoy: any) => (
         <EnvoyCard
           key={envoy.id}

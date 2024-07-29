@@ -36,3 +36,23 @@ export const columns: ColumnDef<Interpellation>[] = [
     },
   },
 ];
+
+export const getColumnsWithClickHandler = () => {
+  return columns.map((column) => ({
+    ...column,
+    cell: ({ row }) => (
+      <a
+        href={row.original.bodyLink}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="cursor-pointer"
+        onClick={(e) => {
+          e.preventDefault();
+          window.open(row.original.bodyLink, "_blank", "noopener,noreferrer");
+        }}
+      >
+        {row.getValue(column.accessorKey as string)}
+      </a>
+    ),
+  }));
+};

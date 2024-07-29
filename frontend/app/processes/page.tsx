@@ -6,56 +6,54 @@ import { MultiSelect } from "@/components/ui/multiSelect";
 import Footer from "@/components/ui/stepper-footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import router from "next/router";
 import ConfirmButton from "@/components/ui/confirm";
+import { DatePickerWithRange } from "@/components/ui/date-picker-with-range";
+import { DateRange } from "react-day-picker";
+import { format } from "date-fns";
 
 interface MetaItem {
   name: string;
+  label?: string;
   count: number;
 }
 
-interface ActsMeta {
-  publishers: MetaItem[];
-  keywords: MetaItem[];
-  actStatuses: MetaItem[];
-  institutions: MetaItem[];
+interface ProcessesMeta {
+  createdBy: MetaItem[];
+  documentTypes: MetaItem[];
   years: MetaItem[];
+  lengthTags: MetaItem[];
+  clubs: MetaItem[];
 }
 
 const steps: StepItem[] = [
-  { label: "Słowa kluczowe", optional: true },
-  { label: "Wydawcy", optional: true },
-  { label: "Status aktu", optional: true },
-  { label: "Instytucje", optional: true },
-  { label: "Lata", optional: true },
+  { label: "Autor", optional: true },
+  { label: "Typ dokumentu", optional: true },
+  { label: "Kluby", optional: true },
+  { label: "Zakres dat", optional: true },
   { label: "Podsumowanie" },
 ];
 
-export default function StepperDemo() {
-  const [actsMeta, setActsMeta] = useState<ActsMeta>({
-    publishers: [],
-    keywords: [],
-    actStatuses: [],
-    institutions: [],
+export default function ProcessStepperDemo() {
+  const [processesMeta, setProcessesMeta] = useState<ProcessesMeta>({
+    createdBy: [],
+    documentTypes: [],
     years: [],
+    lengthTags: [],
+    clubs: [],
   });
-  const [selectedPublishers, setSelectedPublishers] = useState<string[]>([]);
-  const [selectedKeywords, setSelectedKeywords] = useState<string[]>([]);
-  const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
-  const [selectedInstitutions, setSelectedInstitutions] = useState<string[]>(
-    []
-  );
-  const [selectedYears, setselectedYears] = useState<string[]>([]);
+  const [selectedCreatedBy, setSelectedCreatedBy] = useState<string[]>([]);
+  const [selectedDocumentTypes, setSelectedDocumentTypes] = useState<string[]>([]);
+  const [selectedLengthTags, setSelectedLengthTags] = useState<string[]>([]);
+  const [selectedClubs, setSelectedClubs] = useState<string[]>([]);
+  const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [isLoading, setIsLoading] = useState(true);
-
   useEffect(() => {
     async function fetchData() {
       setIsLoading(true);
       try {
-        const response = await fetch("http://127.0.0.1:8000/api/acts-meta/");
+        const response = await fetch("http://127.0.0.1:8000/api/processes-meta/");
         const data = await response.json();
-        setActsMeta(data);
+        setProcessesMeta(data);
       } catch (error) {
         console.error("Error fetching data:", error);
       } finally {
@@ -74,86 +72,65 @@ export default function StepperDemo() {
           orientation="horizontal"
           variant="circle-alt"
         >
-          <Step label="Słowa kluczowe">
+          <Step label="Autor">
             <div className="my-4">
               {isLoading ? (
                 <div>Ładowanie...</div>
               ) : (
                 <MultiSelect
-                  options={actsMeta.keywords.map(
-                    (k) => `${k.name} (${k.count})`
+                  options={processesMeta.createdBy.map(
+                    (c) => `${c.name|| "Nieznany"} (${c.count})`
                   )}
-                  selected={selectedKeywords}
-                  onChange={setSelectedKeywords}
-                  placeholder="Wybierz słowa kluczowe"
+                  selected={selectedCreatedBy}
+                  onChange={setSelectedCreatedBy}
+                  placeholder="Wybierz autora"
                 />
               )}
             </div>
             <Footer />
           </Step>
-          <Step label="Wydawcy">
+          <Step label="Typ dokumentu">
             <div className="my-4">
               {isLoading ? (
                 <div>Ładowanie...</div>
               ) : (
                 <MultiSelect
-                  options={actsMeta.publishers.map(
-                    (p) => `${p.name} (${p.count})`
+                  options={processesMeta.documentTypes.map(
+                    (d) => `${d.name} (${d.count})`
                   )}
-                  selected={selectedPublishers}
-                  onChange={setSelectedPublishers}
-                  placeholder="Wybierz wydawców"
+                  selected={selectedDocumentTypes}
+                  onChange={setSelectedDocumentTypes}
+                  placeholder="Wybierz typ dokumentu"
                 />
               )}
             </div>
             <Footer />
           </Step>
-          <Step label="Status aktu">
+         
+          <Step label="Kluby">
             <div className="my-4">
               {isLoading ? (
                 <div>Ładowanie...</div>
               ) : (
                 <MultiSelect
-                  options={actsMeta.actStatuses.map(
-                    (s) => `${s.name} (${s.count})`
+                  options={processesMeta.clubs.map(
+                    (c) => `${c.name} (${c.count})`
                   )}
-                  selected={selectedStatuses}
-                  onChange={setSelectedStatuses}
-                  placeholder="Wybierz status aktu"
+                  selected={selectedClubs}
+                  onChange={setSelectedClubs}
+                  placeholder="Wybierz kluby"
                 />
               )}
             </div>
             <Footer />
           </Step>
-          <Step label="Instytucje">
+          <Step label="Zakres dat">
             <div className="my-4">
-              {isLoading ? (
-                <div>Ładowanie...</div>
-              ) : (
-                <MultiSelect
-                  options={actsMeta.institutions.map(
-                    (i) => `${i.name} (${i.count})`
-                  )}
-                  selected={selectedInstitutions}
-                  onChange={setSelectedInstitutions}
-                  placeholder="Wybierz instytucje"
-                />
-              )}
-            </div>
-            <Footer />
-          </Step>
-          <Step label="Lata">
-            <div className="my-4">
-              {isLoading ? (
-                <div>Ładowanie...</div>
-              ) : (
-                <MultiSelect
-                  options={actsMeta.years.map((i) => `${i.name} (${i.count})`)}
-                  selected={selectedYears}
-                  onChange={setselectedYears}
-                  placeholder="Wybierz Lata"
-                />
-              )}
+              <DatePickerWithRange
+                className="w-full"
+                date={dateRange}
+                setDate={setDateRange}
+              />
             </div>
             <Footer />
           </Step>
@@ -167,10 +144,10 @@ export default function StepperDemo() {
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <h3 className="font-semibold mb-2">
-                        Wydawcy ({selectedPublishers.length})
+                        Autor ({selectedCreatedBy.length})
                       </h3>
                       <div className="flex flex-wrap gap-1">
-                        {selectedPublishers.map((item) => (
+                        {selectedCreatedBy.map((item) => (
                           <Badge
                             key={item}
                             variant="secondary"
@@ -183,10 +160,10 @@ export default function StepperDemo() {
                     </div>
                     <div>
                       <h3 className="font-semibold mb-2">
-                        Słowa kluczowe ({selectedKeywords.length})
+                        Typ dokumentu ({selectedDocumentTypes.length})
                       </h3>
                       <div className="flex flex-wrap gap-1">
-                        {selectedKeywords.map((item) => (
+                        {selectedDocumentTypes.map((item) => (
                           <Badge
                             key={item}
                             variant="secondary"
@@ -199,10 +176,10 @@ export default function StepperDemo() {
                     </div>
                     <div>
                       <h3 className="font-semibold mb-2">
-                        Statusy aktów ({selectedStatuses.length})
+                        Długość ({selectedLengthTags.length})
                       </h3>
                       <div className="flex flex-wrap gap-1">
-                        {selectedStatuses.map((item) => (
+                        {selectedLengthTags.map((item) => (
                           <Badge
                             key={item}
                             variant="secondary"
@@ -215,10 +192,10 @@ export default function StepperDemo() {
                     </div>
                     <div>
                       <h3 className="font-semibold mb-2">
-                        Instytucje ({selectedInstitutions.length})
+                        Kluby ({selectedClubs.length})
                       </h3>
                       <div className="flex flex-wrap gap-1">
-                        {selectedInstitutions.map((item) => (
+                        {selectedClubs.map((item) => (
                           <Badge
                             key={item}
                             variant="secondary"
@@ -227,6 +204,26 @@ export default function StepperDemo() {
                             {item.split(" (")[0]}
                           </Badge>
                         ))}
+                      </div>
+                    </div>
+                    <div>
+                      <h3 className="font-semibold mb-2">
+                        Zakres dat
+                      </h3>
+                      <div className="flex flex-wrap gap-1">
+                        {dateRange?.from && (
+                          <Badge variant="secondary" className="text-xs">
+                            {format(dateRange.from, "dd.MM.yyyy")}
+                          </Badge>
+                        )}
+                        {dateRange?.to && (
+                          <>
+                            <span className="mx-1">-</span>
+                            <Badge variant="secondary" className="text-xs">
+                              {format(dateRange.to, "dd.MM.yyyy")}
+                            </Badge>
+                          </>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -234,12 +231,13 @@ export default function StepperDemo() {
               </Card>
               <div className="mt-4 flex justify-end">
                 <ConfirmButton
-                  url="acts-results"
-                  selectedPublishers={selectedPublishers}
-                  selectedKeywords={selectedKeywords}
-                  selectedStatuses={selectedStatuses}
-                  selectedYears={selectedYears}
-                  selectedInstitutions={selectedInstitutions}
+                  url="processes-results"
+                  selectedCreatedBy={selectedCreatedBy}
+                  selectedDocumentTypes={selectedDocumentTypes}
+                  selectedLengthTags={selectedLengthTags}
+                  selectedClubs={selectedClubs}
+                  selectedStart_date={dateRange?.from ? format(dateRange.from, "yyyy-MM-dd") : undefined}
+                  selectedEnd_date={dateRange?.to ? format(dateRange.to, "yyyy-MM-dd") : undefined}
                 />
               </div>
             </div>

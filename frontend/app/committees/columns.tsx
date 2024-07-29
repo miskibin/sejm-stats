@@ -36,10 +36,5 @@ export const columns: ColumnDef<Committee>[] = [
       return value.includes(row.getValue(id));
     },
   },
-  {
-    accessorKey: "phone",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Telefon" />
-    ),
-  },
+
 ];

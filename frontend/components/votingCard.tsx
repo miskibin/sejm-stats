@@ -14,7 +14,7 @@ interface VotingCardProps {
 const VotingCard: React.FC<VotingCardProps> = ({ voting }) => {
   return (
     <Link
-      href={`/voting/${voting.id}`}
+      href={`/votings/${voting.id}`}
       className="block bg-white shadow rounded-lg p-4 hover:shadow-md transition-shadow"
     >
       <div className="flex items-center">

@@ -53,7 +53,6 @@ export function DataTable<TData, TValue>({
   const [filterOptions, setFilterOptions] = useState<
     Record<string, { label: string; value: string }[]>
   >({});
-
   useEffect(() => {
     const options: Record<string, { label: string; value: string }[]> = {};
     filters.forEach((filter) => {

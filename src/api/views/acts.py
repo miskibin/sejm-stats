@@ -8,6 +8,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
 from django_filters import rest_framework as django_filters
 
+from api.serializers.list_serializers import ActListSerializer
 from eli_app.models import Act, ActStatus, Institution, Keyword, Publisher
 
 
@@ -16,26 +17,6 @@ class ActPagination(PageNumberPagination):
     page_size_query_param = "page_size"
     max_page_size = 1500
 
-
-class ActSerializer(serializers.ModelSerializer):
-    publisher = serializers.CharField(source="publisher.name")
-    status = serializers.CharField(source="status.name")
-    releasedBy = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Act
-        fields = [
-            "ELI",
-            "publisher",
-            "status",
-            "title",
-            "releasedBy",
-            "announcementDate",
-            "entryIntoForce",
-        ]
-
-    def get_releasedBy(self, obj):
-        return obj.releasedBy.name if obj.releasedBy else None
 
 
 class ActFilter(django_filters.FilterSet):
@@ -90,7 +71,7 @@ class ActViewSet(ReadOnlyModelViewSet):
         .prefetch_related("keywords")
         .all()
     )
-    serializer_class = ActSerializer
+    serializer_class = ActListSerializer
     pagination_class = ActPagination
     filterset_class = ActFilter
     filter_backends = [

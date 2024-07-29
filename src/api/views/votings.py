@@ -7,38 +7,22 @@ from rest_framework.viewsets import ReadOnlyModelViewSet, ViewSet
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
 from django_filters import rest_framework as django_filters
-
+from django.db.models import Count
+from api.serializers.detail_serializers import VotingDetailSerializer
+from api.serializers.list_serializers import VotingListSerializer
 from sejm_app.models import Voting
+from django.db.models import Q
 
 
 class VotingPagination(PageNumberPagination):
-    page_size = 200
+    page_size = 1000
     page_size_query_param = "page_size"
     max_page_size = 1500
 
 
-class VotingSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Voting
-        fields = [
-            "id",
-            "yes",
-            "no",
-            "abstain",
-            "category",
-            "term",
-            "sitting",
-            "sittingDay",
-            "votingNumber",
-            "date",
-            "title",
-            "description",
-            "topic",
-            "prints",
-            "pdfLink",
-            "kind",
-            "success",
-        ]
+from rest_framework import serializers
+from django.utils.formats import date_format
+
 
 
 class VotingFilter(django_filters.FilterSet):
@@ -58,16 +42,27 @@ class VotingFilter(django_filters.FilterSet):
 
     def filter_categories(self, queryset, name, value):
         categories = value.split(",")
-        return queryset.filter(category__in=categories)
+        q_objects = Q()
+        for category in categories:
+            q_objects |= Q(
+                category__in=[
+                    key for key, label in Voting.Category.choices if label == category
+                ]
+            )
+        return queryset.filter(q_objects)
 
     def filter_kinds(self, queryset, name, value):
         kinds = value.split(",")
-        return queryset.filter(kind__in=kinds)
+        q_objects = Q()
+        for kind in kinds:
+            q_objects |= Q(
+                kind__in=[key for key, label in Voting.Kind.choices if label == kind]
+            )
+        return queryset.filter(q_objects)
 
 
 class VotingViewSet(ReadOnlyModelViewSet):
     queryset = Voting.objects.all()
-    serializer_class = VotingSerializer
     pagination_class = VotingPagination
     filterset_class = VotingFilter
     filter_backends = [
@@ -77,6 +72,11 @@ class VotingViewSet(ReadOnlyModelViewSet):
     ]
     search_fields = ["title", "topic"]
     ordering = ["-date"]
+
+    def get_serializer_class(self):
+        if self.action == "list":
+            return VotingListSerializer
+        return VotingDetailSerializer
 
     @method_decorator(cache_page(60 * 15))  # Cache for 15 minutes
     def list(self, request, *args, **kwargs):
@@ -110,11 +110,26 @@ class VotingsMetaViewSet(ViewSet):
         return Response(
             {
                 "categories": [
-                    {"name": category["category"], "count": category["count"]}
+                    {
+                        "name": category["category"],
+                        "label": (
+                            Voting.Category(category["category"]).label
+                            if category["category"]
+                            else None
+                        ),
+                        "count": category["count"],
+                    }
                     for category in categories
                 ],
                 "kinds": [
-                    {"name": kind["kind"], "count": kind["count"]} for kind in kinds
+                    {
+                        "name": kind["kind"],
+                        "label": (
+                            Voting.Kind(kind["kind"]).label if kind["kind"] else None
+                        ),
+                        "count": kind["count"],
+                    }
+                    for kind in kinds
                 ],
                 "years": [
                     {"name": year["date__year"], "count": year["count"]}

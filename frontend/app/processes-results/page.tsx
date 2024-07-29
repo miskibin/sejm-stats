@@ -3,47 +3,42 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { DataTable } from "@/components/dataTable/dataTable";
 import LoadableContainer from "@/components/loadableContainer";
-import { Act } from "@/lib/types";
 import { getColumnsWithClickHandler } from "./columns";
 
-export default function ActsResultsPage() {
+export default function ProcessesResultsPage() {
   const searchParams = useSearchParams();
-  const [acts, setActs] = useState<Act[]>([]);
+  const [processes, setProcesses] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchActs() {
+    async function fetchProcesses() {
       setIsLoading(true);
       try {
         const response = await fetch(
-          `http://127.0.0.1:8000/api/acts/?${searchParams?.toString()}`
+          `http://127.0.0.1:8000/api/processes/?${searchParams?.toString()}`
         );
         const data = await response.json();
-        setActs(data.results);
+        setProcesses(data.results);
       } catch (error) {
-        console.error("Error fetching acts:", error);
+        console.error("Error fetching processes:", error);
       } finally {
         setIsLoading(false);
       }
     }
-    fetchActs();
-
+    fetchProcesses();
   }, [searchParams]);
 
   const filters = [
-    { columnKey: "publisher", title: "Wydawca" },
-    { columnKey: "status", title: "Status" },
-    { columnKey: "announcementDate", title: "Data ogłoszenia" },
-    { columnKey: "entryIntoForce", title: "Data wejścia w życie" },
+    { columnKey: "documentType", title: "Typ dokumentu" },
+    { columnKey: "createdBy", title: "Autorzy" },
+    { columnKey: "length_tag", title: "Długość" },
   ];
+
+  const columnsWithClickHandler = getColumnsWithClickHandler();
 
   return (
     <LoadableContainer>
-      {isLoading ? (
-        <div>Ładowanie...</div>
-      ) : (
-        <DataTable columns={getColumnsWithClickHandler()} data={acts} filters={filters} />
-      )}
+        <DataTable columns={columnsWithClickHandler} data={processes} filters={filters} />
     </LoadableContainer>
   );
 }
