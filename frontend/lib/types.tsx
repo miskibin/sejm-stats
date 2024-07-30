@@ -1,3 +1,5 @@
+import { ColumnDef } from "@tanstack/react-table";
+
 export interface Club {
   id: string;
   name: string;
@@ -7,17 +9,27 @@ export interface Club {
   membersCount: number;
   photo_url: string;
 }
-
+export type ColumnDefE<T> = ColumnDef<T> & {
+  accessorKey?: keyof T;
+};
 export interface Interpellation {
   id: number;
   title: string;
   member: number;
+  bodyLink: string;
   sentDate: string;
 }
 
-
 export interface Envoy {
-    
+  id: number;
+  firstName: string;
+  lastName: string;
+  educationLevel: string;
+  numberOfVotes: number;
+  photo: string;
+  active: boolean;
+  club: string;
+  club_photo: string;
 }
 
 export interface ActDirective {

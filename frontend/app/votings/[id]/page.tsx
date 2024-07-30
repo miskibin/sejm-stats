@@ -99,6 +99,51 @@ const VotingDetail: React.FC = () => {
     ],
   };
 
+  const genderVotesData = {
+    labels: ["Za", "Przeciw", "Wstrzymał się"],
+    datasets: [
+      {
+        label: "Mężczyźni",
+        data: [
+          voting.sex_votes.male.yes,
+          voting.sex_votes.male.no,
+          voting.sex_votes.male.abstain,
+        ],
+        backgroundColor: "#3B82F6",
+      },
+      {
+        label: "Kobiety",
+        data: [
+          voting.sex_votes.female.yes,
+          voting.sex_votes.female.no,
+          voting.sex_votes.female.abstain,
+        ],
+        backgroundColor: "#EC4899",
+      },
+    ],
+  };
+
+  const genderVotesOptions = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: "top" as const,
+      },
+      title: {
+        display: true,
+        text: "Głosy według płci",
+      },
+    },
+    scales: {
+      x: {
+        stacked: false,
+      },
+      y: {
+        stacked: false,
+      },
+    },
+  };
+
   const clubVotesData = {
     labels: voting.club_votes.map((cv: any) => cv.club.id),
     datasets: [
@@ -156,8 +201,8 @@ const VotingDetail: React.FC = () => {
           </p>
         </CardContent>
       </Card>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <Card className="md:col-span-2">
+      <div className="grid grid-cols-1 md:grid-cols-6 gap-8">
+        <Card className="md:col-span-4">
           <CardHeader>
             <CardTitle className="flex items-center">
               <BarChart className="w-6 h-6 mr-2" />
@@ -169,46 +214,7 @@ const VotingDetail: React.FC = () => {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <FileText className="w-6 h-6 mr-2" />
-              Dane o głosowaniu
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <p>
-              <strong>Data:</strong> {new Date(voting.date).toLocaleString()}
-            </p>
-            <p>
-              <strong>Posiedzenie:</strong> {voting.sitting} dzień{" "}
-              {voting.sittingDay}
-            </p>
-            <p>
-              <strong>Za:</strong> {voting.yes}
-            </p>
-            <p>
-              <strong>Przeciw:</strong> {voting.no}
-            </p>
-            <p>
-              <strong>Wstrzymało się:</strong> {voting.abstain}
-            </p>
-          </CardContent>
-        </Card>
-
         <Card className="md:col-span-2">
-          <CardHeader>
-            <CardTitle className="flex items-center">
-              <Users className="w-6 h-6 mr-2" />
-              Głosy posłów
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="max-h-64 py-1 overflow-x-hidden overflow-y-scroll">
-            <DataTable columns={voteColumns} data={voting.votes} filters={[]} />
-          </CardContent>
-        </Card>
-
-        <Card>
           <CardHeader>
             <CardTitle className="flex items-center">
               <PieChart className="w-6 h-6 mr-2" />
@@ -219,6 +225,29 @@ const VotingDetail: React.FC = () => {
             <Pie data={totalVotesData} />
           </CardContent>
         </Card>
+        <Card className="md:col-span-3">
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <Users className="w-6 h-6 mr-2" />
+              Głosy posłów
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="max-h-64 py-1 overflow-x-hidden overflow-y-scroll">
+            <DataTable columns={voteColumns} data={voting.votes} filters={[]} />
+          </CardContent>
+        </Card>
+        <Card className="md:col-span-3">
+          <CardHeader>
+            <CardTitle className="flex items-center">
+              <BarChart className="w-6 h-6 mr-2" />
+              Głosy według płci
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Bar data={genderVotesData} options={genderVotesOptions} />
+          </CardContent>
+        </Card>
+       
       </div>
 
       <Card>

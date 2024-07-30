@@ -1,23 +1,47 @@
-import React from 'react';
-import Link from 'next/link';
-import { FaArrowRight } from 'react-icons/fa';
+import React from "react";
+import Link from "next/link";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { ArrowRight } from "lucide-react";
 
 interface StatCardProps {
   title: string;
   count: number;
-  color: string;
+  color: "default" | "secondary" | "destructive" | "outline";
   url: string;
 }
 
 const StatCard: React.FC<StatCardProps> = ({ title, count, color, url }) => {
   return (
-    <div className="bg-white shadow rounded-lg p-6 transition-transform hover:scale-105 cursor-pointer">
-      <p className="text-gray-600 mb-2">{title}</p>
-      <h3 className={`text-3xl font-bold ${color}`}>{count}</h3>
-      <Link href={url} className="text-blue-500 mt-4 inline-block group">
-        Pokaż więcej <FaArrowRight className="inline ml-1 group-hover:translate-x-1 transition-transform" />
-      </Link>
-    </div>
+    <Card className="transition-all hover:shadow-lg">
+      <CardContent className="p-6">
+        <p className="text-muted-foreground mb-2">{title}</p>
+        <p
+          className={`text-3xl font-bold px-3 py-1 ${
+            color === "default"
+              ? "text-red-500"
+              : color === "secondary"
+              ? "text-blue-500"
+              : color === "destructive"
+              ? "text-blue-500"
+              : color === "outline"
+              ? "text-gray-500"
+              : ""
+          }`}
+        >
+          {count.toLocaleString()}
+        </p>
+      </CardContent>
+      <CardFooter className="p-6 pt-0">
+        <Link
+          href={url}
+          className="text-sm text-muted-foreground hover:underline inline-flex items-center group"
+        >
+          Pokaż więcej
+          <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />
+        </Link>
+      </CardFooter>
+    </Card>
   );
 };
 

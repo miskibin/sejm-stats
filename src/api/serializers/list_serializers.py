@@ -135,12 +135,14 @@ class EnvoyListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Envoy
         fields = [
+            "id",
             "firstName",
             "lastName",
             "educationLevel",
             "numberOfVotes",
             "photo",
             "active",
+            "club",
             "club_photo",
         ]
 

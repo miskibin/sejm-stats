@@ -10,16 +10,9 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import EnvoyCard from "./envoyCard";
+import { Envoy } from "@/lib/types";
 
-interface Envoy {
-  firstName: string;
-  lastName: string;
-  educationLevel: string;
-  numberOfVotes: number;
-  photo: string;
-  club_photo: string;
-  active: boolean;
-}
+
 
 interface ApiResponse {
   count: number;
@@ -169,7 +162,7 @@ export default function EnvoysPage() {
       "all",
       ...new Set(
         envoys.map((envoy) => {
-          const clubName = envoy.club_photo.split("/").pop()?.split(".")[0];
+          const clubName = envoy.club;
           return clubName || "Unknown";
         })
       ),
@@ -254,6 +247,7 @@ export default function EnvoysPage() {
                 numberOfVotes={envoy.numberOfVotes}
                 photo={envoy.photo}
                 clubPhoto={envoy.club_photo}
+                id={envoy.id}
               />
             </div>
           ))}

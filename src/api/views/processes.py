@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from django_filters import rest_framework as django_filters
 from django.utils import timezone
 from django.utils.formats import date_format
-from api.serializers.detail_serializers import ProcessDetailSerializer
+from api.serializers.ProcessDetailSerializer import ProcessDetailSerializer
 from api.serializers.list_serializers import ProcessListSerializer
 from sejm_app.models import Process, Club, Envoy
 from sejm_app.models.process import CreatedByEnum

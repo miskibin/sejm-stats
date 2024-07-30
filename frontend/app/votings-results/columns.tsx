@@ -1,12 +1,11 @@
 "use client";
 
 import { DataTableColumnHeader } from "@/components/columns";
-// import { Voting } from "@/lib/types";
+import { ColumnDefE } from "@/lib/types";
 import { ColumnDef } from "@tanstack/react-table";
 import { useRouter } from "next/navigation";
 
-export const columns: ColumnDef<any>[] = [
-
+export const columns: ColumnDefE<any>[] = [
   {
     accessorKey: "title",
     header: ({ column }) => (
@@ -22,7 +21,6 @@ export const columns: ColumnDef<any>[] = [
       return value.includes(row.getValue(id));
     },
   },
-
   {
     accessorKey: "date",
     header: ({ column }) => (
@@ -33,26 +31,25 @@ export const columns: ColumnDef<any>[] = [
     },
   },
   {
-      accessorKey: "yes",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Za" />
-      ),
-      cell: ({ row }) => {
-        const yes = row.original.yes;
-        return `${yes}`;
-      },
+    accessorKey: "yes",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Za" />
+    ),
+    cell: ({ row }) => {
+      const yes = row.original.yes;
+      return `${yes}`;
     },
-    {
-      accessorKey: "no",
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Przeciw" />
-      ),
-      cell: ({ row }) => {
-        const no = row.original.no;
-        return `${no}`;
-      },
+  },
+  {
+    accessorKey: "no",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Przeciw" />
+    ),
+    cell: ({ row }) => {
+      const no = row.original.no;
+      return `${no}`;
     },
-   
+  },
   {
     accessorKey: "success",
     header: ({ column }) => (
@@ -67,12 +64,19 @@ export const columns: ColumnDef<any>[] = [
   },
 ];
 
-export const getColumnsWithClickHandler = () => {
+export const useColumnsWithClickHandler = () => {
   const router = useRouter();
-  
+
   return columns.map(column => ({
     ...column,
-    cell: ({ row }) => (
+    cell: ({
+      row,
+    }: {
+      row: {
+        original: any;
+        getValue: (accessorKey: string) => string;
+      };
+    }) => (
       <div
         onClick={() => router.push(`/votings/${row.original.id}`)}
         className="cursor-pointer"

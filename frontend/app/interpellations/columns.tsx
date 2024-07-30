@@ -1,10 +1,10 @@
 "use client";
 
 import { DataTableColumnHeader } from "@/components/columns";
-import { Interpellation } from "@/lib/types";
+import { ColumnDefE, Interpellation } from "@/lib/types";
 import { ColumnDef } from "@tanstack/react-table";
 
-export const columns: ColumnDef<Interpellation>[] = [
+export const columns: ColumnDefE<Interpellation>[] = [
   {
     accessorKey: "id",
     header: ({ column }) => (
@@ -40,7 +40,14 @@ export const columns: ColumnDef<Interpellation>[] = [
 export const getColumnsWithClickHandler = () => {
   return columns.map((column) => ({
     ...column,
-    cell: ({ row }) => (
+    cell: ({
+      row,
+    }: {
+      row: {
+        original: Interpellation;
+        getValue: (accessorKey: string) => string;
+      };
+    }) => (
       <a
         href={row.original.bodyLink}
         target="_blank"

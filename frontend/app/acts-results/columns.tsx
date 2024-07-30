@@ -1,10 +1,10 @@
 "use client";
 
 import { DataTableColumnHeader } from "@/components/columns";
-import { Act } from "@/lib/types";
+import { Act, ColumnDefE } from "@/lib/types";
 import { ColumnDef } from "@tanstack/react-table";
 
-export const columns: ColumnDef<Act>[] = [
+export const columns: ColumnDefE<Act>[] = [
   {
     accessorKey: "ELI",
     header: ({ column }) => (
@@ -55,10 +55,17 @@ export const columns: ColumnDef<Act>[] = [
   },
 ];
 
+type RowType = {
+  original: {
+    url: string;
+  };
+  getValue: (accessorKey: string) => string;
+};
+
 export const getColumnsWithClickHandler = () => {
   return columns.map((column) => ({
     ...column,
-    cell: ({ row }) => (
+    cell: ({ row }: { row: RowType }) => (
       <a
         href={row.original.url}
         target="_blank"

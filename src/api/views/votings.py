@@ -8,7 +8,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.response import Response
 from django_filters import rest_framework as django_filters
 from django.db.models import Count
-from api.serializers.detail_serializers import VotingDetailSerializer
+from api.serializers import VotingDetailSerializer
 from api.serializers.list_serializers import VotingListSerializer
 from sejm_app.models import Voting
 from django.db.models import Q
@@ -22,7 +22,6 @@ class VotingPagination(PageNumberPagination):
 
 from rest_framework import serializers
 from django.utils.formats import date_format
-
 
 
 class VotingFilter(django_filters.FilterSet):
@@ -77,6 +76,12 @@ class VotingViewSet(ReadOnlyModelViewSet):
         if self.action == "list":
             return VotingListSerializer
         return VotingDetailSerializer
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        if self.action == "retrieve":
+            return VotingDetailSerializer.setup_eager_loading(queryset)
+        return queryset
 
     @method_decorator(cache_page(60 * 15))  # Cache for 15 minutes
     def list(self, request, *args, **kwargs):
