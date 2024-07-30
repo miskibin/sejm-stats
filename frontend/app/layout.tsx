@@ -67,6 +67,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       label: "Dziennik ustaw",
       icon: <FaBook className="w-5 h-5" />,
     },
+    {
+      href: "https://github.com/miskibin/sejm-stats/issues/new/choose",
+      label: "Zgłoś błąd",
+      icon: <FaGithub className="w-5 h-5" />,
+    },
   ];
 
   const footerLinks = [
