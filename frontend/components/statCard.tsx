@@ -35,7 +35,7 @@ const StatCard: React.FC<StatCardProps> = ({ title, count, color, url }) => {
       <CardFooter className="p-6 pt-0">
         <Link
           href={url}
-          className="text-sm text-primary hover:underline inline-flex items-center group"
+          className="text-sm text-muted-foreground hover:underline inline-flex items-center group"
         >
           Pokaż więcej
           <ArrowRight className="ml-1 h-4 w-4 transition-transform group-hover:translate-x-1" />

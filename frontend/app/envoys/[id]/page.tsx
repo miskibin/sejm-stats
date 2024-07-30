@@ -364,7 +364,7 @@ const EnvoyDetail: React.FC = () => {
                               voting.envoy_vote === "Za"
                                 ? "success"
                                 : voting.envoy_vote === "Przeciw"
-                                ? "destructive"
+                                ? "default"
                                 : "secondary"
                             }
                           >
