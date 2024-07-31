@@ -48,7 +48,7 @@ const Breadcrumbs: React.FC = () => {
         {pathSegments?.map((segment, index) => {
           const href = `/${pathSegments.slice(0, index + 1).join("/")}`;
           const isLast = index === pathSegments.length - 1;
-          const polishName = urlToPolishName[segment] || segment;
+          const polishName = urlToPolishName[segment.replace('-results','')] || segment;
 
           return (
             <li key={href}>
