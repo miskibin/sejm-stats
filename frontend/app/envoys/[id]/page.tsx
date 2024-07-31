@@ -120,15 +120,12 @@ const EnvoyDetail: React.FC = () => {
   if (error) return <div className="container mx-auto p-4">{error}</div>;
   if (!envoy)
     return <div className="container mx-auto p-4">Nie znaleziono posła.</div>;
-
   const disciplineChartData = {
     labels: envoy.discipline_ratio.labels,
     datasets: [
       {
         data: envoy.discipline_ratio.values,
-        backgroundColor: envoy.discipline_ratio.colors,
-        borderColor: envoy.discipline_ratio.colors,
-        borderWidth: 1,
+        backgroundColor:[ "#10B981", "#EF4444", "#F59E0B" ]
       },
     ],
   };
@@ -307,7 +304,7 @@ const EnvoyDetail: React.FC = () => {
                   ? `${envoy.biography.slice(0, 1500)}...`
                   : envoy.biography}
               </p>
-              <Button variant="outline" className="mt-4" asChild>
+              <Button variant="outline" className="w-full py-0" asChild>
                 <a
                   href={envoy.biography_source}
                   target="_blank"

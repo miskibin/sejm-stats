@@ -1,7 +1,6 @@
 "use client";
 import { DataTable } from "@/components/dataTable/dataTable";
 import { columns, getColumnsWithClickHandler } from "./columns";
-import { fetchAllInterpellations } from "@/lib/api";
 import LoadableContainer from "@/components/loadableContainer";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -36,12 +35,13 @@ async function InterpellationsTable() {
   ];
   return (
     <>
+      {isLoading && <p className="text-center mt-4">Ładowanie...</p>}
       <DataTable columns={getColumnsWithClickHandler()} data={interpellations} filters={filters} />;
     </>
   );
 }
 
-export default async function InterpellationsPage() {
+export default function InterpellationsPage() {
   return (
     <LoadableContainer>
       <InterpellationsTable />

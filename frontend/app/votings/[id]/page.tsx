@@ -158,7 +158,7 @@ const VotingDetail: React.FC = () => {
         backgroundColor: "#EF4444",
       },
       {
-        label: "Wstrzymał się",
+        label: "Brak głosu",
         data: voting.club_votes.map((cv: any) => cv.abstain),
         backgroundColor: "#F59E0B",
       },
@@ -247,7 +247,6 @@ const VotingDetail: React.FC = () => {
             <Bar data={genderVotesData} options={genderVotesOptions} />
           </CardContent>
         </Card>
-       
       </div>
 
       <Card>
