@@ -42,7 +42,7 @@ export default function VotingStepperDemo() {
     async function fetchData() {
       setIsLoading(true);
       try {
-        const response = await fetch("http://127.0.0.1:8000/api/votings-meta/");
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/votings-meta/`);
         const data = await response.json();
         setVotingsMeta(data);
       } catch (error) {

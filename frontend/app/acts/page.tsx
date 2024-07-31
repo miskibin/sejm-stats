@@ -53,7 +53,7 @@ export default function StepperDemo() {
     async function fetchData() {
       setIsLoading(true);
       try {
-        const response = await fetch("http://127.0.0.1:8000/api/acts-meta/");
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/acts-meta/`);
         const data = await response.json();
         setActsMeta(data);
       } catch (error) {
