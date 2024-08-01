@@ -6,31 +6,54 @@ import LoadableContainer from "@/components/loadableContainer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { ExternalLink, FileText, Users, Calendar, Info, Phone, ChevronDown, ChevronUp } from "lucide-react";
+import {
+  ExternalLink,
+  FileText,
+  Users,
+  Calendar,
+  Info,
+  Phone,
+  ChevronDown,
+  ChevronUp,
+} from "lucide-react";
 import Link from "next/link";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import { CommitteeMember, CommitteeResponse } from "@/lib/types";
 
 const CommitteeDetail: React.FC = () => {
-  const [committee, setCommittee] = useState<any | null>(null);
+  const [committee, setCommittee] = useState<CommitteeResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [openSections, setOpenSections] = useState<{[key: string]: boolean}>({});
+  const [openSections, setOpenSections] = useState<{ [key: string]: boolean }>(
+    {}
+  );
   const { code } = useParams<{ code: string }>();
 
   useEffect(() => {
     const fetchCommittee = async () => {
       try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/committees/${code}/`);
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/committees/${code}/`
+        );
         if (!response.ok) throw new Error("Failed to fetch committee details");
-        const data = await response.json();
+        const data: CommitteeResponse = await response.json();
         setCommittee(data);
         // Initialize all sections as open
         const initialOpenSections = data.members.reduce((acc, member) => {
           acc[member.envoy_club] = true;
           return acc;
-        }, {});
+        }, {} as { [key: string]: boolean });
         setOpenSections(initialOpenSections);
       } catch (err) {
         setError("An error occurred while fetching the committee details.");
@@ -44,7 +67,8 @@ const CommitteeDetail: React.FC = () => {
 
   if (isLoading) return <LoadableContainer>Ładowanie...</LoadableContainer>;
   if (error) return <LoadableContainer>{error}</LoadableContainer>;
-  if (!committee) return <LoadableContainer>Nie znaleziono komisji.</LoadableContainer>;
+  if (!committee)
+    return <LoadableContainer>Nie znaleziono komisji.</LoadableContainer>;
 
   const groupedMembers = committee.members.reduce((acc, member) => {
     if (!acc[member.envoy_club]) {
@@ -52,88 +76,110 @@ const CommitteeDetail: React.FC = () => {
     }
     acc[member.envoy_club].push(member);
     return acc;
-  }, {});
+  }, {} as { [key: string]: CommitteeMember[] });
 
   const toggleSection = (club: string) => {
-    setOpenSections(prev => ({ ...prev, [club]: !prev[club] }));
+    setOpenSections((prev) => ({ ...prev, [club]: !prev[club] }));
   };
+
   return (
     <div className="container mx-auto md:max-2xl:p-16 max-w-7xl">
-    <h1 className="text-3xl font-bold mb-6">{committee.name}</h1>
+      <h1 className="text-3xl font-bold mb-6">{committee.name}</h1>
 
-    <Card className="mb-8">
-      <CardHeader>
-        <CardTitle className="flex items-center">
-          <Info className="mr-2" /> Informacje o komisji
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <p><strong>Kod:</strong> {committee.code}</p>
-            <p><strong>Typ:</strong> {committee.type}</p>
-            <p><strong>Data powołania:</strong> {committee.appointmentDate}</p>
-            <p><strong>Data składu:</strong> {committee.composition_date}</p>
+      <Card className="mb-8">
+        <CardHeader>
+          <CardTitle className="flex items-center">
+            <Info className="mr-2" /> Informacje o komisji
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <p>
+                <strong>Kod:</strong> {committee.code}
+              </p>
+              <p>
+                <strong>Typ:</strong> {committee.type}
+              </p>
+              <p>
+                <strong>Data powołania:</strong> {committee.appointmentDate}
+              </p>
+              <p>
+                <strong>Data składu:</strong> {committee.composition_date}
+              </p>
+            </div>
+            <div>
+              <p>
+                <strong>Telefon:</strong> {committee.phone}
+              </p>
+            </div>
           </div>
-          <div>
-            <p><strong>Telefon:</strong> {committee.phone}</p>
-          </div>
-        </div>
-        {committee.scope && (
-          <>
-            <Separator className="my-4" />
-            <h3 className="font-semibold mb-2">Zakres działania</h3>
-            <p>{committee.scope}</p>
-          </>
-        )}
-      </CardContent>
-    </Card>
+          {committee.scope && (
+            <>
+              <Separator className="my-4" />
+              <h3 className="font-semibold mb-2">Zakres działania</h3>
+              <p>{committee.scope}</p>
+            </>
+          )}
+        </CardContent>
+      </Card>
 
-    <Tabs defaultValue="members" className="mb-8">
-      <TabsList>
-        <TabsTrigger value="members">Członkowie komisji</TabsTrigger>
-        <TabsTrigger value="meetings">Ostatnie posiedzenia</TabsTrigger>
-      </TabsList>
-      <TabsContent value="members">
-        <Card>
-          <CardContent className="p-6">
-            {Object.entries(groupedMembers).map(([club, members]) => (
-              <Collapsible 
-                key={club} 
-                className="mb-4" 
-                open={openSections[club]}
-                onOpenChange={() => toggleSection(club)}
-              >
-                <CollapsibleTrigger className="flex items-center justify-between w-full p-2 bg-gray-100 rounded-md">
-                  <span className="font-semibold">{club} ({members.length})</span>
-                  {openSections[club] ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-                </CollapsibleTrigger>
-                <CollapsibleContent>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-2">
-                    {members.map((member: any) => (
-                      <div key={member.envoy_id} className="flex flex-col">
-                        <div className="flex items-center">
-                          <Link href={`/envoys/${member.envoy_id}`} className="text-blue-500 hover:underline">
-                            {member.envoy_name}
-                          </Link>
-                          {member.function && (
-                          <Badge variant="secondary" className="ml-2">{member.function}</Badge>
-                        )}
+      <Tabs defaultValue="members" className="mb-8">
+        <TabsList>
+          <TabsTrigger value="members">Członkowie komisji</TabsTrigger>
+          <TabsTrigger value="meetings">Ostatnie posiedzenia</TabsTrigger>
+        </TabsList>
+        <TabsContent value="members">
+          <Card>
+            <CardContent className="p-6">
+              {Object.entries(groupedMembers).map(([club, members]) => (
+                <Collapsible
+                  key={club}
+                  className="mb-4"
+                  open={openSections[club]}
+                  onOpenChange={() => toggleSection(club)}
+                >
+                  <CollapsibleTrigger className="flex items-center justify-between w-full p-2 bg-gray-100 rounded-md">
+                    <span className="font-semibold">
+                      {club} ({members.length})
+                    </span>
+                    {openSections[club] ? (
+                      <ChevronUp className="h-4 w-4" />
+                    ) : (
+                      <ChevronDown className="h-4 w-4" />
+                    )}
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 mt-2">
+                      {members.map((member) => (
+                        <div key={member.envoy_id} className="flex flex-col">
+                          <div className="flex items-center">
+                            <Link
+                              href={`/envoys/${member.envoy_id}`}
+                              className="text-blue-500 hover:underline"
+                            >
+                              {member.envoy_name}
+                            </Link>
+                            {member.function && (
+                              <Badge variant="secondary" className="ml-2">
+                                {member.function}
+                              </Badge>
+                            )}
+                          </div>
                         </div>
-                      </div>
-                    ))}
-                  </div>
-                </CollapsibleContent>
-              </Collapsible>
-            ))}
-          </CardContent>
-        </Card>
-      </TabsContent>
+                      ))}
+                    </div>
+                  </CollapsibleContent>
+                </Collapsible>
+              ))}
+            </CardContent>
+          </Card>
+        </TabsContent>
         <TabsContent value="meetings">
           <Card>
             <CardContent className="p-6">
               <Accordion type="single" collapsible className="w-full">
-                {committee.recent_sittings.map((sitting: any, index: number) => (
+                {committee.recent_sittings.map((sitting, index) => (
                   <AccordionItem key={sitting.id} value={`item-${index}`}>
                     <AccordionTrigger>
                       Posiedzenie nr {sitting.num} - {sitting.date}
@@ -168,7 +214,7 @@ const CommitteeDetail: React.FC = () => {
                         <div className="mt-4">
                           <strong>Powiązane druki:</strong>
                           <ul className="list-disc list-inside mt-2">
-                            {sitting.prints.map((print: any) => (
+                            {sitting.prints.map((print) => (
                               <li key={print.id}>
                                 <a
                                   href={print.pdf_url}

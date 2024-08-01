@@ -6,12 +6,12 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { ExternalLink, FileText, Users, Calendar, Info } from "lucide-react";
-import { Envoy } from "@/lib/types";
+import { Envoy, Process } from "@/lib/types";
 import Link from "next/link";
 import GroupedMPs from "./groupedEnvoys";
 
 const ProcessDetail: React.FC = () => {
-  const [currentProcess, setCurrentProcess] = useState<any | null>(null);
+  const [currentProcess, setCurrentProcess] = useState<Process | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { id } = useParams<{ id: string }>();
@@ -23,7 +23,7 @@ const ProcessDetail: React.FC = () => {
           `${process.env.NEXT_PUBLIC_API_URL}/processes/${id}/`
         );
         if (!response.ok) throw new Error("Failed to fetch process details");
-        const data = await response.json();
+        const data: Process = await response.json();
         setCurrentProcess(data);
       } catch (err) {
         setError("Błąd podczas pobierania danych procesu.");

@@ -8,18 +8,29 @@ import {
 } from "@/components/ui/accordion";
 import { ExternalLink } from "lucide-react";
 import LoadableContainer from "@/components/loadableContainer";
+import { FAQItem } from "@/lib/types";
 
-const FAQPage = () => {
-  const [faqs, setFaqs] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+// Define the FAQ item type
+
+// Define the API response type
+interface APIResponse {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: FAQItem[];
+}
+
+const FAQPage: React.FC = () => {
+  const [faqs, setFaqs] = useState<FAQItem[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchFAQs = async () => {
+    const fetchFAQs = async (): Promise<void> => {
       try {
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/faq/`);
         if (!response.ok) throw new Error("Failed to fetch FAQs");
-        const data = await response.json();
+        const data: APIResponse = await response.json();
         setFaqs(data.results);
       } catch (err) {
         setError("Błąd podczas pobierania FAQ.");
@@ -38,7 +49,7 @@ const FAQPage = () => {
     <div className="container mx-auto p-2 md:p-8 max-w-3xl">
       <h1 className="text-3xl font-bold mb-8">Często Zadawane Pytania</h1>
       <Accordion type="single" collapsible className="w-full">
-        {faqs.map((faq, index) => (
+        {faqs.map((faq: FAQItem, index: number) => (
           <AccordionItem key={faq.id} value={`item-${index}`}>
             <AccordionTrigger className="text-xl font-semibold">
               {faq.question}
