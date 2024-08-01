@@ -11,3 +11,4 @@ from .committees import (
     CommitteeViewSet,
 )
 from .processes import ProcessViewSet, ProcessesMetaViewSet
+from .faq import FAQViewSet

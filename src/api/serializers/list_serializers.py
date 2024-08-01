@@ -5,6 +5,7 @@ from django.utils.formats import date_format
 from sejm_app.models import Voting, Process, Interpellation, Club, Committee, Envoy
 from eli_app.models import Act
 from sejm_app.models.committee import CommitteeType
+from sejm_app.models.faq import FAQ
 from sejm_app.models.print_model import PrintModel
 
 
@@ -83,7 +84,6 @@ class InterpellationListSerializer(serializers.ModelSerializer):
         ]
 
 
-
 class PrintListSerializer(serializers.ModelSerializer):
     pdf_url = serializers.SerializerMethodField()
 
@@ -104,6 +104,12 @@ class ClubListSerializer(serializers.ModelSerializer):
 
     def get_photo_url(self, obj):
         return obj.photo.url if obj.photo else None
+
+
+class FAQSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FAQ
+        fields = ["id", "question", "answer", "url1", "url2"]
 
 
 class CommitteeListSerializer(serializers.ModelSerializer):
@@ -158,6 +164,7 @@ class ActListSerializer(serializers.ModelSerializer):
     status = serializers.CharField(source="status.name")
     releasedBy = serializers.SerializerMethodField()
     url = serializers.SerializerMethodField()
+
     class Meta:
         model = Act
         fields = [
@@ -170,6 +177,7 @@ class ActListSerializer(serializers.ModelSerializer):
             "announcementDate",
             "entryIntoForce",
         ]
+
     def get_url(self, obj):
         return obj.url
 
