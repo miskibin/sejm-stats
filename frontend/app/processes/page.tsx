@@ -51,7 +51,7 @@ export default function ProcessStepperDemo() {
     async function fetchData() {
       setIsLoading(true);
       try {
-        const response = await fetch("http://127.0.0.1:8000/api/processes-meta/");
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/processes-meta/`);
         const data = await response.json();
         setProcessesMeta(data);
       } catch (error) {
