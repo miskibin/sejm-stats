@@ -17,7 +17,7 @@ export default function CommitteesPage() {
       setIsLoading(true);
       try {
         const response = await fetch(
-          `http://127.0.0.1:8000/api/committees/?${searchParams?.toString()}`
+          `${process.env.NEXT_PUBLIC_API_URL}/committees/?${searchParams?.toString()}`
         );
         if (!response.ok) {
           throw new Error('Failed to fetch committees');
@@ -41,6 +41,8 @@ export default function CommitteesPage() {
   const columnsWithClickHandler = useColumnsWithClickHandler();
 
   return (
+    <div className="mx-1">
+
     <LoadableContainer>
       {isLoading ? (
         <div>Ładowanie...</div>
@@ -50,5 +52,6 @@ export default function CommitteesPage() {
         <DataTable columns={columnsWithClickHandler} data={committees} filters={filters} />
       )}
     </LoadableContainer>
+      </div>
   );
 }

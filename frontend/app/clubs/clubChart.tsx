@@ -93,7 +93,7 @@ const ClubsChart: React.FC<ClubsChartProps> = ({ clubs }) => {
           rules: [
             {
               condition: {
-                maxWidth: 600,
+                maxWidth: 800,
               },
               chartOptions: {
                 series: [],

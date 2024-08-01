@@ -55,7 +55,7 @@ export default function VotingStepperDemo() {
   }, []);
 
   return (
-    <div className="mx-auto max-w-4xl">
+    <div className="mx-auto max-w-4xl p-1">
       <LoadableContainer>
         <Stepper
           initialStep={0}

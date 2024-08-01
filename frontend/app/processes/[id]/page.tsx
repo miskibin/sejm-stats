@@ -11,7 +11,7 @@ import Link from "next/link";
 import GroupedMPs from "./groupedEnvoys";
 
 const ProcessDetail: React.FC = () => {
-  const [process, setProcess] = useState<any | null>(null);
+  const [currentProcess, setCurrentProcess] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { id } = useParams<{ id: string }>();
@@ -20,13 +20,13 @@ const ProcessDetail: React.FC = () => {
     const fetchProcess = async () => {
       try {
         const response = await fetch(
-          `http://127.0.0.1:8000/api/processes/${id}/`
+          `${process.env.NEXT_PUBLIC_API_URL}/processes/${id}/`
         );
         if (!response.ok) throw new Error("Failed to fetch process details");
         const data = await response.json();
-        setProcess(data);
+        setCurrentProcess(data);
       } catch (err) {
-        setError("An error occurred while fetching the process details.");
+        setError("Błąd podczas pobierania danych procesu.");
         console.error(err);
       } finally {
         setIsLoading(false);
@@ -37,14 +37,14 @@ const ProcessDetail: React.FC = () => {
 
   if (isLoading) return <LoadableContainer>Ładowanie...</LoadableContainer>;
   if (error) return <LoadableContainer>{error}</LoadableContainer>;
-  if (!process)
+  if (!currentProcess)
     return <LoadableContainer>Nie znaleziono procesu.</LoadableContainer>;
 
   return (
-    <div className="container mx-auto md:max-2xl:p-16 max-w-7xl">
+    <div className="container mx-auto p-2 md:p-8 max-w-7xl">
       <Card className="my-6">
         <CardContent className="p-6">
-          <h1 className="text-xl font-semibold mb-6">{process.title}</h1>
+          <h1 className="text-xl font-semibold mb-6">{currentProcess.title}</h1>
         </CardContent>
       </Card>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
@@ -55,16 +55,16 @@ const ProcessDetail: React.FC = () => {
             </h2>
             <div className="space-y-2">
               <p>
-                <strong>Status:</strong> {process.is_finished}
+                <strong>Status:</strong> {currentProcess.is_finished}
               </p>
               <p>
-                <strong>Numer:</strong> {process.number}
+                <strong>Numer:</strong> {currentProcess.number}
               </p>
               <p>
-                <strong>Kadencja:</strong> {process.term}
+                <strong>Kadencja:</strong> {currentProcess.term}
               </p>
               <p>
-                <strong>Data zmiany:</strong> {process.changeDate}
+                <strong>Data zmiany:</strong> {currentProcess.changeDate}
               </p>
             </div>
           </CardContent>
@@ -77,41 +77,41 @@ const ProcessDetail: React.FC = () => {
             </h2>
             <div className="space-y-2">
               <p>
-                <strong>Typ:</strong> {process.documentType}
+                <strong>Typ:</strong> {currentProcess.documentType}
               </p>
               <p>
-                <strong>Długość:</strong> {process.length_tag} (
-                {process.pagesCount} stron)
+                <strong>Długość:</strong> {currentProcess.length_tag} (
+                {currentProcess.pagesCount} stron)
               </p>
               <p>
                 <strong>Złożony przez:</strong>{" "}
-                {process.createdBy || "Nie określono"}
+                {currentProcess.createdBy || "Nie określono"}
               </p>
               <p>
-                <strong>Data wniesienia:</strong> {process.documentDate}
+                <strong>Data wniesienia:</strong> {currentProcess.documentDate}
               </p>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {process.description !== "Brak" && (
+      {currentProcess.description !== "Brak" && (
         <Card className="mb-8">
           <CardContent className="p-6">
             <h2 className="text-xl font-semibold mb-4">Opis</h2>
-            <p>{process.description}</p>
+            <p>{currentProcess.description}</p>
           </CardContent>
         </Card>
       )}
 
-      {process.prints && process.prints.length > 0 && (
+      {currentProcess.prints && currentProcess.prints.length > 0 && (
         <Card className="mb-8">
           <CardContent className="p-6">
             <h2 className="text-xl font-semibold mb-4 flex items-center">
               <FileText className="mr-2" /> Powiązane druki
             </h2>
             <ul className="space-y-2">
-              {process.prints.map((print: any) => (
+              {currentProcess.prints.map((print: any) => (
                 <li key={print.id}>
                   <a
                     href={print.pdf_url}
@@ -129,14 +129,14 @@ const ProcessDetail: React.FC = () => {
         </Card>
       )}
 
-      {process.stages && process.stages.length > 0 && (
+      {currentProcess.stages && currentProcess.stages.length > 0 && (
         <Card className="mb-8">
           <CardContent className="p-6">
             <h2 className="text-xl font-semibold mb-4 flex items-center">
               <Calendar className="mr-2" /> Etapy procesu
             </h2>
             <ol className="relative border-l border-gray-200 dark:border-gray-700">
-              {process.stages.map((stage, index) => (
+              {currentProcess.stages.map((stage, index) => (
                 <li key={stage.stageNumber} className="mb-10 ml-6">
                   <span className="absolute flex items-center justify-center w-6 h-6 bg-blue-100 rounded-full -left-3 ring-8 ring-white dark:ring-gray-900 dark:bg-blue-900">
                     <span className="text-blue-800 dark:text-blue-300">
@@ -201,7 +201,7 @@ const ProcessDetail: React.FC = () => {
         </Card>
       )}
 
-      <GroupedMPs mps={process.MPs} />
+      <GroupedMPs mps={currentProcess.MPs} />
     </div>
   );
 };

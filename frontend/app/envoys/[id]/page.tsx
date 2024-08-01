@@ -100,7 +100,7 @@ const EnvoyDetail: React.FC = () => {
   useEffect(() => {
     const fetchEnvoy = async () => {
       try {
-        const response = await fetch(`http://127.0.0.1:8000/api/envoys/${id}/`);
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/envoys/${id}/`);
         if (!response.ok)
           throw new Error("Nie udało się pobrać szczegółów posła");
         const data = await response.json();

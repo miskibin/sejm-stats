@@ -22,7 +22,7 @@ const CommitteeDetail: React.FC = () => {
   useEffect(() => {
     const fetchCommittee = async () => {
       try {
-        const response = await fetch(`http://127.0.0.1:8000/api/committees/${code}/`);
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/committees/${code}/`);
         if (!response.ok) throw new Error("Failed to fetch committee details");
         const data = await response.json();
         setCommittee(data);

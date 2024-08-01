@@ -16,7 +16,7 @@ export default function VotingResultsPage() {
       setIsLoading(true);
       try {
         const response = await fetch(
-          `http://127.0.0.1:8000/api/votings/?${searchParams?.toString()}`
+          `${process.env.NEXT_PUBLIC_API_URL}/votings/?${searchParams?.toString()}`
         );
         const data = await response.json();
         setVotings(data.results);

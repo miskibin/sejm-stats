@@ -46,7 +46,7 @@ const VotingDetail: React.FC = () => {
     const fetchVoting = async () => {
       try {
         const response = await fetch(
-          `http://127.0.0.1:8000/api/votings/${id}/`
+          `${process.env.NEXT_PUBLIC_API_URL}/votings/${id}/`
         );
         if (!response.ok) throw new Error("Failed to fetch voting details");
         const data = await response.json();
@@ -76,7 +76,7 @@ const VotingDetail: React.FC = () => {
   };
 
   const sexVotesData = {
-    labels: ["Za", "Przeciw", "Wstrzymał się"],
+    labels: ["Za", "Przeciw", "Brak głosu"],
     datasets: [
       {
         label: "Mężczyźni",
@@ -171,7 +171,7 @@ const VotingDetail: React.FC = () => {
   ];
 
   return (
-    <div className="container mx-auto p-8 space-y-8">
+    <div className="container mx-auto p-4 md:p-8 sm:p-1 sm:px-0 space-y-8">
       <h1 className="text-3xl font-bold">{voting.topic}</h1>
 
       <Card className="md:col-span-2">

@@ -1,4 +1,4 @@
-from django.db.models import Count, Case, When, IntegerField, Prefetch, F, Value, Q
+from django.db.models import Count, Case, When, IntegerField, Prefetch, F, Value, Q, Subquery, OuterRef
 from django.db.models.functions import Concat
 from rest_framework import serializers
 
@@ -119,7 +119,11 @@ class VotingDetailSerializer(serializers.ModelSerializer):
         return queryset.prefetch_related(
             "prints",
             Prefetch("votes", queryset=Vote.objects.select_related("MP")),
-            Prefetch("club_votes", queryset=ClubVote.objects.select_related("club")),
+            Prefetch(
+                "club_votes", 
+                queryset=ClubVote.objects.select_related("club").filter(club__membersCount__gt=4),
+                to_attr="filtered_club_votes"
+            ),
             Prefetch(
                 "prints__processPrint",
                 queryset=Process.objects.all(),
@@ -155,3 +159,8 @@ class VotingDetailSerializer(serializers.ModelSerializer):
                 filter=Q(votes__MP__isFemale=False, votes__vote=VoteOption.ABSTAIN),
             ),
         )
+
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation['club_votes'] = ClubVoteSerializer(instance.filtered_club_votes, many=True).data
+        return representation

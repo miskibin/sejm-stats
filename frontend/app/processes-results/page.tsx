@@ -15,7 +15,7 @@ export default function ProcessesResultsPage() {
       setIsLoading(true);
       try {
         const response = await fetch(
-          `http://127.0.0.1:8000/api/processes/?${searchParams?.toString()}`
+          `${process.env.NEXT_PUBLIC_API_URL}/processes/?${searchParams?.toString()}`
         );
         const data = await response.json();
         setProcesses(data.results);
