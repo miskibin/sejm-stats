@@ -9,7 +9,7 @@ export default async function ClubsPage() {
   const clubsData = await fetchAllClubs();
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-1 w-min-full">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-1  m-1">
       <LoadableContainer>
         <h2 className="text-2xl font-normal text-gray-700  mb-4">
           Lista Klubów

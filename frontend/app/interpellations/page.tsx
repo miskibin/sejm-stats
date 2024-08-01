@@ -15,7 +15,7 @@ async function InterpellationsTable() {
         setIsLoading(true);
         try {
           const response = await fetch(
-            `http://127.0.0.1:8000/api/interpellations/?${searchParams?.toString()}`
+            `${process.env.NEXT_PUBLIC_API_URL}/interpellations/?${searchParams?.toString()}`
           );
           const data = await response.json();
           setInterpellations(data.results);
@@ -43,8 +43,11 @@ async function InterpellationsTable() {
 
 export default function InterpellationsPage() {
   return (
+    <div className="mx-1">
+
     <LoadableContainer>
       <InterpellationsTable />
     </LoadableContainer>
+    </div>
   );
 }

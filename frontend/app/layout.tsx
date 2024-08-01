@@ -16,6 +16,7 @@ import {
   FaYoutube,
   FaDiscord,
   FaGithub,
+  FaAddressBook,
 } from "react-icons/fa";
 import { FiYoutube, FiHeart, FiGithub } from "react-icons/fi";
 import { SiDiscord } from "react-icons/si";
@@ -46,6 +47,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       href: "/processes",
       label: "Procesy legislacyjne",
       icon: <FaCogs className="w-5 h-5" />,
+    },
+    {
+      href: "/faq",
+      label: "O projekcie",
+      icon: <FaAddressBook className="w-5 h-5" />,
     },
     {
       href: "/committees",

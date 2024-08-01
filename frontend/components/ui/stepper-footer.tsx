@@ -48,7 +48,7 @@ const Footer = () => {
           {!isLastStep && !hasCompletedAllSteps && (
             <Button variant="secondary" size="sm" onClick={goToSummary}>
               <ListChecks className="w-4 h-4 mr-2" />
-              Przejdź do podsumowania
+              Pomiń wszystkie
             </Button>
           )}
           {hasCompletedAllSteps ? (
@@ -58,12 +58,12 @@ const Footer = () => {
             </Button>
           ) : (
             <>
-              {isOptionalStep && (
+              {/* {isOptionalStep && (
                 <Button variant="secondary" size="sm" onClick={nextStep}>
                   <SkipForward className="w-4 h-4 mr-2" />
                   Pomiń
                 </Button>
-              )}
+              )} */}
               <Button size="sm" onClick={nextStep}>
                 {isLastStep ? (
                   <>

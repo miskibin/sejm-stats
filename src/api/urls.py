@@ -12,6 +12,7 @@ router.register(r"envoys", views.EnvoyViewSet, basename="envoy")
 router.register(
     r"interpellations", views.InterpellationViewSet, basename="interpellation"
 )
+router.register(r"faq", views.FAQViewSet, basename="faq")
 router.register(r"clubs", views.ClubViewSet, basename="club")
 router.register(r"acts", views.ActViewSet, basename="act")
 router.register(r"acts-meta", views.ActsMetaViewSet, basename="act-meta")

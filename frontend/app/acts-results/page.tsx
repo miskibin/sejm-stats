@@ -16,7 +16,7 @@ export default function ActsResultsPage() {
       setIsLoading(true);
       try {
         const response = await fetch(
-          `http://127.0.0.1:8000/api/acts/?${searchParams?.toString()}`
+          `${process.env.NEXT_PUBLIC_API_URL}/acts/?${searchParams?.toString()}`
         );
         const data = await response.json();
         setActs(data.results);
@@ -38,6 +38,8 @@ export default function ActsResultsPage() {
   ];
 
   return (
+    <div className="mx-1">
+
     <LoadableContainer>
       {isLoading ? (
         <div>Ładowanie...</div>
@@ -45,5 +47,6 @@ export default function ActsResultsPage() {
         <DataTable columns={getColumnsWithClickHandler()} data={acts} filters={filters} />
       )}
     </LoadableContainer>
+      </div>
   );
 }

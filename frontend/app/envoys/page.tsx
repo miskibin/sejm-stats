@@ -68,7 +68,7 @@ export default function EnvoysPage() {
     setIsLoading(true);
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/api/envoys/?page=${pageNum}&page_size=${pageSize}`
+        `${process.env.NEXT_PUBLIC_API_URL}/envoys/?page=${pageNum}&page_size=${pageSize}`
       );
       const data: ApiResponse = await response.json();
       return data;
