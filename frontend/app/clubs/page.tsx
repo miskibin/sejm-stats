@@ -16,14 +16,14 @@ export default function ClubsPage() {
 
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-1  m-1">
-      <LoadableContainer>
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 m-1">
+      <LoadableContainer className="col-span-1">
         <h2 className="text-2xl font-normal text-gray-700  mb-4">
           Lista Klubów
         </h2>
         <ClubsList clubs={data.results} />
       </LoadableContainer>
-      <LoadableContainer>
+      <LoadableContainer className="col-span-1">
         <h2 className="text-2xl font-normal text-gray-700 mb-4">
           Rozkład mandatów{" "}
         </h2>

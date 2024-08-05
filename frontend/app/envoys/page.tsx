@@ -79,7 +79,7 @@ export default function EnvoysPage() {
       setIsLoading(false);
     }
   };
-
+  
   const loadEnvoys = async (forceRefresh = false) => {
     if (allEnvoysLoadedRef.current && !forceRefresh) {
       return;
