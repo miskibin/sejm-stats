@@ -71,7 +71,7 @@ services:
     volumes:
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot
-    command: certonly --webroot -w /var/www/certbot --force-renewal --email your-email@example.com -d your-domain.com --agree-tos
+    command: certonly --webroot -w /var/www/certbot --force-renewal --email michalskibinski109@gmail.com -d sejm-stats.pl --agree-tos
 
 volumes:
   postgres_data:
