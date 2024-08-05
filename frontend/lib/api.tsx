@@ -16,3 +16,15 @@ export function useFetchData<T>(
     ...options
   });
 }
+
+export async function fetchEnvoys(page: number = 1) {
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/envoys/?page=${page}`, {
+    next: { revalidate: 60 },
+  });
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch envoys data");
+  }
+
+  return res.json();
+}

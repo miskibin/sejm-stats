@@ -28,6 +28,23 @@ services:
       - .env
     networks:
       - sejm
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: ../.docker/nextjs/Dockerfile
+    volumes:
+      - ./frontend:/app
+      - ./media:/app/public/media # Mount media directory
+    ports:
+      - "443:443"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://app # Set the API URL to the app service
+    env_file:
+      - ./frontend/.env
+    depends_on:
+      - app
+    networks:
+      - sejm
 
   redis:
     image: redis:latest

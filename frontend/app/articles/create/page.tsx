@@ -13,6 +13,8 @@ import {
   Editor,
   Element as SlateElement,
   Descendant,
+  BaseEditor,
+  BaseElement,
 } from "slate";
 import {
   Slate,
@@ -23,6 +25,8 @@ import {
   useSlateStatic,
   useSelected,
   useFocused,
+  RenderElementProps,
+  RenderLeafProps,
 } from "slate-react";
 import { withHistory } from "slate-history";
 import isHotkey from "is-hotkey";
@@ -45,7 +49,20 @@ import {
   Quote,
   Image as ImageIcon,
 } from "lucide-react";
-const HOTKEYS = {
+
+type CustomElement = { type: string; align?: string; children: Descendant[], character?: string; url?: string };
+type CustomText = { text: string; bold?: boolean; italic?: boolean; code?: boolean; underline?: boolean };
+type CustomEditor = BaseEditor & ReactEditor;
+
+declare module "slate" {
+  interface CustomTypes {
+    Editor: CustomEditor;
+    Element: CustomElement;
+    Text: CustomText;
+  }
+}
+
+const HOTKEYS: { [key: string]: string } = {
   "mod+b": "bold",
   "mod+i": "italic",
   "mod+u": "underline",
@@ -125,14 +142,14 @@ const CreateArticle: React.FC = () => {
       const domRange = ReactEditor.toDOMRange(editor, target);
       const rect = domRange.getBoundingClientRect();
       if (el) {
-        el.style.top = `${rect.top + window.pageYOffset + 24}px`;
-        el.style.left = `${rect.left + window.pageXOffset}px`;
+        el.style.top = `${rect.top + window.scrollY + 24}px`;
+        el.style.left = `${rect.left + window.scrollX}px`;
       }
     }
   }, [chars.length, editor, target]);
 
-  const renderElement = useCallback((props: any) => <Element {...props} />, []);
-  const renderLeaf = useCallback((props: any) => <Leaf {...props} />, []);
+  const renderElement = useCallback((props: RenderElementProps) => <Element {...props} />, []);
+  const renderLeaf = useCallback((props: RenderLeafProps) => <Leaf {...props} />, []);
 
   const initialValue: Descendant[] = [
     {
@@ -144,7 +161,7 @@ const CreateArticle: React.FC = () => {
   ];
 
   if (isLoading) return <div>Ładowanie...</div>;
-  if (error) return <div>Błąd: {error}</div>;
+  if (error) return <div>Błąd: {error.message}</div>;
 
   return (
     <div className="max-w-4xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-lg">
@@ -226,7 +243,7 @@ const CreateArticle: React.FC = () => {
   );
 };
 
-const withMentions = (editor: Editor) => {
+const withMentions = (editor: CustomEditor) => {
   const { isInline, isVoid } = editor;
 
   editor.isInline = (element) =>
@@ -238,8 +255,8 @@ const withMentions = (editor: Editor) => {
   return editor;
 };
 
-const insertMention = (editor: Editor, character: string) => {
-  const mention: any = {
+const insertMention = (editor: CustomEditor, character: string) => {
+  const mention: CustomElement = {
     type: "mention",
     character,
     children: [{ text: "" }],
@@ -248,24 +265,24 @@ const insertMention = (editor: Editor, character: string) => {
   Transforms.move(editor);
 };
 
-const withImages = (editor) => {
+const withImages = (editor: CustomEditor) => {
   const { insertData, isVoid } = editor;
 
   editor.isVoid = (element) =>
     element.type === "image" ? true : isVoid(element);
 
-  editor.insertData = (data) => {
+  editor.insertData = (data: DataTransfer) => {
     const text = data.getData("text/plain");
     const { files } = data;
 
     if (files && files.length > 0) {
-      for (const file of files) {
+      for (const file of Array.from(files)) {
         const reader = new FileReader();
         const [mime] = file.type.split("/");
 
         if (mime === "image") {
           reader.addEventListener("load", () => {
-            const url = reader.result;
+            const url = reader.result as string;
             insertImage(editor, url);
           });
 
@@ -282,20 +299,19 @@ const withImages = (editor) => {
   return editor;
 };
 
-const insertImage = (editor, url) => {
+const insertImage = (editor: CustomEditor, url: string) => {
   const text = { text: "" };
-  const image = { type: "image", url, children: [text] };
+  const image: CustomElement = { type: "image", url, children: [text] };
   Transforms.insertNodes(editor, image);
 };
 
-const isImageUrl = (url) => {
+const isImageUrl = (url: string) => {
   if (!url) return false;
   if (!isUrl(url)) return false;
   const ext = new URL(url).pathname.split(".").pop();
-  return imageExtensions.includes(ext);
+  return imageExtensions.includes(ext!);
 };
-
-const Element = (props) => {
+const Element = (props: RenderElementProps) => {
   const { attributes, children, element } = props;
 
   switch (element.type) {
@@ -315,24 +331,23 @@ const Element = (props) => {
     case "block-quote":
       return (
         <blockquote
-          style={{ textAlign: element.align }}
+          style={{ textAlign: element.align as React.CSSProperties['textAlign'] }}
           {...attributes}
           className="border-l-4 border-gray-300 pl-4 italic"
         >
           {children}
         </blockquote>
       );
-    // ... (other element cases remain the same)
     default:
       return (
-        <p style={{ textAlign: element.align }} {...attributes}>
+        <p style={{ textAlign: element.align as React.CSSProperties['textAlign'] }} {...attributes}>
           {children}
         </p>
       );
   }
 };
 
-const Image = ({ attributes, children, element }) => {
+const Image = ({ attributes, children, element }: RenderElementProps) => {
   const editor = useSlateStatic();
   const path = ReactEditor.findPath(editor, element);
   const selected = useSelected();
@@ -343,7 +358,7 @@ const Image = ({ attributes, children, element }) => {
       {children}
       <div contentEditable={false} className="relative">
         <img
-          src={element.url}
+          src={(element as any).url}
           className={`block max-w-full max-h-80 ${
             selected && focused ? "shadow-outline" : ""
           }`}
@@ -382,7 +397,7 @@ const InsertImageButton = () => {
   );
 };
 
-const Leaf = ({ attributes, children, leaf }: any) => {
+const Leaf = ({ attributes, children, leaf }: RenderLeafProps) => {
   if (leaf.bold) {
     children = <strong>{children}</strong>;
   }
@@ -490,27 +505,28 @@ const toggleBlock = (editor: Editor, format: string) => {
     match: (n) =>
       !Editor.isEditor(n) &&
       SlateElement.isElement(n) &&
-      LIST_TYPES.includes(n.type) &&
+      LIST_TYPES.includes(n.type as string) &&
       !TEXT_ALIGN_TYPES.includes(format),
     split: true,
   });
-  let newProperties: Partial<SlateElement>;
+  let newProperties: Partial<CustomElement>;
   if (TEXT_ALIGN_TYPES.includes(format)) {
     newProperties = {
-      align: isActive ? undefined : format,
+      align: isActive ? undefined : format as CustomElement['align'],
     };
   } else {
     newProperties = {
       type: isActive ? "paragraph" : isList ? "list-item" : format,
     };
   }
-  Transforms.setNodes<SlateElement>(editor, newProperties);
+  Transforms.setNodes<CustomElement>(editor, newProperties);
 
   if (!isActive && isList) {
-    const block = { type: format, children: [] };
+    const block: CustomElement = { type: format, children: [] };
     Transforms.wrapNodes(editor, block);
   }
 };
+
 
 const toggleMark = (editor: Editor, format: string) => {
   const isActive = isMarkActive(editor, format);
@@ -521,7 +537,6 @@ const toggleMark = (editor: Editor, format: string) => {
     Editor.addMark(editor, format, true);
   }
 };
-
 const isBlockActive = (editor: Editor, format: string, blockType = "type") => {
   const { selection } = editor;
   if (!selection) return false;
@@ -532,16 +547,15 @@ const isBlockActive = (editor: Editor, format: string, blockType = "type") => {
       match: (n) =>
         !Editor.isEditor(n) &&
         SlateElement.isElement(n) &&
-        n[blockType] === format,
+        (n as CustomElement)[blockType as keyof CustomElement] === format,
     })
   );
 
   return !!match;
 };
-
 const isMarkActive = (editor: Editor, format: string) => {
-  const marks = Editor.marks(editor);
-  return marks ? marks[format] === true : false;
+  const marks = Editor.marks(editor) as Partial<CustomText>;
+  return marks ? marks[format as keyof CustomText] === true : false;
 };
 
 export default CreateArticle;

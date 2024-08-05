@@ -12,6 +12,8 @@ import { LoadingSpinner } from "@/components/ui/spinner";
 export default function CommitteesPage() {
   const { data, isLoading, error } =
     useFetchData<APIResponse<Committee>>(`/committees/`);
+  const columnsWithClickHandler = useColumnsWithClickHandler();
+
   if (isLoading) return <LoadingSpinner />;
   if (error) return <LoadableContainer>{error.message}</LoadableContainer>;
   if (!data) return null;
@@ -20,7 +22,6 @@ export default function CommitteesPage() {
     { columnKey: "type", title: "Typ" },
     { columnKey: "compositionDate", title: "Data powołania" },
   ];
-  const columnsWithClickHandler = useColumnsWithClickHandler();
 
   return (
     <div className="mx-1">

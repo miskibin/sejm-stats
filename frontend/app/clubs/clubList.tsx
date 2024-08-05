@@ -8,12 +8,12 @@ interface ClubsListProps {
   clubs: Club[];
 }
 
-const ClubsList: React.FC<Club[]> = ({ clubs }) => {
+const ClubsList: React.FC<ClubsListProps> = ({ clubs }) => {
   return (
     <ul className="space-y-2">
       {clubs
-        .sort((a, b) => b.membersCount - a.membersCount)
-        .map((club) => (
+        .sort((a: Club, b: Club) => b.membersCount - a.membersCount)
+        .map((club: Club) => (
           <li key={club.id}>
             <Link
               href={`/club/${club.id}`}

@@ -95,8 +95,8 @@ interface Envoy {
 }
 
 const EnvoyDetail: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
-  const { data, isLoading, error } = useFetchData<Envoy[]>(`/envoys/${id}/`);
+  const { id } = useParams<{ id: string }>() ?? {};
+  const { data, isLoading, error } = useFetchData<Envoy>(`/envoys/${id}/`);
   if (isLoading) return <LoadingSpinner />;
   if (error) return <LoadableContainer>{error.message}</LoadableContainer>;
   if (!data) return null;

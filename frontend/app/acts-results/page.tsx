@@ -10,7 +10,7 @@ import { LoadingSpinner } from "@/components/ui/spinner";
 
 export default function ActsResultsPage() {
   const searchParams = useSearchParams();
-  const { data, isLoading, error } = useFetchData<APIResponse<Act[]>>(
+  const { data, isLoading, error } = useFetchData<APIResponse<Act>>(
     `/acts/?${searchParams?.toString()}`
   );
   if (isLoading) return <LoadingSpinner />;

@@ -40,7 +40,7 @@ const VotingDetail: React.FC = () => {
   const [voting, setVoting] = useState<any | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const { id } = useParams<{ id: string }>();
+  const { id } = useParams<{ id: string }>() || { id: "" };
 
   useEffect(() => {
     const fetchVoting = async () => {
