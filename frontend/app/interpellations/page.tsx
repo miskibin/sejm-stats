@@ -10,7 +10,7 @@ import { LoadingSpinner } from "@/components/ui/spinner";
 
 async function InterpellationsTable() {
     const searchParams = useSearchParams();
-  const { data, isLoading, error } = useFetchData<APIResponse<Interpellation[]>>(`/interpellations/?${searchParams?.toString()}`);
+  const { data, isLoading, error } = useFetchData<APIResponse<Interpellation>>(`/interpellations/?${searchParams?.toString()}`);
   if (isLoading) return <LoadingSpinner/>
   if (error) return <LoadableContainer>{error.message}</LoadableContainer>;
   if (!data) return null;

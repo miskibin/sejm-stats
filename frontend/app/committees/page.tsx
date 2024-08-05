@@ -10,7 +10,7 @@ import { APIResponse, Committee, Interpellation } from "@/lib/types";
 import { LoadingSpinner } from "@/components/ui/spinner";
 
 export default function CommitteesPage() {
-  const { data, isLoading, error } = useFetchData<APIResponse<Committee[]>>(`/committees/`);
+  const { data, isLoading, error } = useFetchData<APIResponse<Committee>>(`/committees/`);
   if (isLoading) return <LoadingSpinner/>
   if (error) return <LoadableContainer>{error.message}</LoadableContainer>;
   if (!data) return null;

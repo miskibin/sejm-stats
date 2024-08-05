@@ -9,7 +9,7 @@ import { useFetchData } from "@/lib/api";
 
 export default function ClubsPage() {
   const searchParams = useSearchParams();
-  const { data, isLoading, error } = useFetchData<APIResponse<Club[]>>(`/clubs/`);
+  const { data, isLoading, error } = useFetchData<APIResponse<Club>>(`/clubs/`);
   if (isLoading) return <LoadingSpinner/>
   if (error) return <LoadableContainer>{error.message}</LoadableContainer>;
   if (!data) return null;
