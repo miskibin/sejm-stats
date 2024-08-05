@@ -78,3 +78,8 @@ For any inquiries or contributions, please refer to our [GitHub repository](http
 
 > [!TIP]
 > If you have any questions feel free to ask on [discord](https://discord.com/invite/zH2J3z5Wbf)
+
+## SS
+
+![image](https://github.com/user-attachments/assets/a83698b9-7975-46aa-8f6e-3bd2f13cc900)
+
