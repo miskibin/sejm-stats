@@ -33,14 +33,16 @@ services:
       context: ./frontend
       dockerfile: ../.docker/nextjs/Dockerfile
     volumes:
-      - ./frontend:/app
       - ./media:/app/public/media # Mount media directory
+      - ./frontend/app:/app/app # Mount only the app directory
+      - ./frontend/components:/app/components # Mount components
+      - ./frontend/public:/app/public # Mount public directory
+      - ./frontend/.env:/app/.env # Mount .env file
+      - ./frontend/.env.local:/app/.env.local # Mount .env.local file
     ports:
       - "3000:3000"
     environment:
       - NEXT_PUBLIC_API_URL=http://app # Set the API URL to the app service
-    env_file:
-      - ./frontend/.env
     depends_on:
       - app
     networks:
@@ -50,6 +52,26 @@ services:
     image: redis:latest
     networks:
       - sejm
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    depends_on:
+      - frontend
+    networks:
+      - sejm
+
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    command: certonly --webroot -w /var/www/certbot --force-renewal --email your-email@example.com -d your-domain.com --agree-tos
 
 volumes:
   postgres_data:
