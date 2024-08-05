@@ -3,7 +3,6 @@ export type ColumnDefE<T> = ColumnDef<T> & {
   accessorKey?: keyof T;
 };
 
-
 export interface APIResponse<T> {
   count: number;
   next: string | null;
@@ -63,7 +62,6 @@ export interface ActsMeta {
   institutions: MetaItem[];
   years: MetaItem[];
 }
-
 
 export interface Print {
   id: string;

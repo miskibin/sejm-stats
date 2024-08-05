@@ -7,6 +7,7 @@ from sejm_app.models import Voting, Process, Interpellation, Club, Committee, En
 from eli_app.models import Act
 from sejm_app.models.committee import CommitteeType
 from sejm_app.models.faq import FAQ
+from sejm_app.models.faq import FAQ
 from sejm_app.models.print_model import PrintModel
 
 

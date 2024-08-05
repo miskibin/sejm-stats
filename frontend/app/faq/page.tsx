@@ -17,7 +17,7 @@ import Spinner, { LoadingSpinner } from "@/components/ui/spinner";
 
 const FAQAndTeamPage: React.FC = () => {
   const { data, isLoading, error } = useFetchData<FaqViewAPIResponse>("/faq/");
-  if (isLoading) return <LoadingSpinner/>
+  if (isLoading) return <LoadingSpinner />;
   if (error) return <LoadableContainer>{error.message}</LoadableContainer>;
   if (!data) return null;
   let faqs = data.faqs.results;

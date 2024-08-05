@@ -9,12 +9,14 @@ import { useFetchData } from "@/lib/api";
 import { LoadingSpinner } from "@/components/ui/spinner";
 
 async function InterpellationsTable() {
-    const searchParams = useSearchParams();
-  const { data, isLoading, error } = useFetchData<APIResponse<Interpellation>>(`/interpellations/?${searchParams?.toString()}`);
-  if (isLoading) return <LoadingSpinner/>
+  const searchParams = useSearchParams();
+  const { data, isLoading, error } = useFetchData<APIResponse<Interpellation>>(
+    `/interpellations/?${searchParams?.toString()}`
+  );
+  if (isLoading) return <LoadingSpinner />;
   if (error) return <LoadableContainer>{error.message}</LoadableContainer>;
   if (!data) return null;
-  
+
   const filters = [
     { columnKey: "member", title: "Autor" },
     { columnKey: "sentDate", title: "Data wysłania" },
@@ -22,7 +24,12 @@ async function InterpellationsTable() {
   return (
     <>
       {isLoading && <p className="text-center mt-4">Ładowanie...</p>}
-      <DataTable columns={getColumnsWithClickHandler()} data={data.results} filters={filters} />;
+      <DataTable
+        columns={getColumnsWithClickHandler()}
+        data={data.results}
+        filters={filters}
+      />
+      ;
     </>
   );
 }
@@ -30,10 +37,9 @@ async function InterpellationsTable() {
 export default function InterpellationsPage() {
   return (
     <div className="mx-1">
-
-    <LoadableContainer>
-      <InterpellationsTable />
-    </LoadableContainer>
+      <LoadableContainer>
+        <InterpellationsTable />
+      </LoadableContainer>
     </div>
   );
 }

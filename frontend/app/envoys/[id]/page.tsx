@@ -97,7 +97,7 @@ interface Envoy {
 const EnvoyDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const { data, isLoading, error } = useFetchData<Envoy[]>(`/envoys/${id}/`);
-  if (isLoading) return <LoadingSpinner/>
+  if (isLoading) return <LoadingSpinner />;
   if (error) return <LoadableContainer>{error.message}</LoadableContainer>;
   if (!data) return null;
   const envoy = data;
@@ -109,7 +109,7 @@ const EnvoyDetail: React.FC = () => {
     datasets: [
       {
         data: envoy.discipline_ratio.values,
-        backgroundColor:[ "#10B981", "#EF4444", "#F59E0B" ]
+        backgroundColor: ["#10B981", "#EF4444", "#F59E0B"],
       },
     ],
   };
@@ -307,7 +307,10 @@ const EnvoyDetail: React.FC = () => {
             <CardContent>
               <ul className="space-y-2">
                 {envoy.committee_memberships.map((membership, index) => (
-                  <li key={index} className="flex justify-between items-center border-b py-3">
+                  <li
+                    key={index}
+                    className="flex justify-between items-center border-b py-3"
+                  >
                     <Link
                       href={`/committees/${membership.committee_code}`}
                       className="hover:underline"
@@ -335,11 +338,16 @@ const EnvoyDetail: React.FC = () => {
                   <ul className="space-y-4">
                     {envoy.latest_votings.map((voting) => (
                       <li key={voting.id} className="border-b pb-2">
-                        <Link href={`/votings/${voting.id}`} className="hover:underline">
+                        <Link
+                          href={`/votings/${voting.id}`}
+                          className="hover:underline"
+                        >
                           <p className="font-semibold">{voting.title}</p>
                         </Link>
                         <div className="flex justify-between text-sm text-muted-foreground">
-                          <span>{new Date(voting.date).toLocaleDateString("pl-PL")}</span>
+                          <span>
+                            {new Date(voting.date).toLocaleDateString("pl-PL")}
+                          </span>
                           <Badge
                             variant={
                               voting.envoy_vote === "Za"
@@ -355,7 +363,9 @@ const EnvoyDetail: React.FC = () => {
                       </li>
                     ))}
                   </ul>
-                  <Button className="w-full mt-4" disabled>Pokaż wszystkie</Button>
+                  <Button className="w-full mt-4" disabled>
+                    Pokaż wszystkie
+                  </Button>
                 </CardContent>
               </Card>
             </TabsContent>
@@ -365,7 +375,10 @@ const EnvoyDetail: React.FC = () => {
                   <ul className="space-y-4">
                     {envoy.processes.map((process) => (
                       <li key={process.id} className="border-b pb-2">
-                        <Link href={`/processes/${process.id}`} className="hover:underline">
+                        <Link
+                          href={`/processes/${process.id}`}
+                          className="hover:underline"
+                        >
                           <p className="font-semibold">{process.title}</p>
                         </Link>
                         <div className="flex justify-between text-sm text-muted-foreground">
@@ -375,7 +388,9 @@ const EnvoyDetail: React.FC = () => {
                       </li>
                     ))}
                   </ul>
-                  <Button className="w-full mt-4" disabled>Pokaż wszystkie</Button>
+                  <Button className="w-full mt-4" disabled>
+                    Pokaż wszystkie
+                  </Button>
                 </CardContent>
               </Card>
             </TabsContent>
@@ -386,19 +401,34 @@ const EnvoyDetail: React.FC = () => {
                     {envoy.interpellations.map((interpellation) => (
                       <li key={interpellation.id} className="border-b pb-2">
                         {interpellation.bodyLink ? (
-                          <Link href={interpellation.bodyLink} className="hover:underline" target="_blank" rel="noopener noreferrer">
-                            <p className="font-semibold">{interpellation.title}</p>
+                          <Link
+                            href={interpellation.bodyLink}
+                            className="hover:underline"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <p className="font-semibold">
+                              {interpellation.title}
+                            </p>
                           </Link>
                         ) : (
-                          <p className="font-semibold">{interpellation.title}</p>
+                          <p className="font-semibold">
+                            {interpellation.title}
+                          </p>
                         )}
                         <div className="flex justify-between text-sm text-muted-foreground">
-                          <span>{new Date(interpellation.lastModified).toLocaleDateString("pl-PL")}</span>
+                          <span>
+                            {new Date(
+                              interpellation.lastModified
+                            ).toLocaleDateString("pl-PL")}
+                          </span>
                         </div>
                       </li>
                     ))}
                   </ul>
-                  <Button className="w-full mt-4" disabled>Pokaż wszystkie</Button>
+                  <Button className="w-full mt-4" disabled>
+                    Pokaż wszystkie
+                  </Button>
                 </CardContent>
               </Card>
             </TabsContent>

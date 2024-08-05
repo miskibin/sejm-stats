@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import ClubsList from "@/app/clubs/clubList";
 import ClubsChart from "@/app/clubs/clubChart";
 import { LoadingSpinner } from "@/components/ui/spinner";
@@ -10,10 +10,9 @@ import { useFetchData } from "@/lib/api";
 export default function ClubsPage() {
   const searchParams = useSearchParams();
   const { data, isLoading, error } = useFetchData<APIResponse<Club>>(`/clubs/`);
-  if (isLoading) return <LoadingSpinner/>
+  if (isLoading) return <LoadingSpinner />;
   if (error) return <LoadableContainer>{error.message}</LoadableContainer>;
   if (!data) return null;
-
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 m-1">

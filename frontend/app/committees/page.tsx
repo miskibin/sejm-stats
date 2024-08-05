@@ -10,8 +10,9 @@ import { APIResponse, Committee, Interpellation } from "@/lib/types";
 import { LoadingSpinner } from "@/components/ui/spinner";
 
 export default function CommitteesPage() {
-  const { data, isLoading, error } = useFetchData<APIResponse<Committee>>(`/committees/`);
-  if (isLoading) return <LoadingSpinner/>
+  const { data, isLoading, error } =
+    useFetchData<APIResponse<Committee>>(`/committees/`);
+  if (isLoading) return <LoadingSpinner />;
   if (error) return <LoadableContainer>{error.message}</LoadableContainer>;
   if (!data) return null;
 
@@ -23,16 +24,19 @@ export default function CommitteesPage() {
 
   return (
     <div className="mx-1">
-
-    <LoadableContainer>
-      {isLoading ? (
-        <div>Ładowanie...</div>
-      ) : error ? (
-        <div>Błąd: {error}</div>
-      ) : (
-        <DataTable columns={columnsWithClickHandler} data={data.results} filters={filters} />
-      )}
-    </LoadableContainer>
-      </div>
+      <LoadableContainer>
+        {isLoading ? (
+          <div>Ładowanie...</div>
+        ) : error ? (
+          <div>Błąd: {error}</div>
+        ) : (
+          <DataTable
+            columns={columnsWithClickHandler}
+            data={data.results}
+            filters={filters}
+          />
+        )}
+      </LoadableContainer>
+    </div>
   );
 }

@@ -10,8 +10,10 @@ import { LoadingSpinner } from "@/components/ui/spinner";
 
 export default function ActsResultsPage() {
   const searchParams = useSearchParams();
-  const { data, isLoading, error } = useFetchData<APIResponse<Act[]>>(`/acts/?${searchParams?.toString()}`);
-  if (isLoading) return <LoadingSpinner/>
+  const { data, isLoading, error } = useFetchData<APIResponse<Act[]>>(
+    `/acts/?${searchParams?.toString()}`
+  );
+  if (isLoading) return <LoadingSpinner />;
   if (error) return <LoadableContainer>{error.message}</LoadableContainer>;
   if (!data) return null;
 
@@ -24,14 +26,17 @@ export default function ActsResultsPage() {
 
   return (
     <div className="mx-1">
-
-    <LoadableContainer>
-      {isLoading ? (
-        <div>Ładowanie...</div>
-      ) : (
-        <DataTable columns={getColumnsWithClickHandler()} data={data.results} filters={filters} />
-      )}
-    </LoadableContainer>
-      </div>
+      <LoadableContainer>
+        {isLoading ? (
+          <div>Ładowanie...</div>
+        ) : (
+          <DataTable
+            columns={getColumnsWithClickHandler()}
+            data={data.results}
+            filters={filters}
+          />
+        )}
+      </LoadableContainer>
+    </div>
   );
 }
