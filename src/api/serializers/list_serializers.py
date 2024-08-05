@@ -2,6 +2,7 @@ from django.utils import timezone
 
 from rest_framework import serializers
 from django.utils.formats import date_format
+from community_app.models import TeamMember
 from sejm_app.models import Voting, Process, Interpellation, Club, Committee, Envoy
 from eli_app.models import Act
 from sejm_app.models.committee import CommitteeType
@@ -110,6 +111,22 @@ class FAQSerializer(serializers.ModelSerializer):
     class Meta:
         model = FAQ
         fields = ["id", "question", "answer", "url1", "url2"]
+
+
+class TeamMemberSerializer(serializers.ModelSerializer):
+    role = serializers.CharField(source="get_role_display")
+
+    class Meta:
+        model = TeamMember
+        fields = [
+            "id",
+            "name",
+            "role",
+            "since",
+            "facebook_url",
+            "about",
+            "photo",
+        ]
 
 
 class CommitteeListSerializer(serializers.ModelSerializer):

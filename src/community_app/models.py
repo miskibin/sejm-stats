@@ -228,12 +228,12 @@ class TeamMember(models.Model):
         SUPPORTER = 2, _("Wyjątkowo chojny wspierający")
         SUPPORTER_SMALL = 3, _("Wspierający")
 
-    badge = models.CharField(max_length=10, null=True, blank=True)
+    # badge = models.CharField(max_length=10, null=True, blank=True)
     name = models.CharField(max_length=64)
     role = models.IntegerField(choices=Role.choices, default=Role.SUPPORTER_SMALL)
     since = models.CharField(max_length=7, default="YYYY-MM")
     facebook_url = models.URLField(null=True, blank=True)
-    linkedin_url = models.URLField(null=True, blank=True)
+    # linkedin_url = models.URLField(null=True, blank=True)
     about = models.TextField(null=True, blank=True)
     photo = models.ImageField(upload_to="photos", null=True, blank=True)
 
