@@ -6,6 +6,7 @@ import { FaSearch, FaArrowRight } from "react-icons/fa";
 import StatCard from "./statCard";
 import VotingCard from "./votingCard";
 import styles from "@/app/home.module.css";
+import NewsCard from "./newsCard";
 export interface HomeProps {
   latestVotings: any[];
   allClubs: number;
@@ -13,6 +14,43 @@ export interface HomeProps {
 }
 
 const Home: React.FC<HomeProps> = ({ latestVotings, allClubs, cards }) => {
+  const newsItems = [
+    {
+      title:
+        "Amazon Shoppers Are Ditching Designer Belts For This Best-Selling",
+      category: "Europe",
+      imageUrl: "/home.webp",
+      link: "#",
+      isWide: true,
+    },
+    {
+      title: "News Magazines Are Becoming Obsolete, Replaced By Gadgets",
+      category: "Techno",
+      imageUrl:"/home.webp",
+      link: "#",
+    },
+    {
+      title:
+        "Minimalist Designs Are Starting To Be Popular With The Next Generation",
+      category: "Architecture",
+      imageUrl:"/home.webp",
+      link: "#",
+    },
+    {
+      title: "Tips For Decorating The Interior Of The Living Room",
+      category: "Interior",
+      imageUrl:"/home.webp",
+      link: "#",
+    },
+    {
+      title:
+        "Online Taxi Users Are Increasing Drastically Ahead Of The New Year",
+      category: "Lifestyle",
+      imageUrl:"/sejm.webp",
+      link: "#",
+    },
+  ];
+
   return (
     <div className="container min-w-full px-0 mx-auto">
       <div
@@ -84,6 +122,23 @@ const Home: React.FC<HomeProps> = ({ latestVotings, allClubs, cards }) => {
         >
           {/* Articles will be loaded dynamically */}
         </section>
+      </div>
+      <div className="max-w-7xl px-4 mx-auto mt-16">
+        <h2 className="text-4xl font-semibold text-gray-800 mb-6">
+          Aktualności
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {newsItems.map((item, index) => (
+            <NewsCard
+              key={index}
+              title={item.title}
+              category={item.category}
+              imageUrl={item.imageUrl}
+              link={item.link}
+              isWide={index === 0}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );

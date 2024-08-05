@@ -8,7 +8,7 @@ interface ClubsListProps {
   clubs: Club[];
 }
 
-const ClubsList: React.FC<ClubsListProps> = ({ clubs }) => {
+const ClubsList: React.FC<Club[]> = ({ clubs }) => {
   return (
     <ul className="space-y-2">
       {clubs

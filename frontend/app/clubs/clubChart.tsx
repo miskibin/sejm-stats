@@ -44,6 +44,7 @@ const ClubsChart: React.FC<ClubsChartProps> = ({ clubs }) => {
         chart: {
           type: "item",
           backgroundColor: "transparent",
+          height: '100%',
         },
         title: {
           text: undefined,

@@ -2,9 +2,11 @@ from django.utils import timezone
 
 from rest_framework import serializers
 from django.utils.formats import date_format
+from community_app.models import TeamMember
 from sejm_app.models import Voting, Process, Interpellation, Club, Committee, Envoy
 from eli_app.models import Act
 from sejm_app.models.committee import CommitteeType
+from sejm_app.models.faq import FAQ
 from sejm_app.models.faq import FAQ
 from sejm_app.models.print_model import PrintModel
 
@@ -112,6 +114,22 @@ class FAQSerializer(serializers.ModelSerializer):
         fields = ["id", "question", "answer", "url1", "url2"]
 
 
+class TeamMemberSerializer(serializers.ModelSerializer):
+    role = serializers.CharField(source="get_role_display")
+
+    class Meta:
+        model = TeamMember
+        fields = [
+            "id",
+            "name",
+            "role",
+            "since",
+            "facebook_url",
+            "about",
+            "photo",
+        ]
+
+
 class CommitteeListSerializer(serializers.ModelSerializer):
     type = serializers.SerializerMethodField()
     compositionDate = serializers.SerializerMethodField()
@@ -183,3 +201,35 @@ class ActListSerializer(serializers.ModelSerializer):
 
     def get_releasedBy(self, obj):
         return obj.releasedBy.name if obj.releasedBy else None
+
+
+class ArticleContextSerializer(serializers.Serializer):
+    envoys = serializers.SerializerMethodField()
+    clubs = serializers.SerializerMethodField()
+    committees = serializers.SerializerMethodField()
+    votings = serializers.SerializerMethodField()
+    processes = serializers.SerializerMethodField()
+    interpellations = serializers.SerializerMethodField()
+
+    def get_envoys(self, obj):
+        return [str(envoy) for envoy in Envoy.objects.all()]
+
+    def get_clubs(self, obj):
+        return [club.id for club in Club.objects.all()]
+
+    def get_committees(self, obj):
+        return [committee.code for committee in Committee.objects.all()]
+
+    def get_votings(self, obj):
+        return [voting.title for voting in Voting.objects.order_by("-date")[:100]]
+
+    def get_processes(self, obj):
+        return [
+            process.title for process in Process.objects.order_by("-documentDate")[:100]
+        ]
+
+    def get_interpellations(self, obj):
+        return [
+            interpellation.title
+            for interpellation in Interpellation.objects.order_by("-receiptDate")[:100]
+        ]

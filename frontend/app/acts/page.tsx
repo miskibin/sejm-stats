@@ -9,19 +9,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import router from "next/router";
 import ConfirmButton from "@/components/ui/confirm";
+import { useFetchData } from "@/lib/api";
+import { LoadingSpinner } from "@/components/ui/spinner";
+import { ActsMeta } from "@/lib/types";
 
-interface MetaItem {
-  name: string;
-  count: number;
-}
-
-interface ActsMeta {
-  publishers: MetaItem[];
-  keywords: MetaItem[];
-  actStatuses: MetaItem[];
-  institutions: MetaItem[];
-  years: MetaItem[];
-}
 
 const steps: StepItem[] = [
   { label: "Słowa kluczowe", optional: true },
@@ -33,13 +24,6 @@ const steps: StepItem[] = [
 ];
 
 export default function StepperDemo() {
-  const [actsMeta, setActsMeta] = useState<ActsMeta>({
-    publishers: [],
-    keywords: [],
-    actStatuses: [],
-    institutions: [],
-    years: [],
-  });
   const [selectedPublishers, setSelectedPublishers] = useState<string[]>([]);
   const [selectedKeywords, setSelectedKeywords] = useState<string[]>([]);
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
@@ -47,24 +31,12 @@ export default function StepperDemo() {
     []
   );
   const [selectedYears, setselectedYears] = useState<string[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    async function fetchData() {
-      setIsLoading(true);
-      try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/acts-meta/`);
-        const data = await response.json();
-        setActsMeta(data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    fetchData();
-  }, []);
-
+ 
+  const { data, isLoading, error } = useFetchData<ActsMeta>("/acts-meta/");
+  if (isLoading) return <LoadingSpinner/>
+  if (error) return <LoadableContainer>{error.message}</LoadableContainer>;
+  if (!data) return null;
   return (
     <div className="mx-auto max-w-4xl">
       <LoadableContainer>
@@ -80,7 +52,7 @@ export default function StepperDemo() {
                 <div>Ładowanie...</div>
               ) : (
                 <MultiSelect
-                  options={actsMeta.keywords.map(
+                  options={data.keywords.map(
                     (k) => `${k.name} (${k.count})`
                   )}
                   selected={selectedKeywords}
@@ -97,7 +69,7 @@ export default function StepperDemo() {
                 <div>Ładowanie...</div>
               ) : (
                 <MultiSelect
-                  options={actsMeta.publishers.map(
+                  options={data.publishers.map(
                     (p) => `${p.name} (${p.count})`
                   )}
                   selected={selectedPublishers}
@@ -114,7 +86,7 @@ export default function StepperDemo() {
                 <div>Ładowanie...</div>
               ) : (
                 <MultiSelect
-                  options={actsMeta.actStatuses.map(
+                  options={data.actStatuses.map(
                     (s) => `${s.name} (${s.count})`
                   )}
                   selected={selectedStatuses}
@@ -131,7 +103,7 @@ export default function StepperDemo() {
                 <div>Ładowanie...</div>
               ) : (
                 <MultiSelect
-                  options={actsMeta.institutions.map(
+                  options={data.institutions.map(
                     (i) => `${i.name} (${i.count})`
                   )}
                   selected={selectedInstitutions}
@@ -148,7 +120,7 @@ export default function StepperDemo() {
                 <div>Ładowanie...</div>
               ) : (
                 <MultiSelect
-                  options={actsMeta.years.map((i) => `${i.name} (${i.count})`)}
+                  options={data.years.map((i) => `${i.name} (${i.count})`)}
                   selected={selectedYears}
                   onChange={setselectedYears}
                   placeholder="Wybierz Lata"

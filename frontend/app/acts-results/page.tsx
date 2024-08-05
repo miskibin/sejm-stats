@@ -3,32 +3,19 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { DataTable } from "@/components/dataTable/dataTable";
 import LoadableContainer from "@/components/loadableContainer";
-import { Act } from "@/lib/types";
+import { Act, APIResponse } from "@/lib/types";
 import { getColumnsWithClickHandler } from "./columns";
+import { useFetchData } from "@/lib/api";
+import { LoadingSpinner } from "@/components/ui/spinner";
 
 export default function ActsResultsPage() {
   const searchParams = useSearchParams();
-  const [acts, setActs] = useState<Act[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    async function fetchActs() {
-      setIsLoading(true);
-      try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/acts/?${searchParams?.toString()}`
-        );
-        const data = await response.json();
-        setActs(data.results);
-      } catch (error) {
-        console.error("Error fetching acts:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    fetchActs();
-
-  }, [searchParams]);
+  const { data, isLoading, error } = useFetchData<APIResponse<Act[]>>(
+    `/acts/?${searchParams?.toString()}`
+  );
+  if (isLoading) return <LoadingSpinner />;
+  if (error) return <LoadableContainer>{error.message}</LoadableContainer>;
+  if (!data) return null;
 
   const filters = [
     { columnKey: "publisher", title: "Wydawca" },
@@ -39,14 +26,17 @@ export default function ActsResultsPage() {
 
   return (
     <div className="mx-1">
-
-    <LoadableContainer>
-      {isLoading ? (
-        <div>Ładowanie...</div>
-      ) : (
-        <DataTable columns={getColumnsWithClickHandler()} data={acts} filters={filters} />
-      )}
-    </LoadableContainer>
-      </div>
+      <LoadableContainer>
+        {isLoading ? (
+          <div>Ładowanie...</div>
+        ) : (
+          <DataTable
+            columns={getColumnsWithClickHandler()}
+            data={data.results}
+            filters={filters}
+          />
+        )}
+      </LoadableContainer>
+    </div>
   );
 }

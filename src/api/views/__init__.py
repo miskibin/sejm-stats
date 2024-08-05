@@ -12,3 +12,4 @@ from .committees import (
 )
 from .processes import ProcessViewSet, ProcessesMetaViewSet
 from .faq import FAQViewSet
+from .create_article import ArticleContextViewSet
