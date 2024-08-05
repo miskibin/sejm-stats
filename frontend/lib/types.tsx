@@ -1,4 +1,15 @@
 import { ColumnDef } from "@tanstack/react-table";
+export type ColumnDefE<T> = ColumnDef<T> & {
+  accessorKey?: keyof T;
+};
+
+
+export interface APIResponse<T> {
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: T[];
+}
 
 export interface Club {
   id: string;
@@ -9,15 +20,48 @@ export interface Club {
   membersCount: number;
   photo_url: string;
 }
-export type ColumnDefE<T> = ColumnDef<T> & {
-  accessorKey?: keyof T;
-};
+
 export interface Interpellation {
   id: number;
   title: string;
   member: number;
   bodyLink: string;
   sentDate: string;
+}
+
+export interface FAQItem {
+  id: number;
+  question: string;
+  answer: string;
+  url1: string | null;
+  url2: string | null;
+}
+
+export interface TeamMember {
+  id: number;
+  name: string;
+  role: string;
+  since: string;
+  facebook_url: string | null;
+  about: string | null;
+  photo: string | null;
+}
+export interface FaqViewAPIResponse {
+  faqs: APIResponse<FAQItem>;
+  team_members: TeamMember[];
+}
+
+export interface MetaItem {
+  name: string;
+  count: number;
+}
+
+export interface ActsMeta {
+  publishers: MetaItem[];
+  keywords: MetaItem[];
+  actStatuses: MetaItem[];
+  institutions: MetaItem[];
+  years: MetaItem[];
 }
 
 
@@ -84,7 +128,6 @@ export interface Process {
   stages: Stage[];
 }
 
-
 export interface Envoy {
   id: number;
   firstName: string;
@@ -133,13 +176,6 @@ export interface Committee {
   phone: string;
   scope: string;
   type: string;
-}
-export interface FAQItem {
-  id: number;
-  question: string;
-  answer: string;
-  url1: string | null;
-  url2: string | null;
 }
 
 export type CommitteeMember = {

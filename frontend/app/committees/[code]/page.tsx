@@ -30,45 +30,22 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { CommitteeMember, CommitteeResponse } from "@/lib/types";
+import { LoadingSpinner } from "@/components/ui/spinner";
+import { useFetchData } from "@/lib/api";
 
 const CommitteeDetail: React.FC = () => {
-  const [committee, setCommittee] = useState<CommitteeResponse | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [openSections, setOpenSections] = useState<{ [key: string]: boolean }>(
     {}
   );
   const { code } = useParams<{ code: string }>();
 
-  useEffect(() => {
-    const fetchCommittee = async () => {
-      try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/committees/${code}/`
-        );
-        if (!response.ok) throw new Error("Failed to fetch committee details");
-        const data: CommitteeResponse = await response.json();
-        setCommittee(data);
-        // Initialize all sections as open
-        const initialOpenSections = data.members.reduce((acc, member) => {
-          acc[member.envoy_club] = true;
-          return acc;
-        }, {} as { [key: string]: boolean });
-        setOpenSections(initialOpenSections);
-      } catch (err) {
-        setError("An error occurred while fetching the committee details.");
-        console.error(err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchCommittee();
-  }, [code]);
-
-  if (isLoading) return <LoadableContainer>Ładowanie...</LoadableContainer>;
-  if (error) return <LoadableContainer>{error}</LoadableContainer>;
-  if (!committee)
-    return <LoadableContainer>Nie znaleziono komisji.</LoadableContainer>;
+  const { data, isLoading, error } = useFetchData<CommitteeResponse>(
+    `/committees/${code}/`
+  );
+  if (isLoading) return <LoadingSpinner />;
+  if (error) return <LoadableContainer>{error.message}</LoadableContainer>;
+  if (!data) return null;
+  const committee = data;
 
   const groupedMembers = committee.members.reduce((acc, member) => {
     if (!acc[member.envoy_club]) {

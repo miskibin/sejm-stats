@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, { useState, useEffect } from "react";
 import {
@@ -11,64 +11,24 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ExternalLink, Crown } from "lucide-react";
 import LoadableContainer from "@/components/loadableContainer";
-
-interface FAQItem {
-  id: number;
-  question: string;
-  answer: string;
-  url1: string | null;
-  url2: string | null;
-}
-
-interface TeamMember {
-  id: number;
-  name: string;
-  role: string;
-  since: string;
-  facebook_url: string | null;
-  about: string | null;
-  photo: string | null;
-}
-
-interface APIResponse {
-  faqs: {
-    count: number;
-    next: string | null;
-    previous: string | null;
-    results: FAQItem[];
-  };
-  team_members: TeamMember[];
-}
+import { FAQItem, FaqViewAPIResponse, TeamMember } from "@/lib/types";
+import { useFetchData } from "@/lib/api";
+import Spinner, { LoadingSpinner } from "@/components/ui/spinner";
 
 const FAQAndTeamPage: React.FC = () => {
-  const [faqs, setFaqs] = useState<FAQItem[]>([]);
-  const [teamMembers, setTeamMembers] = useState<TeamMember[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchData = async (): Promise<void> => {
-      try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/faq/`);
-        if (!response.ok) throw new Error("Failed to fetch data");
-        const data: APIResponse = await response.json();
-        setFaqs(data.faqs.results);
-        setTeamMembers(data.team_members);
-      } catch (err) {
-        setError("Błąd podczas pobierania danych.");
-        console.error(err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
-
-  if (isLoading) return <LoadableContainer>Ładowanie...</LoadableContainer>;
-  if (error) return <LoadableContainer>{error}</LoadableContainer>;
-
-  const teamCore = teamMembers.filter(member => member.role === "Twórca aplikacji" || member.role === "Programista");
-  const supporters = teamMembers.filter(member => member.role.toLowerCase().includes("wspierający"));
+  const { data, isLoading, error } = useFetchData<FaqViewAPIResponse>("/faq/");
+  if (isLoading) return <LoadingSpinner/>
+  if (error) return <LoadableContainer>{error.message}</LoadableContainer>;
+  if (!data) return null;
+  let faqs = data.faqs.results;
+  let teamMembers = data.team_members;
+  const teamCore = teamMembers.filter(
+    (member) =>
+      member.role === "Twórca aplikacji" || member.role === "Programista"
+  );
+  const supporters = teamMembers.filter((member) =>
+    member.role.toLowerCase().includes("wspierający")
+  );
 
   return (
     <div className="container mx-auto p-2 md:p-8 max-w-6xl">
@@ -86,10 +46,15 @@ const FAQAndTeamPage: React.FC = () => {
                   {faq.question}
                 </AccordionTrigger>
                 <AccordionContent>
-                  <p className="mb-4" dangerouslySetInnerHTML={{ __html: faq.answer }} />
+                  <p
+                    className="mb-4"
+                    dangerouslySetInnerHTML={{ __html: faq.answer }}
+                  />
                   {(faq.url1 || faq.url2) && (
                     <div className="mt-4">
-                      <h3 className="text-lg font-semibold mb-2">Przydatne linki:</h3>
+                      <h3 className="text-lg font-semibold mb-2">
+                        Przydatne linki:
+                      </h3>
                       <ul className="list-disc list-inside">
                         {faq.url1 && (
                           <li>
@@ -136,7 +101,9 @@ const FAQAndTeamPage: React.FC = () => {
                     <CardTitle>{member.name}</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-sm text-muted-foreground">{member.role}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {member.role}
+                    </p>
                     <p className="text-sm">Od: {member.since}</p>
                     {member.about && <p className="mt-2">{member.about}</p>}
                     {member.facebook_url && (

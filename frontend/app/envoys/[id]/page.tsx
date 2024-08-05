@@ -34,6 +34,9 @@ import {
   Legend,
 } from "chart.js";
 import { Pie } from "react-chartjs-2";
+import { useFetchData } from "@/lib/api";
+import { LoadingSpinner } from "@/components/ui/spinner";
+import LoadableContainer from "@/components/loadableContainer";
 ChartJS.register(ArcElement, Legend);
 
 interface Envoy {
@@ -92,34 +95,15 @@ interface Envoy {
 }
 
 const EnvoyDetail: React.FC = () => {
-  const [envoy, setEnvoy] = useState<Envoy | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const { id } = useParams<{ id: string }>();
-
-  useEffect(() => {
-    const fetchEnvoy = async () => {
-      try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/envoys/${id}/`);
-        if (!response.ok)
-          throw new Error("Nie udało się pobrać szczegółów posła");
-        const data = await response.json();
-        setEnvoy(data);
-      } catch (err) {
-        setError("Wystąpił błąd podczas pobierania szczegółów posła.");
-        console.error(err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchEnvoy();
-  }, [id]);
-
+  const { data, isLoading, error } = useFetchData<Envoy[]>(`/envoys/${id}/`);
+  if (isLoading) return <LoadingSpinner/>
+  if (error) return <LoadableContainer>{error.message}</LoadableContainer>;
+  if (!data) return null;
+  const envoy = data;
   if (isLoading)
     return <div className="container mx-auto p-4">Ładowanie...</div>;
   if (error) return <div className="container mx-auto p-4">{error}</div>;
-  if (!envoy)
-    return <div className="container mx-auto p-4">Nie znaleziono posła.</div>;
   const disciplineChartData = {
     labels: envoy.discipline_ratio.labels,
     datasets: [

@@ -4,30 +4,16 @@ import { columns, getColumnsWithClickHandler } from "./columns";
 import LoadableContainer from "@/components/loadableContainer";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { APIResponse, Interpellation } from "@/lib/types";
+import { useFetchData } from "@/lib/api";
+import { LoadingSpinner } from "@/components/ui/spinner";
 
 async function InterpellationsTable() {
     const searchParams = useSearchParams();
-    const [interpellations, setInterpellations] = useState<any[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-  
-    useEffect(() => {
-      async function fetchActs() {
-        setIsLoading(true);
-        try {
-          const response = await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/interpellations/?${searchParams?.toString()}`
-          );
-          const data = await response.json();
-          setInterpellations(data.results);
-        } catch (error) {
-          console.error("Error fetching acts:", error);
-        } finally {
-          setIsLoading(false);
-        }
-      }
-      fetchActs();
-  
-    }, [searchParams]);
+  const { data, isLoading, error } = useFetchData<APIResponse<Interpellation[]>>(`/interpellations/?${searchParams?.toString()}`);
+  if (isLoading) return <LoadingSpinner/>
+  if (error) return <LoadableContainer>{error.message}</LoadableContainer>;
+  if (!data) return null;
   
   const filters = [
     { columnKey: "member", title: "Autor" },
@@ -36,7 +22,7 @@ async function InterpellationsTable() {
   return (
     <>
       {isLoading && <p className="text-center mt-4">Ładowanie...</p>}
-      <DataTable columns={getColumnsWithClickHandler()} data={interpellations} filters={filters} />;
+      <DataTable columns={getColumnsWithClickHandler()} data={data.results} filters={filters} />;
     </>
   );
 }

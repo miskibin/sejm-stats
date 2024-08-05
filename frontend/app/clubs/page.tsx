@@ -1,12 +1,19 @@
-import { Suspense } from "react";
+"use client"
 import ClubsList from "@/app/clubs/clubList";
 import ClubsChart from "@/app/clubs/clubChart";
 import { LoadingSpinner } from "@/components/ui/spinner";
 import LoadableContainer from "@/components/loadableContainer";
-import { fetchAllActs, fetchAllClubs } from "@/lib/api";
+import { useSearchParams } from "next/navigation";
+import { APIResponse, Club } from "@/lib/types";
+import { useFetchData } from "@/lib/api";
 
-export default async function ClubsPage() {
-  const clubsData = await fetchAllClubs();
+export default function ClubsPage() {
+  const searchParams = useSearchParams();
+  const { data, isLoading, error } = useFetchData<APIResponse<Club[]>>(`/clubs/`);
+  if (isLoading) return <LoadingSpinner/>
+  if (error) return <LoadableContainer>{error.message}</LoadableContainer>;
+  if (!data) return null;
+
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-1  m-1">
@@ -14,13 +21,13 @@ export default async function ClubsPage() {
         <h2 className="text-2xl font-normal text-gray-700  mb-4">
           Lista Klubów
         </h2>
-        <ClubsList clubs={clubsData} />
+        <ClubsList clubs={data.results} />
       </LoadableContainer>
       <LoadableContainer>
         <h2 className="text-2xl font-normal text-gray-700 mb-4">
           Rozkład mandatów{" "}
         </h2>
-        <ClubsChart clubs={clubsData} />
+        <ClubsChart clubs={data.results} />
       </LoadableContainer>
     </div>
   );
