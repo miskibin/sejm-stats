@@ -2,8 +2,8 @@
 const nextConfig = {
   experimental: {
     missingSuspenseWithCSRBailout: false,
-    output: 'standalone',
   },
+  output: 'standalone',
 };
 
 export default nextConfig;
