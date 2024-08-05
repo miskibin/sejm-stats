@@ -22,6 +22,7 @@ router.register(r"votings-meta", views.VotingsMetaViewSet, basename="voting-meta
 router.register(r"processes", views.ProcessViewSet, basename="processes")
 router.register(r"processes-meta", views.ProcessesMetaViewSet, basename="process-meta")
 router.register(r"home", views.HomeViewSet, basename="home")
+router.register(r"create-article", views.ArticleContextViewSet, basename="create-article")
 app_name = "api"
 
 urlpatterns = [

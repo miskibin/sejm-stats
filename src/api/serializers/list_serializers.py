@@ -200,3 +200,35 @@ class ActListSerializer(serializers.ModelSerializer):
 
     def get_releasedBy(self, obj):
         return obj.releasedBy.name if obj.releasedBy else None
+
+
+class ArticleContextSerializer(serializers.Serializer):
+    envoys = serializers.SerializerMethodField()
+    clubs = serializers.SerializerMethodField()
+    committees = serializers.SerializerMethodField()
+    votings = serializers.SerializerMethodField()
+    processes = serializers.SerializerMethodField()
+    interpellations = serializers.SerializerMethodField()
+
+    def get_envoys(self, obj):
+        return [str(envoy) for envoy in Envoy.objects.all()]
+
+    def get_clubs(self, obj):
+        return [club.id for club in Club.objects.all()]
+
+    def get_committees(self, obj):
+        return [committee.code for committee in Committee.objects.all()]
+
+    def get_votings(self, obj):
+        return [voting.title for voting in Voting.objects.order_by("-date")[:100]]
+
+    def get_processes(self, obj):
+        return [
+            process.title for process in Process.objects.order_by("-documentDate")[:100]
+        ]
+
+    def get_interpellations(self, obj):
+        return [
+            interpellation.title
+            for interpellation in Interpellation.objects.order_by("-receiptDate")[:100]
+        ]
