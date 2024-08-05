@@ -36,7 +36,7 @@ services:
       - ./frontend:/app
       - ./media:/app/public/media # Mount media directory
     ports:
-      - "443:443"
+      - "3000:3000"
     environment:
       - NEXT_PUBLIC_API_URL=http://app # Set the API URL to the app service
     env_file:
