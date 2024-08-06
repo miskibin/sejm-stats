@@ -7,8 +7,6 @@ services:
       dockerfile: .docker/postgres/Dockerfile.postgres
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    ports:
-      - ${POSTGRES_PORT:-5432}:5432
     env_file:
       - .env
     networks:
@@ -18,45 +16,43 @@ services:
     build:
       context: .
       dockerfile: .docker/python/Dockerfile
-      target: ${BUILD_TARGET:-dev}
     volumes:
       - ./src:/code
-      - app-socket:/code
     ports:
       - "8000:8000"
     env_file:
       - .env
+    depends_on:
+      - db
     networks:
       - sejm
 
   nginx:
     image: nginx:alpine
     ports:
-      - "8080:8080"
+      - "80:80"
       - "443:443"
     volumes:
       - ./.docker/nginx/default.conf:/etc/nginx/nginx.conf:ro
       - ./certbot/conf:/etc/letsencrypt
       - ./certbot/www:/var/www/certbot
-      - app-socket:/code
     depends_on:
       - frontend
       - app
     networks:
       - sejm
+
   frontend:
     build:
       context: ./frontend
       dockerfile: ../.docker/nextjs/Dockerfile
     volumes:
-      - ./media:/app/public/media # Mount media directory
-      - ./frontend/app:/app/app # Mount only the app directory
-      - ./frontend/components:/app/components # Mount components
-      - ./frontend/public:/app/public # Mount public directory
-      - ./frontend/.env:/app/.env # Mount .env file
-      - ./frontend/.env.local:/app/.env.local # Mount .env.local file
-    ports:
-      - "3000:3000"
+      - ./media:/app/public/media
+      - ./frontend/app:/app/app
+      - ./frontend/components:/app/components
+      - ./frontend/public:/app/public
+      - ./frontend/.env:/app/.env
+      - ./frontend/.env.local:/app/.env.local
     environment:
       - NEXT_PUBLIC_API_URL=https://sejm-stats.pl/api
     depends_on:
@@ -68,15 +64,10 @@ services:
     image: redis:latest
     networks:
       - sejm
-  certbot:
-    image: certbot/dns-cloudflare
-    volumes:
-      - ./certbot/conf:/etc/letsencrypt
-      - ./cloudflare.ini:/cloudflare.ini
-    command: certonly --dns-cloudflare --dns-cloudflare-credentials /cloudflare.ini --email michalskibinski109@gmail.com -d sejm-stats.pl --agree-tos --non-interactive
+
 volumes:
   postgres_data:
-  app-socket:
+
 networks:
   sejm:
     driver: bridge

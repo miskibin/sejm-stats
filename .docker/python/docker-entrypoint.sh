@@ -44,5 +44,5 @@ python manage.py collectstatic --noinput
 echo "Loading initial data..."
 python manage.py loaddata fixtures/faq.json
 
-echo "Starting supervisord..."
-exec supervisord -n -c /etc/supervisor/conf.d/supervisord.conf
+echo "Starting Gunicorn..."
+exec gunicorn core.wsgi:application --bind 0.0.0.0:8000
