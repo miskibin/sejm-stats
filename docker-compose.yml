@@ -41,7 +41,7 @@ services:
 
   frontend:
     build:
-      context: .
+      context: ./frontend/
       dockerfile: Dockerfile.nextjs
     labels:
       - "traefik.enable=true"
