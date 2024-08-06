@@ -10,6 +10,8 @@ RUN apt-get update \
     && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
     && rm -rf /var/lib/apt/lists/*
 
+RUN mkdir -p /var/log/supervisor
+
 FROM base AS dev
 
 COPY ./.docker/python/docker-entrypoint.sh /code/
@@ -25,6 +27,6 @@ COPY ./.docker/python/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 COPY ./.docker/nginx/default.conf /etc/nginx/nginx.conf
 RUN chmod +x /etc/entrypoint.sh
 
-EXPOSE 80
+EXPOSE 8080
 
 ENTRYPOINT ["/etc/entrypoint.sh"]
