@@ -15,7 +15,7 @@ mdb/
 # next.js
 /.next/
 /out/
-
+cloudflare.ini
 # production
 /build
 

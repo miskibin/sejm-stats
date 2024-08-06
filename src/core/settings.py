@@ -39,9 +39,8 @@ ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
     "127.0.0.1:3000",
-    "sejm.aleksander-kowalski.pl",
+    "app",
 ]
-
 CSRF_TRUSTED_ORIGINS = [
     "https://sejm-stats.pl",
     "https://www.sejm-stats.pl",
@@ -67,7 +66,7 @@ INSTALLED_APPS = [
     "drf_redesign",
     "rest_framework",
     "crispy_forms",
-        'corsheaders',
+    "corsheaders",
     "django_filters",
     "django_celery_results",
     "crispy_bootstrap5",
