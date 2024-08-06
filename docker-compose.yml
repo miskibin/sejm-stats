@@ -1,72 +1,99 @@
-version: "3.8"
-
 services:
   db:
     build:
       context: .
-      dockerfile: .docker/postgres/Dockerfile.postgres
+      dockerfile: Dockerfile.postgres
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data:/db/data
     env_file:
       - .env
-    networks:
-      - sejm
 
-  app:
+  web:
     build:
       context: .
-      dockerfile: .docker/python/Dockerfile
+      dockerfile: Dockerfile
+    command:
+      [
+        "gunicorn",
+        "core.asgi:application",
+        "-k",
+        "uvicorn.workers.UvicornWorker",
+        "-b",
+        "0.0.0.0:8000",
+        "--timeout",
+        "40",
+        "--capture-output",
+      ]
     volumes:
-      - ./src:/code
-    ports:
-      - "8000:8000"
-    env_file:
-      - .env
+      - ./src:/code/src
+      - ./src/manage.py:/code/manage.py
+      - static_volume:/code/static # Match STATIC_ROOT
+      - media_volume:/code/media # Match MEDIA_ROOT
     depends_on:
       - db
-    networks:
-      - sejm
-  nginx:
-    image: nginx:alpine
+      - redis
+    env_file:
+      - .env
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.django.rule=Host(`sejm-stats.pl`) && PathPrefix(`/api`)"
+      - "traefik.http.services.django.loadbalancer.server.port=8000"
+
+  frontend:
+    build:
+      context: ./frontend # Adjust this path to where your frontend Dockerfile is
+      dockerfile: Dockerfile
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`sejm-stats.pl`)"
+      - "traefik.http.services.frontend.loadbalancer.server.port=3000"
+
+  traefik:
+    image: traefik:v2.5
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.myresolver.acme.httpchallenge=true"
+      - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.myresolver.acme.email=michalskibinski109@gmail.com"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
     ports:
       - "80:80"
       - "443:443"
     volumes:
-      - ./.docker/nginx/default.conf:/etc/nginx/nginx.conf:ro
-      - ./certbot/conf:/etc/letsencrypt
-      - ./certbot/www:/var/www/certbot
-    depends_on:
-      - frontend
-      - app
-    networks:
-      - sejm
-
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: ../.docker/nextjs/Dockerfile
-    volumes:
-      - ./media:/app/public/media
-      - ./frontend/app:/app/app
-      - ./frontend/components:/app/components
-      - ./frontend/public:/app/public
-      - ./frontend/.env:/app/.env
-      - ./frontend/.env.local:/app/.env.local
-    environment:
-      - NEXT_PUBLIC_API_URL=https://sejm-stats.pl/api
-    depends_on:
-      - app
-    networks:
-      - sejm
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+      - "./letsencrypt:/letsencrypt"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.http-catchall.rule=hostregexp(`{host:.+}`)"
+      - "traefik.http.routers.http-catchall.entrypoints=web"
+      - "traefik.http.routers.http-catchall.middlewares=redirect-to-https"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
 
   redis:
     image: redis:latest
-    networks:
-      - sejm
-
+  celery:
+    build:
+      context: .
+      dockerfile: Dockerfile.celery
+    command: ["celery", "-A", "core", "worker", "-l", "INFO"]
+    volumes:
+      - ./src:/code/src
+      - ./src/manage.py:/code/manage.py
+      - media_volume:/code/media # Match MEDIA_ROOT
+    depends_on:
+      - db
+      - redis
+      - web
+    environment:
+      - C_FORCE_ROOT=true
+    env_file:
+      - .env
+    mem_limit: 2g
 volumes:
   postgres_data:
-
-networks:
-  sejm:
-    driver: bridge
+  static_volume:
+  media_volume: #  sudo docker compose down && sudo docker compose up --build

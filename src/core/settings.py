@@ -49,7 +49,7 @@ CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1",
     "https://sejm.aleksander-kowalski.pl",
 ]
-
+API_URL_ROOT = "/api"
 
 # Application definition
 

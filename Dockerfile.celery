@@ -1,0 +1,25 @@
+# Use the official Python image from the Docker Hub
+FROM python:3.12
+
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+ENV TESSDATA_PREFIX /usr/share/tesseract-ocr/5/tessdata
+
+# Set the working directory in the container
+WORKDIR /code
+
+# Install system dependencies
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends gcc libpq-dev postgresql-client  poppler-utils tesseract-ocr wget \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* \
+    && wget -O /tmp/pol.traineddata https://github.com/tesseract-ocr/tessdata/raw/main/pol.traineddata \
+    && mv /tmp/pol.traineddata /usr/share/tesseract-ocr/5/tessdata/
+
+# Install Python dependencies
+COPY requirements.txt /code/
+RUN pip install --upgrade pip && pip install -r requirements.txt
+
+# Copy application code
+COPY src/ /code/
