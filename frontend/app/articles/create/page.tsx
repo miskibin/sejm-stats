@@ -2,7 +2,7 @@ import CreateArticle from "@/components/editor/createArticle";
 
 function App() {
   return (
-    <div className="App">
+    <div>
       <CreateArticle />
     </div>
   );

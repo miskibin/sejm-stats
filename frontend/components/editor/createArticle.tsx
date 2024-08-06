@@ -136,11 +136,11 @@ const CreateArticle: React.FC = () => {
     }
   };
 
-  if (isLoading) return <div>Ładowanie...</div>;
+  if (isLoading) return <div className="text-center">Ładowanie...</div>;
   if (error) return <div>Błąd: {error.message}</div>;
 
   return (
-    <div className="max-w-4xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-lg">
+    <div className="max-w-4xl mx-auto my-10 p-6 bg-white rounded-lg shadow-lg">
       <h1 className="text-3xl font-bold mb-6">Utwórz artykuł</h1>
 
       {/* Pole tytułu */}
