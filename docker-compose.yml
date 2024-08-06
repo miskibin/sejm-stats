@@ -21,6 +21,7 @@ services:
       target: ${BUILD_TARGET:-dev}
     volumes:
       - ./src:/code
+      - app-socket:/code
     # - ./src/manage.py:/code/manage.py
     env_file:
       - .env
@@ -72,7 +73,7 @@ services:
     command: certonly --dns-cloudflare --dns-cloudflare-credentials /cloudflare.ini --email michalskibinski109@gmail.com -d sejm-stats.pl --agree-tos --non-interactive
 volumes:
   postgres_data:
-
+  app-socket:
 networks:
   sejm:
     driver: bridge
