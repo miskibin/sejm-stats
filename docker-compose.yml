@@ -41,8 +41,8 @@ services:
 
   frontend:
     build:
-      context: ./frontend/
-      dockerfile: Dockerfile.nextjs
+      context: ./frontend # This specifies the build context as the frontend directory
+      dockerfile: Dockerfile.nextjs # Assuming your Dockerfile is named Dockerfile.nextjs and is in the frontend directory
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.frontend.rule=Host(`sejm-stats.pl`)"
