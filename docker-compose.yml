@@ -67,12 +67,11 @@ services:
       - sejm
 
   certbot:
-    image: certbot/certbot
+    image: certbot/dns-cloudflare
     volumes:
       - ./certbot/conf:/etc/letsencrypt
-      - ./certbot/www:/var/www/certbot
-    command: certonly --webroot -w /var/www/certbot --force-renewal --email michalskibinski109@gmail.com -d sejm-stats.pl --agree-tos
-
+      - ./cloudflare.ini:/cloudflare.ini
+    command: certonly --dns-cloudflare --dns-cloudflare-credentials /cloudflare.ini --email michalskibinski109@gmail.com -d sejm-stats.pl --agree-tos --non-interactive
 volumes:
   postgres_data:
 
