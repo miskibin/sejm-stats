@@ -41,13 +41,12 @@ services:
 
   frontend:
     build:
-      context: ./frontend # Adjust this path to where your frontend Dockerfile is
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: Dockerfile.nextjs
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.frontend.rule=Host(`sejm-stats.pl`)"
       - "traefik.http.services.frontend.loadbalancer.server.port=3000"
-
   traefik:
     image: traefik:v2.5
     command:
