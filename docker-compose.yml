@@ -26,7 +26,6 @@ services:
       - db
     networks:
       - sejm
-
   nginx:
     image: nginx:alpine
     ports:
