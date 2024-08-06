@@ -27,6 +27,6 @@ COPY ./.docker/python/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 COPY ./.docker/nginx/default.conf /etc/nginx/nginx.conf
 RUN chmod +x /etc/entrypoint.sh
 
-EXPOSE 8080
+EXPOSE 8000
 
 ENTRYPOINT ["/etc/entrypoint.sh"]
