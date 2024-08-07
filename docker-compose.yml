@@ -56,7 +56,6 @@ services:
       - ./cloudflare.ini:/etc/cloudflare/cloudflare.ini:ro
       - static_volume:/static
       - media_volume:/media
-      - certbot_www:/var/www/certbot
       - certbot_conf:/etc/letsencrypt
     depends_on:
       - web
@@ -89,11 +88,10 @@ services:
     volumes:
       - certbot_conf:/etc/letsencrypt
       - ./cloudflare.ini:/etc/cloudflare/cloudflare.ini:ro
-    command: certonly --dns-cloudflare --dns-cloudflare-credentials /etc/cloudflare/cloudflare.ini -d sejm-stats.pl -d www.sejm-stats.pl --email michalskibinski109@gmail.com --agree-tos --non-interactive --expand
+    command: certonly --dns-cloudflare --dns-cloudflare-credentials /etc/cloudflare/cloudflare.ini -d sejm-stats.pl --email michalskibinski109@gmail.com --agree-tos --non-interactive --expand --dns-cloudflare-propagation-seconds 60
 
 volumes:
   postgres_data:
   static_volume:
   media_volume:
-  certbot_www:
   certbot_conf:
