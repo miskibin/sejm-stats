@@ -112,8 +112,16 @@ class VotingsUpdaterTask(DbUpdaterTask):
 
     def _create_voting(self, data: dict):
         # if does not existss
-        if Voting.objects.filter(id=data["id"]).exists():
-            return Voting.objects.get(id=data["id"])
+        if Voting.objects.filter(
+            sittingDay=data["sittingDay"],
+            votingNumber=data["votingNumber"],
+            sitting=data["sitting"],
+        ).exists():
+            return Voting.objects.filter(
+                sittingDay=data["sittingDay"],
+                votingNumber=data["votingNumber"],
+                sitting=data["sitting"],
+            ).first()
         voting = Voting()
         data = parse_all_dates(data)
         for key, value in data.items():
