@@ -5,18 +5,19 @@ import {
   QueryClient,
 } from "@tanstack/react-query";
 
-// Initialize the QueryClient
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 5 * 60 * 1000, // 5 minutes
-      gcTime: 10 * 60 * 1000, // 10 minutes (previously cacheTime)
+      staleTime: 1 * 60 * 60 * 1000, // 24 hours
+      gcTime: 7 * 1 * 60 * 60 * 1000, // 7 days
     },
   },
 });
 
 async function fetchData<T>(endpoint: string): Promise<T> {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${endpoint}`);
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${endpoint}`, {
+    next: { revalidate: 1 * 60 * 60 }, // 24 hours
+  });
   if (!response.ok) throw new Error("Błąd podczas pobierania danych");
   return response.json();
 }
@@ -28,6 +29,8 @@ export function useFetchData<T>(
   return useQuery<T, Error>({
     queryKey: [endpoint],
     queryFn: () => fetchData<T>(endpoint),
+    staleTime: 1 * 60 * 60 * 1000, 
+    gcTime: 7 * 1 * 60 * 60 * 1000, 
     ...options,
   });
 }
