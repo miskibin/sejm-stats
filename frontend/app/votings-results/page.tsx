@@ -9,6 +9,7 @@ import { Suspense } from "react";
 
 async function VotingResultsTable() {
   const searchParams = useSearchParams();
+  const columns = useColumnsWithClickHandler();
   const { data, isLoading, error } = useFetchData<APIResponse<Voting>>(
     `/votings/?${searchParams?.toString()}`
   );
@@ -26,7 +27,7 @@ async function VotingResultsTable() {
 
   return (
     <DataTable
-      columns={useColumnsWithClickHandler()}
+      columns={columns}
       data={data.results}
       filters={filters}
     />
