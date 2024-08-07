@@ -17,19 +17,19 @@ class HomeViewSet(ViewSet):
                 "title": "Wszystkich głosowań",
                 "count": Voting.objects.count(),
                 "color": "destructive",
-                "url": reverse("votings"),
+                "url": "/votings/",
             },
             {
                 "title": "Komisji parlamentarnych",
                 "count": Committee.objects.count(),
                 "color": "destructive",
-                "url": reverse("committees"),
+                "url": "/committees/",
             },
             {
                 "title": "Wszystkich projektów",
                 "count": Process.objects.count(),
                 "color": "destructive",
-                "url": reverse("processes"),
+                "url": "/processes/",
             },
             {
                 "title": "Oczekujących projektów",
@@ -37,7 +37,7 @@ class HomeViewSet(ViewSet):
                     not process.is_finished for process in Process.objects.all()
                 ),
                 "color": "default",
-                "url": reverse("processes") + "?state=on",
+                "url": "/processes/" + "?state=on",
             },
         ]
 
