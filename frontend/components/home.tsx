@@ -26,27 +26,27 @@ const Home: React.FC<HomeProps> = ({ latestVotings, allClubs, cards }) => {
     {
       title: "News Magazines Are Becoming Obsolete, Replaced By Gadgets",
       category: "Techno",
-      imageUrl:"/home.webp",
+      imageUrl: "/home.webp",
       link: "#",
     },
     {
       title:
         "Minimalist Designs Are Starting To Be Popular With The Next Generation",
       category: "Architecture",
-      imageUrl:"/home.webp",
+      imageUrl: "/home.webp",
       link: "#",
     },
     {
       title: "Tips For Decorating The Interior Of The Living Room",
       category: "Interior",
-      imageUrl:"/home.webp",
+      imageUrl: "/home.webp",
       link: "#",
     },
     {
       title:
         "Online Taxi Users Are Increasing Drastically Ahead Of The New Year",
       category: "Lifestyle",
-      imageUrl:"/sejm.webp",
+      imageUrl: "/sejm.webp",
       link: "#",
     },
   ];
@@ -124,11 +124,8 @@ const Home: React.FC<HomeProps> = ({ latestVotings, allClubs, cards }) => {
         </section>
       </div>
       <div className="max-w-7xl px-4 mx-auto mt-16">
-        <h2 className="text-4xl font-semibold text-gray-800 mb-6">
-          Aktualności
-        </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {newsItems.map((item, index) => (
+          {/* {newsItems.map((item, index) => (
             <NewsCard
               key={index}
               title={item.title}
@@ -137,7 +134,7 @@ const Home: React.FC<HomeProps> = ({ latestVotings, allClubs, cards }) => {
               link={item.link}
               isWide={index === 0}
             />
-          ))}
+          ))} */}
         </div>
       </div>
     </div>
