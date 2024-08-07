@@ -58,12 +58,14 @@ C_FORCE_ROOT=true
    ```
    celery -A core worker -l info
    ```
-
-> 🤖 **Note:** The UI for the Django part is obsolete and will be removed soon.
+   
+> [!Note]  
+> 🤖  The UI for the Django part is obsolete and will be removed soon.
 
 #### Frontend Development
 
-> 🤖 **Tip:** If you don't want to run the backend locally, you can use the production API. Set `NEXT_PUBLIC_API_URL=https://sejm-stats.pl/api` in `/frontend/.env` file.
+> [!Tip]  
+> 🤖 If you don't want to run the backend locally, you can use the production API. Set `NEXT_PUBLIC_API_URL=https://sejm-stats.pl/api` in `/frontend/.env` file.
 
 1. [Install npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
 
@@ -93,7 +95,8 @@ When creating a pull request, we enforce a specific title format using [blumilks
 
 For any inquiries or contributions, please refer to our [GitHub repository](https://github.com/michalskibinski109/sejm-stats) or join our Discord server. Your support through Patronite or feedback on YouTube is also highly appreciated.
 
-> 🤖 **Tip:** If you have any questions, feel free to ask on [Discord](https://discord.com/invite/zH2J3z5Wbf)!
+> [!Tip]  
+> 🤖 If you have any questions, feel free to ask on [Discord](https://discord.com/invite/zH2J3z5Wbf)!
 
 <br/>
 
