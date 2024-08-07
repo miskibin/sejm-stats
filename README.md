@@ -17,8 +17,9 @@
 </p>
 <br/>
 
+
 <p align="center">
-  <a href="https://sejm-stats.pl"><img src="https://github.com/user-attachments/assets/a83698b9-7975-46aa-8f6e-3bd2f13cc900" alt="Sejm Stats Preview"></a>
+  <a href="https://sejm-stats.pl"><img src="https://github.com/user-attachments/assets/f8b3a543-1b05-4541-b65d-4f004b868ccc" alt="Sejm Stats Preview" ></a>
 </p>
 
 Sejm-stats provides a clear and concise view of complex parliamentary data, making it easier for citizens to stay informed about the actions and decisions of their representatives.
