@@ -1,3 +1,5 @@
+version: '3'
+
 services:
   db:
     build:
@@ -27,54 +29,40 @@ services:
     volumes:
       - ./src:/code/src
       - ./src/manage.py:/code/manage.py
-      - static_volume:/code/static # Match STATIC_ROOT
-      - media_volume:/code/media # Match MEDIA_ROOT
+      - static_volume:/code/static
+      - media_volume:/code/media
     depends_on:
       - db
       - redis
     env_file:
       - .env
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.django.rule=Host(`sejm-stats.pl`) && PathPrefix(`/api`)"
-      - "traefik.http.services.django.loadbalancer.server.port=8000"
 
   frontend:
     build:
-      context: ./frontend # This specifies the build context as the frontend directory
-      dockerfile: Dockerfile.nextjs # Assuming your Dockerfile is named Dockerfile.nextjs and is in the frontend directory
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.frontend.rule=Host(`sejm-stats.pl`)"
-      - "traefik.http.services.frontend.loadbalancer.server.port=3000"
-  traefik:
-    image: traefik:v2.5
-    command:
-      - "--api.insecure=true"
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--entrypoints.web.address=:80"
-      - "--entrypoints.websecure.address=:443"
-      - "--certificatesresolvers.myresolver.acme.httpchallenge=true"
-      - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
-      - "--certificatesresolvers.myresolver.acme.email=michalskibinski109@gmail.com"
-      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
-      - "--log.level=DEBUG"
+      context: ./frontend
+      dockerfile: Dockerfile.nextjs
+    depends_on:
+      - web
+
+  nginx:
+    image: nginx:latest
     ports:
       - "80:80"
       - "443:443"
     volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - "./letsencrypt:/letsencrypt"
-    labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.http-catchall.rule=hostregexp(`{host:.+}`)"
-      - "traefik.http.routers.http-catchall.entrypoints=web"
-      - "traefik.http.routers.http-catchall.middlewares=redirect-to-https"
-      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./cloudflare.ini:/etc/cloudflare/cloudflare.ini:ro
+      - static_volume:/static
+      - media_volume:/media
+      - certbot_www:/var/www/certbot
+      - certbot_conf:/etc/letsencrypt
+    depends_on:
+      - web
+      - frontend
 
   redis:
     image: redis:latest
+
   celery:
     build:
       context: .
@@ -83,7 +71,7 @@ services:
     volumes:
       - ./src:/code/src
       - ./src/manage.py:/code/manage.py
-      - media_volume:/code/media # Match MEDIA_ROOT
+      - media_volume:/code/media
     depends_on:
       - db
       - redis
@@ -93,7 +81,18 @@ services:
     env_file:
       - .env
     mem_limit: 2g
+
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - certbot_www:/var/www/certbot
+      - certbot_conf:/etc/letsencrypt
+      - ./cloudflare.ini:/etc/cloudflare/cloudflare.ini:ro
+    command: certonly --webroot -w /var/www/certbot --email michalskibinski109@gmail.com -d sejm-stats.pl -d www.sejm-stats.pl --rsa-key-size 4096 --agree-tos --force-renewal --dns-cloudflare --dns-cloudflare-credentials /etc/cloudflare/cloudflare.ini
+
 volumes:
   postgres_data:
   static_volume:
-  media_volume: #  sudo docker compose down && sudo docker compose up --build
+  media_volume:
+  certbot_www:
+  certbot_conf:
