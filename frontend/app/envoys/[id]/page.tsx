@@ -148,9 +148,9 @@ const EnvoyDetail: React.FC = () => {
                 <Image
                   src={envoy.photo}
                   alt={envoy.full_name}
-                  width={150}
-                  height={150}
-                  className="rounded-full"
+                  width={100}
+                  height={100}
+                  className="rounded-md"
                 />
                 <h2 className="mt-4 text-2xl font-bold">{envoy.full_name}</h2>
                 <p className="text-muted-foreground">{envoy.club}</p>
@@ -288,7 +288,7 @@ const EnvoyDetail: React.FC = () => {
                   ? `${envoy.biography.slice(0, 1500)}...`
                   : envoy.biography}
               </p>
-              <Button variant="outline" className="w-full py-0" asChild>
+              <Button variant="outline" className="w-full py-0  my-2" asChild>
                 <a
                   href={envoy.biography_source}
                   target="_blank"

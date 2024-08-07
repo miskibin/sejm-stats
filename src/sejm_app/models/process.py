@@ -52,7 +52,11 @@ class Process(models.Model):
     urgencyStatus = models.CharField(max_length=20)
     MPs = models.ManyToManyField(Envoy, related_name="processes", blank=True)
     club = models.ForeignKey(
-        "Club", on_delete=models.CASCADE, related_name="processes", null=True, blank=True
+        "Club",
+        on_delete=models.CASCADE,
+        related_name="processes",
+        null=True,
+        blank=True,
     )
     createdBy = models.CharField(
         max_length=20,

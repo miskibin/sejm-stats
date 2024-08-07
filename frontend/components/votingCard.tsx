@@ -29,7 +29,7 @@ const VotingCard: React.FC<VotingCardProps> = ({ voting }) => {
           <p className="text-gray-800">{truncateWords(voting.title, 15)}</p>
         </div>
         {voting.category === "WHOLE_PROJECT" && (
-          <FaExclamationCircle className="text-blue-500 text-xl" />
+          <FaExclamationCircle className="text-blue-500 text-3xl" />
         )}
       </div>
     </Link>

@@ -1,6 +1,8 @@
-from rest_framework.pagination import PageNumberPagination
-from rest_framework.viewsets import ReadOnlyModelViewSet
 from rest_framework import serializers
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.response import Response
+from rest_framework.viewsets import ReadOnlyModelViewSet
+
 from api.pagination import ApiViewPagination
 from api.serializers import EnvoyDetailSerializer
 from api.serializers.list_serializers import (
@@ -11,7 +13,6 @@ from api.serializers.list_serializers import (
 from community_app.models import TeamMember
 from sejm_app.models.envoy import Envoy
 from sejm_app.models.faq import FAQ
-from rest_framework.response import Response
 
 
 class FAQViewSet(ReadOnlyModelViewSet):

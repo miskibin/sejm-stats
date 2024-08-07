@@ -1,12 +1,11 @@
 from django.utils import timezone
-
-from rest_framework import serializers
 from django.utils.formats import date_format
+from rest_framework import serializers
+
 from community_app.models import TeamMember
-from sejm_app.models import Voting, Process, Interpellation, Club, Committee, Envoy
 from eli_app.models import Act
+from sejm_app.models import Club, Committee, Envoy, Interpellation, Process, Voting
 from sejm_app.models.committee import CommitteeType
-from sejm_app.models.faq import FAQ
 from sejm_app.models.faq import FAQ
 from sejm_app.models.print_model import PrintModel
 

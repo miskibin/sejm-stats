@@ -1,4 +1,16 @@
-from django.db.models import Count, Case, When, IntegerField, Prefetch, F, Value, Q, Subquery, OuterRef
+from django.db import models
+from django.db.models import (
+    Case,
+    Count,
+    F,
+    IntegerField,
+    OuterRef,
+    Prefetch,
+    Q,
+    Subquery,
+    Value,
+    When,
+)
 from django.db.models.functions import Concat
 from rest_framework import serializers
 
@@ -7,8 +19,7 @@ from api.serializers.list_serializers import (
     ProcessListSerializer,
     VotingListSerializer,
 )
-from sejm_app.models import Voting, Vote, VoteOption, ClubVote, Process, Envoy, Club
-from django.db import models
+from sejm_app.models import Club, ClubVote, Envoy, Process, Vote, VoteOption, Voting
 
 
 class ClubListSerializer(serializers.ModelSerializer):
@@ -120,9 +131,11 @@ class VotingDetailSerializer(serializers.ModelSerializer):
             "prints",
             Prefetch("votes", queryset=Vote.objects.select_related("MP")),
             Prefetch(
-                "club_votes", 
-                queryset=ClubVote.objects.select_related("club").filter(club__membersCount__gt=4),
-                to_attr="filtered_club_votes"
+                "club_votes",
+                queryset=ClubVote.objects.select_related("club").filter(
+                    club__membersCount__gt=4
+                ),
+                to_attr="filtered_club_votes",
             ),
             Prefetch(
                 "prints__processPrint",
@@ -162,5 +175,7 @@ class VotingDetailSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
-        representation['club_votes'] = ClubVoteSerializer(instance.filtered_club_votes, many=True).data
+        representation["club_votes"] = ClubVoteSerializer(
+            instance.filtered_club_votes, many=True
+        ).data
         return representation

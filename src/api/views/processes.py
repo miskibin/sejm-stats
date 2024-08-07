@@ -1,17 +1,18 @@
-from django.db.models import Prefetch, Count, Q, Case, When, Value, CharField, F
-from django.utils.decorators import method_decorator
-from django.views.decorators.cache import cache_page
-from rest_framework import serializers, filters
-from rest_framework.pagination import PageNumberPagination
-from rest_framework.viewsets import ReadOnlyModelViewSet, ViewSet
-from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.response import Response
-from django_filters import rest_framework as django_filters
+from django.db.models import Case, CharField, Count, F, Prefetch, Q, Value, When
 from django.utils import timezone
+from django.utils.decorators import method_decorator
 from django.utils.formats import date_format
-from api.serializers.ProcessDetailSerializer import ProcessDetailSerializer
+from django.views.decorators.cache import cache_page
+from django_filters import rest_framework as django_filters
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters, serializers
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.response import Response
+from rest_framework.viewsets import ReadOnlyModelViewSet, ViewSet
+
 from api.serializers.list_serializers import ProcessListSerializer
-from sejm_app.models import Process, Club, Envoy
+from api.serializers.ProcessDetailSerializer import ProcessDetailSerializer
+from sejm_app.models import Club, Envoy, Process
 from sejm_app.models.process import CreatedByEnum
 
 
@@ -19,7 +20,6 @@ class ProcessPagination(PageNumberPagination):
     page_size = 1000
     page_size_query_param = "page_size"
     max_page_size = 1500
-
 
 
 class ProcessFilter(django_filters.FilterSet):
@@ -76,6 +76,7 @@ class ProcessFilter(django_filters.FilterSet):
             Q(club__id__in=club_ids) | Q(MPs__club__id__in=club_ids)
         ).distinct()
 
+
 class ProcessViewSet(ReadOnlyModelViewSet):
     queryset = Process.objects.all()
     pagination_class = ProcessPagination
@@ -89,7 +90,7 @@ class ProcessViewSet(ReadOnlyModelViewSet):
     ordering = ["-processStartDate"]
 
     def get_serializer_class(self):
-        if self.action == 'list':
+        if self.action == "list":
             return ProcessListSerializer
         return ProcessDetailSerializer
 
@@ -100,6 +101,7 @@ class ProcessViewSet(ReadOnlyModelViewSet):
     @method_decorator(cache_page(60 * 60))  # Cache for 1 hour
     def retrieve(self, request, *args, **kwargs):
         return super().retrieve(request, *args, **kwargs)
+
 
 class ProcessesMetaViewSet(ViewSet):
     @method_decorator(cache_page(60 * 15))  # Cache for 15 minutes

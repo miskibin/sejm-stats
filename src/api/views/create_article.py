@@ -3,6 +3,7 @@ from rest_framework.response import Response
 
 from api.serializers.list_serializers import ArticleContextSerializer
 
+
 class ArticleContextViewSet(viewsets.ViewSet):
     def list(self, request):
         serializer = ArticleContextSerializer({})

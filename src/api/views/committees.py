@@ -1,13 +1,11 @@
+from rest_framework import serializers
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.viewsets import ReadOnlyModelViewSet
-from rest_framework import serializers
 
 from api.pagination import ApiViewPagination
 from api.serializers.CommitteeDetailSerialzer import CommitteeDetailSerializer
 from api.serializers.list_serializers import CommitteeListSerializer
-from sejm_app.models.committee import (
-    Committee,
-)
+from sejm_app.models.committee import Committee
 
 
 # return CommitteeDetailSerializer.setup_eager_loading(super().get_queryset())

@@ -95,7 +95,7 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    <div className="space-y-6 p-6 mx-auto max-w-7xl">
+    <div className="space-y-6 p-0 md:p-6 mx-auto max-w-7xl">
       <Card className="shadow-md">
         <CardContent className="flex py-3 flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0 md:space-x-4">
           <Input

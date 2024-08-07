@@ -1,15 +1,13 @@
 from community_app.serializers import ArticleSerializer
 
-from .search import SearchViewSet
-from .home import HomeViewSet
-from .envoys import EnvoyViewSet
+from .acts import ActsMetaViewSet, ActViewSet
 from .clubs import ClubViewSet
-from .interpellations import InterpellationViewSet
-from .acts import ActViewSet, ActsMetaViewSet
-from .votings import VotingViewSet, VotingsMetaViewSet
-from .committees import (
-    CommitteeViewSet,
-)
-from .processes import ProcessViewSet, ProcessesMetaViewSet
-from .faq import FAQViewSet
+from .committees import CommitteeViewSet
 from .create_article import ArticleContextViewSet
+from .envoys import EnvoyViewSet
+from .faq import FAQViewSet
+from .home import HomeViewSet
+from .interpellations import InterpellationViewSet
+from .processes import ProcessesMetaViewSet, ProcessViewSet
+from .search import SearchViewSet
+from .votings import VotingsMetaViewSet, VotingViewSet

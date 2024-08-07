@@ -10,8 +10,6 @@ from api.serializers.list_serializers import InterpellationListSerializer
 from sejm_app.models.interpellation import Interpellation
 
 
-
-
 class InterpellationViewSet(ReadOnlyModelViewSet):
     queryset = Interpellation.objects.all()
     serializer_class = InterpellationListSerializer

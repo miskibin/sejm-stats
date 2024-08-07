@@ -1,6 +1,7 @@
+from rest_framework import serializers
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.viewsets import ReadOnlyModelViewSet
-from rest_framework import serializers
+
 from api.pagination import ApiViewPagination
 from api.serializers import EnvoyDetailSerializer
 from api.serializers.list_serializers import EnvoyListSerializer

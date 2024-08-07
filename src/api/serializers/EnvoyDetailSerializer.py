@@ -1,8 +1,10 @@
-from django.conf import settings
-from rest_framework import serializers
-from sejm_app.models import Envoy, Voting, CommitteeMember, VoteOption
 from collections import defaultdict
+
+from django.conf import settings
 from django.db.models import Prefetch
+from rest_framework import serializers
+
+from sejm_app.models import CommitteeMember, Envoy, VoteOption, Voting
 
 
 class CommitteeMembershipSerializer(serializers.ModelSerializer):

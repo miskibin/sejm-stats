@@ -1,10 +1,9 @@
 from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
+from api import views
 from api.views.home import HomeViewSet
 from api.views.search import SearchViewSet
-
-from api import views
 
 router = DefaultRouter()
 router.register(r"search", SearchViewSet, basename="search")
@@ -22,7 +21,9 @@ router.register(r"votings-meta", views.VotingsMetaViewSet, basename="voting-meta
 router.register(r"processes", views.ProcessViewSet, basename="processes")
 router.register(r"processes-meta", views.ProcessesMetaViewSet, basename="process-meta")
 router.register(r"home", views.HomeViewSet, basename="home")
-router.register(r"create-article", views.ArticleContextViewSet, basename="create-article")
+router.register(
+    r"create-article", views.ArticleContextViewSet, basename="create-article"
+)
 app_name = "api"
 
 urlpatterns = [

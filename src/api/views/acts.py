@@ -1,12 +1,12 @@
-from django.db.models import Prefetch, Count
+from django.db.models import Count, Prefetch
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
-from rest_framework import serializers, filters
-from rest_framework.pagination import PageNumberPagination
-from rest_framework.viewsets import ReadOnlyModelViewSet, ViewSet
-from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.response import Response
 from django_filters import rest_framework as django_filters
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters, serializers
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.response import Response
+from rest_framework.viewsets import ReadOnlyModelViewSet, ViewSet
 
 from api.serializers.list_serializers import ActListSerializer
 from eli_app.models import Act, ActStatus, Institution, Keyword, Publisher
@@ -16,7 +16,6 @@ class ActPagination(PageNumberPagination):
     page_size = 1500
     page_size_query_param = "page_size"
     max_page_size = 1500
-
 
 
 class ActFilter(django_filters.FilterSet):

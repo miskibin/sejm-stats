@@ -31,7 +31,7 @@ const FAQAndTeamPage: React.FC = () => {
   );
 
   return (
-    <div className="container mx-auto p-2 md:p-8 max-w-6xl">
+    <div className="container mx-auto p-3 md:p-8 max-w-6xl">
       <Tabs defaultValue="faq" className="w-full">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="faq">FAQ</TabsTrigger>
@@ -42,7 +42,7 @@ const FAQAndTeamPage: React.FC = () => {
           <Accordion type="single" collapsible className="w-full">
             {faqs.map((faq: FAQItem, index: number) => (
               <AccordionItem key={faq.id} value={`item-${index}`}>
-                <AccordionTrigger className="text-xl font-semibold">
+                <AccordionTrigger className="text-xl font-semibold text-start">
                   {faq.question}
                 </AccordionTrigger>
                 <AccordionContent>
@@ -52,12 +52,7 @@ const FAQAndTeamPage: React.FC = () => {
                   />
                   {(faq.url1 || faq.url2) && (
                     <div className="mt-4">
-                      <h3 className="text-lg font-semibold mb-2">
-                        Przydatne linki:
-                      </h3>
-                      <ul className="list-disc list-inside">
                         {faq.url1 && (
-                          <li>
                             <a
                               href={faq.url1}
                               target="_blank"
@@ -67,22 +62,7 @@ const FAQAndTeamPage: React.FC = () => {
                               <ExternalLink className="w-4 h-4 mr-2" />
                               Link 1
                             </a>
-                          </li>
                         )}
-                        {faq.url2 && (
-                          <li>
-                            <a
-                              href={faq.url2}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-blue-500 hover:underline flex items-center"
-                            >
-                              <ExternalLink className="w-4 h-4 mr-2" />
-                              Link 2
-                            </a>
-                          </li>
-                        )}
-                      </ul>
                     </div>
                   )}
                 </AccordionContent>
