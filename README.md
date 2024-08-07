@@ -11,7 +11,7 @@
 <p align="center">
   <a href="https://docs.sejm-stats.pl/"><strong>Dokumentacja (PL)</strong></a> ·
   <a href="https://github.com/michalskibinski109/sejm-stats-docs"><strong>Project Docs</strong></a> ·
-  <a href="https://discord.gg/sejm-stats"><strong>Discord</strong></a> ·
+  <a href="https://discord.com/invite/zH2J3z5Wbf"><strong>Discord</strong></a> ·
   <a href="https://patronite.pl/sejm-stats"><strong>Patronite</strong></a> ·
   <a href="https://www.youtube.com/@sejm-stats"><strong>YouTube</strong></a>
 </p>
