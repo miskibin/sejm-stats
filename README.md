@@ -49,7 +49,8 @@ Note: The UI for the Django part is obsolete and will be removed soon.
 ## Frontend Development
 
 > [!TIP]
-> If you don't want to run the backend locally, you can use the production API at `https://sejm-stats.pl/api`. in `frontend/lib/api.tsx` file
+> If you don't want to run the backend locally, you can use the production API 
+> set `NEXT_PUBLIC_API_URL=https://sejm-stats.pl/api` in `/frontend/.env` file
 
 1. Navigate to the frontend directory:
    ```
