@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 
 services:
   db:
@@ -85,12 +85,11 @@ services:
     mem_limit: 2g
 
   certbot:
-    image: certbot/certbot
+    image: certbot/dns-cloudflare
     volumes:
-      - certbot_www:/var/www/certbot
       - certbot_conf:/etc/letsencrypt
       - ./cloudflare.ini:/etc/cloudflare/cloudflare.ini:ro
-    command: certonly --webroot -w /var/www/certbot --email michalskibinski109@gmail.com -d sejm-stats.pl -d www.sejm-stats.pl --rsa-key-size 4096 --agree-tos --force-renewal --dns-cloudflare --dns-cloudflare-credentials /etc/cloudflare/cloudflare.ini
+    command: certonly --dns-cloudflare --dns-cloudflare-credentials /etc/cloudflare/cloudflare.ini -d sejm-stats.pl -d www.sejm-stats.pl --email michalskibinski109@gmail.com --agree-tos --non-interactive --expand
 
 volumes:
   postgres_data:
