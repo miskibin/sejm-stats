@@ -2,10 +2,13 @@ from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework import status
 from django.urls import reverse
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from sejm_app.models import Club, Process, Voting, Committee
 
 
 class HomeViewSet(ViewSet):
+    @method_decorator(cache_page(60 * 15))  # Cache for 15 minutes
     def list(self, request):
         latest_votings = Voting.objects.order_by("-date")[:5].values(
             "id", "title", "success", "category"
