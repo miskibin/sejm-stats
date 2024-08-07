@@ -51,6 +51,7 @@ Note: The UI for the Django part is obsolete and will be removed soon.
 > [!TIP]
 > If you don't want to run the backend locally, you can use the production API 
 > set `NEXT_PUBLIC_API_URL=https://sejm-stats.pl/api` in `/frontend/.env` file
+0. [Install npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
 
 1. Navigate to the frontend directory:
    ```
