@@ -14,7 +14,7 @@ async function InterpellationsTable() {
     `/interpellations/?${searchParams?.toString()}`
   );
   if (isLoading) return <LoadingSpinner />;
-  if (error) return <LoadableContainer>{error.message}</LoadableContainer>;
+  if (error) return <>{error.message}</>;
   if (!data) return null;
 
   const filters = [
@@ -23,13 +23,11 @@ async function InterpellationsTable() {
   ];
   return (
     <>
-      {isLoading && <p className="text-center mt-4">Ładowanie...</p>}
       <DataTable
         columns={getColumnsWithClickHandler()}
         data={data.results}
         filters={filters}
       />
-      ;
     </>
   );
 }
@@ -37,9 +35,7 @@ async function InterpellationsTable() {
 export default function InterpellationsPage() {
   return (
     <div className="mx-1">
-      <LoadableContainer>
         <InterpellationsTable />
-      </LoadableContainer>
     </div>
   );
 }

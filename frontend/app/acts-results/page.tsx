@@ -26,17 +26,12 @@ export default function ActsResultsPage() {
 
   return (
     <div className="mx-1">
-      <LoadableContainer>
-        {isLoading ? (
-          <div>Ładowanie...</div>
-        ) : (
+    
           <DataTable
             columns={getColumnsWithClickHandler()}
             data={data.results}
             filters={filters}
           />
-        )}
-      </LoadableContainer>
     </div>
   );
 }

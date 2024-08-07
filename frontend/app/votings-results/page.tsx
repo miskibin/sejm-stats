@@ -37,12 +37,6 @@ export default function VotingResultsPage() {
   ];
   const columnsWithClickHandler = useColumnsWithClickHandler();
   return (
-    <LoadableContainer>
-      {isLoading ? (
-        <div>Ładowanie...</div>
-      ) : (
         <DataTable columns={columnsWithClickHandler} data={votings} filters={filters} />
-      )}
-    </LoadableContainer>
   );
 }

@@ -30,6 +30,7 @@ import { DataTablePagination } from "./pagination";
 import { Input } from "@/components/ui/input";
 import { DataTableViewOptions } from "./toggle";
 import { DataTableFilter } from "./dataTableFilter";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -92,78 +93,92 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <Input
-          placeholder="Wpisz cokolwiek..."
-          value={globalFilter ?? ""}
-          onChange={(event) => setGlobalFilter(String(event.target.value))}
-          className="max-w-sm"
-        />
-        <div className="flex items-center space-x-1">
-          {filters.map((filter) => (
-            <DataTableFilter
-              key={filter.columnKey}
-              column={table.getColumn(filter.columnKey)}
-              title={filter.title}
-              options={filterOptions[filter.columnKey] || []}
-            />
-          ))}
-          <DataTableViewOptions table={table} />
-        </div>
-      </div>
-
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id} colSpan={header.colSpan}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
-                  );
-                })}
-              </TableRow>
+    <div className="space-y-6 p-6 mx-auto max-w-7xl">
+      <Card className="shadow-md">
+        <CardContent className="flex py-3 flex-col md:flex-row justify-between items-start md:items-center space-y-4 md:space-y-0 md:space-x-4">
+          <Input
+            placeholder="Wpisz cokolwiek..."
+            value={globalFilter ?? ""}
+            onChange={(event) => setGlobalFilter(String(event.target.value))}
+            className="max-w-sm"
+          />
+          <div className="flex flex-wrap items-center gap-2">
+            {filters.map((filter) => (
+              <DataTableFilter
+                key={filter.columnKey}
+                column={table.getColumn(filter.columnKey)}
+                title={filter.title}
+                options={filterOptions[filter.columnKey] || []}
+              />
             ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
+            <DataTableViewOptions table={table} />
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="shadow-md overflow-hidden ">
+        <CardContent className="p-0">
+          <div className="rounded-md border p-2 bg-white">
+            <Table>
+              <TableHeader className="bg-gray-100">
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <TableRow key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => (
+                      <TableHead
+                        key={header.id}
+                        colSpan={header.colSpan}
+                        className="font-bold text-gray-700"
+                      >
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                      </TableHead>
+                    ))}
+                  </TableRow>
+                ))}
+              </TableHeader>
+              <TableBody>
+                {table.getRowModel().rows?.length ? (
+                  table.getRowModel().rows.map((row, index) => (
+                    <TableRow
+                      key={row.id}
+                      data-state={row.getIsSelected() && "selected"}
+                      className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
+                    >
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell key={cell.id}>
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell
+                      colSpan={columns.length}
+                      className="h-24 text-center"
+                    >
+                      Brak wyników.
                     </TableCell>
-                  ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  Brak wyników.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
-      <DataTablePagination table={table} />
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="shadow-md">
+        <CardContent className="py-3">
+          <DataTablePagination table={table} />
+        </CardContent>
+      </Card>
     </div>
-  )
+  );
 }

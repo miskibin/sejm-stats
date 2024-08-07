@@ -116,7 +116,7 @@ export default function EnvoysPage() {
 
   useEffect(() => {
     loadEnvoys();
-  }, [isSearching]);
+  }, []);
 
   useEffect(() => {
     if (!isSearching && page > 1 && !allEnvoysLoadedRef.current) {

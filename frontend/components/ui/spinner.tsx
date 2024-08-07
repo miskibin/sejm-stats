@@ -1,46 +1,52 @@
 import React from 'react';
+import { Skeleton } from "@/components/ui/skeleton"
+import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card"
 
-interface SpinnerProps {
-  size?: number;
-  color?: string;
-  className?: string;
-}
-
-export const Spinner: React.FC<SpinnerProps> = ({
-  size = 24,
-  color = 'currentColor',
-  className = '',
-}) => {
+const SkeletonLoader: React.FC = () => {
   return (
-    <svg
-      className={`animate-spin ${className}`}
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      viewBox="0 0 24 24"
-      width={size}
-      height={size}
-    >
-      <circle
-        className="opacity-25"
-        cx="12"
-        cy="12"
-        r="10"
-        stroke={color}
-        strokeWidth="4"
-      ></circle>
-      <path
-        className="opacity-75"
-        fill={color}
-        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-      ></path>
-    </svg>
+    <Card className="w-full">
+      <CardHeader className="space-y-2">
+        <Skeleton className="h-6 w-1/2" />
+        <Skeleton className="h-4 w-1/4" />
+      </CardHeader>
+      <CardContent className="space-y-2">
+        <Skeleton className="h-4 w-full" />
+        <Skeleton className="h-4 w-full" />
+        <Skeleton className="h-4 w-3/4" />
+      </CardContent>
+      <CardFooter>
+        <Skeleton className="h-10 w-28" />
+      </CardFooter>
+    </Card>
   );
 };
 
-export const LoadingSpinner = () => (
-    <div className="flex items-center justify-center h-64">
-      <Spinner className="w-12 h-12 text-blue-500" />
-      <span className="ml-2 text-lg font-semibold text-gray-700">Ładowanie...</span>
+export const LoadingSpinner: React.FC = () => {
+  return (
+    <div className="min-h-[87vh]  p-8">
+      <div className="max-w-6xl mx-auto space-y-8">
+        <div className="space-y-2">
+          <Skeleton className="h-12 w-[250px]" />
+          <Skeleton className="h-4 w-[350px]" />
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <SkeletonLoader />
+          <SkeletonLoader />
+          <SkeletonLoader />
+        </div>
+        
+        <div className="space-y-2">
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-3/4" />
+        </div>
+        
+        <div className="flex justify-between items-center">
+          <Skeleton className="h-10 w-[100px]" />
+          <Skeleton className="h-10 w-[100px]" />
+        </div>
+      </div>
     </div>
   );
-export default Spinner;
+};

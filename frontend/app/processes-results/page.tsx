@@ -37,8 +37,6 @@ export default function ProcessesResultsPage() {
   const columnsWithClickHandler = useColumnsWithClickHandler();
 
   return (
-    <LoadableContainer>
         <DataTable columns={columnsWithClickHandler} data={processes} filters={filters} />
-    </LoadableContainer>
   );
 }

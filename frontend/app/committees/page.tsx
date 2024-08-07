@@ -25,19 +25,11 @@ export default function CommitteesPage() {
 
   return (
     <div className="mx-1">
-      <LoadableContainer>
-        {isLoading ? (
-          <div>Ładowanie...</div>
-        ) : error ? (
-          <div>Błąd: {error}</div>
-        ) : (
           <DataTable
             columns={columnsWithClickHandler}
             data={data.results}
             filters={filters}
           />
-        )}
-      </LoadableContainer>
     </div>
   );
 }
