@@ -2,17 +2,17 @@
     "name": "transparlament",
     "workspaceFolder": "/code",
     "dockerComposeFile": [
-        "../docker-compose.yml"
+        "../docker-compose-dev.yml"
     ],
-    "service": "app",
+    "service": "web",
     "shutdownAction": "stopCompose",
     "runServices": [
         "db",
-        "app",
+        "web",
         "redis"
     ],
-    "postCreateCommand": "pip install -r /code/requirements.txt && pip install djlint isort black",
-    "postStartCommand": "isort . && black . && djlint . --indent=2 --ignore='H013,H006,H021,D018,T003' --reformat && /usr/local/bin/python /code/src/manage.py runserver 0.0.0.0:8000",
+    "postCreateCommand": "pip install -r /code/requirements.txt && pip install djlint isort black mypy pylint",
+    "postStartCommand": "isort . && black . && djlint . --indent=2 --ignore='H013,H006,H021,D018,T003' --reformat",
     "forwardPorts": [
         8000
     ],
@@ -25,12 +25,40 @@
                 "ms-python.black-formatter",
                 "streetsidesoftware.code-spell-checker",
                 "mcright.auto-save",
-                "ChakrounAnas.turbo-console-log"
+                "ChakrounAnas.turbo-console-log",
+                "ms-python.vscode-pylance",
+                "eamodio.gitlens",
+                "github.copilot",
+                "esbenp.prettier-vscode"
             ],
             "settings": {
-                "terminal.integrated.shell.linux": "/bin/bash",
-                "python.pythonPath": "/usr/local/bin/python"
+                "terminal.integrated.defaultProfile.linux": "bash",
+                "python.defaultInterpreterPath": "/usr/local/bin/python",
+                "python.linting.enabled": true,
+                "python.linting.pylintEnabled": true,
+                "python.linting.mypyEnabled": true,
+                "python.formatting.provider": "black",
+                "editor.formatOnSave": true,
+                "[python]": {
+                    "editor.defaultFormatter": "ms-python.black-formatter"
+                },
+                "[javascript]": {
+                    "editor.defaultFormatter": "esbenp.prettier-vscode"
+                },
+                "[typescript]": {
+                    "editor.defaultFormatter": "esbenp.prettier-vscode"
+                },
+                "[json]": {
+                    "editor.defaultFormatter": "esbenp.prettier-vscode"
+                }
             }
         }
+    },
+    "features": {
+        "ghcr.io/devcontainers/features/node:1": {
+            "version": "lts"
+        },
+        "ghcr.io/devcontainers/features/git:1": {},
+        "ghcr.io/devcontainers/features/github-cli:1": {}
     }
 }

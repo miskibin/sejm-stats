@@ -21,23 +21,22 @@ interface MultiSelectProps {
 
 export function MultiSelect({ options, selected, onChange, placeholder }: MultiSelectProps) {
   return (
-    <div className="w-full  p-4">
-      {/* <h3 className="text-lg font-semibold mb-2">{placeholder}</h3> */}
-      <div className="flex flex-wrap gap-2 mb-4">
+    <div className="w-full p-2 sm:p-4">
+      <div className="flex flex-wrap gap-1 sm:gap-2 mb-2 sm:mb-4">
         {selected.length === 0 ? (
-          <span className="text-gray-500">Nic nie wybrano</span>
+          <span className="text-gray-500 text-sm sm:text-base">Nic nie wybrano</span>
         ) : (
           selected.map((item) => (
             <Badge
               key={item}
               variant="secondary"
-              className="py-1 px-2 text-xs flex items-center"
+              className="py-1 px-2 text-xs sm:text-sm flex items-center"
             >
-              {item}
+              <span className="max-w-[100px] sm:max-w-[150px] truncate">{item}</span>
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-auto p-0 ml-2"
+                className="h-auto p-0 ml-1 sm:ml-2"
                 onClick={() => onChange(selected.filter((i) => i !== item))}
               >
                 <X className="h-3 w-3" />
@@ -47,9 +46,9 @@ export function MultiSelect({ options, selected, onChange, placeholder }: MultiS
         )}
       </div>
       <Command className="border rounded-md">
-        <CommandInput placeholder="Szukaj..." />
-        <CommandList>
-          <CommandEmpty>Nie znaleziono wyników.</CommandEmpty>
+        <CommandInput placeholder={placeholder} className="text-sm sm:text-base" />
+        <CommandList className="max-h-[200px] sm:max-h-[300px] overflow-y-auto">
+          <CommandEmpty className="text-sm sm:text-base">Nie znaleziono wyników.</CommandEmpty>
           <CommandGroup>
             {options.map((option) => {
               const isSelected = selected.includes(option);
@@ -63,6 +62,7 @@ export function MultiSelect({ options, selected, onChange, placeholder }: MultiS
                         : [...selected, option]
                     );
                   }}
+                  className="text-sm sm:text-base"
                 >
                   <div
                     className={cn(
@@ -74,7 +74,7 @@ export function MultiSelect({ options, selected, onChange, placeholder }: MultiS
                   >
                     <Check className={cn("h-4 w-4")} />
                   </div>
-                  <span>{option}</span>
+                  <span className="truncate">{option}</span>
                 </CommandItem>
               );
             })}
@@ -85,7 +85,7 @@ export function MultiSelect({ options, selected, onChange, placeholder }: MultiS
         <Button
           variant="outline"
           size="sm"
-          className="mt-2"
+          className="mt-2 text-xs sm:text-sm"
           onClick={() => onChange([])}
         >
           Wyczyść wszystko

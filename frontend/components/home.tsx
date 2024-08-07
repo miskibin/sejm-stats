@@ -14,43 +14,6 @@ export interface HomeProps {
 }
 
 const Home: React.FC<HomeProps> = ({ latestVotings, allClubs, cards }) => {
-  const newsItems = [
-    {
-      title:
-        "Amazon Shoppers Are Ditching Designer Belts For This Best-Selling",
-      category: "Europe",
-      imageUrl: "/home.webp",
-      link: "#",
-      isWide: true,
-    },
-    {
-      title: "News Magazines Are Becoming Obsolete, Replaced By Gadgets",
-      category: "Techno",
-      imageUrl: "/home.webp",
-      link: "#",
-    },
-    {
-      title:
-        "Minimalist Designs Are Starting To Be Popular With The Next Generation",
-      category: "Architecture",
-      imageUrl: "/home.webp",
-      link: "#",
-    },
-    {
-      title: "Tips For Decorating The Interior Of The Living Room",
-      category: "Interior",
-      imageUrl: "/home.webp",
-      link: "#",
-    },
-    {
-      title:
-        "Online Taxi Users Are Increasing Drastically Ahead Of The New Year",
-      category: "Lifestyle",
-      imageUrl: "/sejm.webp",
-      link: "#",
-    },
-  ];
-
   return (
     <div className="container min-w-full px-0 mx-auto">
       <div

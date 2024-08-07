@@ -1,0 +1,54 @@
+version: "3"
+
+services:
+  db:
+    build:
+      context: .
+      dockerfile: Dockerfile.postgres
+    volumes:
+      - postgres_data:/db/data
+    env_file:
+      - .env
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: ["sh", "-c", "tail -f /dev/null"]
+    volumes:
+      - ./src:/code/src
+      - ./src/manage.py:/code/manage.py
+      - static_volume:/code/static
+      - media_volume:/code/media
+    depends_on:
+      - db
+      - redis
+    env_file:
+      - .env
+
+  redis:
+    image: redis:latest
+
+  celery:
+    build:
+      context: .
+      dockerfile: Dockerfile.celery
+    command: ["celery", "-A", "core", "worker", "-l", "INFO"]
+    volumes:
+      - ./src:/code/src
+      - ./src/manage.py:/code/manage.py
+      - media_volume:/code/media
+    depends_on:
+      - db
+      - redis
+      - web
+    environment:
+      - C_FORCE_ROOT=true
+    env_file:
+      - .env
+    mem_limit: 2g
+
+volumes:
+  postgres_data:
+  static_volume:
+  media_volume:

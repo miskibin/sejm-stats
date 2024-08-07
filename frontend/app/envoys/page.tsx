@@ -11,8 +11,9 @@ import {
 } from "@/components/ui/select";
 import EnvoyCard from "./envoyCard";
 import { Envoy } from "@/lib/types";
-
-
+import { Skeleton } from "@/components/ui/skeleton";
+import { SkeletonComponent } from "@/components/ui/skeleton-page";
+import Spinner from "@/components/ui/spinner";
 
 interface ApiResponse {
   count: number;
@@ -79,7 +80,7 @@ export default function EnvoysPage() {
       setIsLoading(false);
     }
   };
-  
+
   const loadEnvoys = async (forceRefresh = false) => {
     if (allEnvoysLoadedRef.current && !forceRefresh) {
       return;
@@ -251,7 +252,11 @@ export default function EnvoysPage() {
             </div>
           ))}
         </div>
-        {isLoading && <p className="text-center mt-4">Ładowanie...</p>}
+        {isLoading && (
+          <p className="text-center mt-4">
+            <Spinner  variant="primary" />
+          </p>
+        )}
       </div>
     </LoadableContainer>
   );
