@@ -7,14 +7,14 @@ import LoadableContainer from "@/components/loadableContainer";
 import { columns, useColumnsWithClickHandler } from "./columns";
 import { useFetchData } from "@/lib/api";
 import { APIResponse, Committee, Interpellation } from "@/lib/types";
-import { LoadingSpinner } from "@/components/ui/spinner";
+import { SkeletonComponent } from "@/components/ui/skeleton-page";
 
 export default function CommitteesPage() {
   const { data, isLoading, error } =
     useFetchData<APIResponse<Committee>>(`/committees/`);
   const columnsWithClickHandler = useColumnsWithClickHandler();
 
-  if (isLoading) return <LoadingSpinner />;
+  if (isLoading) return <SkeletonComponent />;
   if (error) return <LoadableContainer>{error.message}</LoadableContainer>;
   if (!data) return null;
 

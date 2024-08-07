@@ -35,7 +35,7 @@ import {
 } from "chart.js";
 import { Pie } from "react-chartjs-2";
 import { useFetchData } from "@/lib/api";
-import { LoadingSpinner } from "@/components/ui/spinner";
+import { SkeletonComponent } from "@/components/ui/skeleton-page";
 import LoadableContainer from "@/components/loadableContainer";
 ChartJS.register(ArcElement, Legend);
 
@@ -97,7 +97,7 @@ interface Envoy {
 const EnvoyDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>() ?? {};
   const { data, isLoading, error } = useFetchData<Envoy>(`/envoys/${id}/`);
-  if (isLoading) return <LoadingSpinner />;
+  if (isLoading) return <SkeletonComponent />;
   if (error) return <LoadableContainer>{error.message}</LoadableContainer>;
   if (!data) return null;
   const envoy = data;

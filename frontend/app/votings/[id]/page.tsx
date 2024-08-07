@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { useParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -25,7 +25,8 @@ import {
   BarElement,
 } from "chart.js";
 import { DataTable } from "@/components/dataTable/dataTable";
-import LoadableContainer from "@/components/loadableContainer";
+import { useFetchData } from "@/lib/api";
+import { SkeletonComponent } from "@/components/ui/skeleton-page";
 
 ChartJS.register(
   ArcElement,
@@ -37,33 +38,16 @@ ChartJS.register(
 );
 
 const VotingDetail: React.FC = () => {
-  const [voting, setVoting] = useState<any | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const { id } = useParams<{ id: string }>() || { id: "" };
+  const {
+    data: voting,
+    isLoading,
+    error,
+  } = useFetchData<any>(`/votings/${id}/`);
 
-  useEffect(() => {
-    const fetchVoting = async () => {
-      try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/votings/${id}/`
-        );
-        if (!response.ok) throw new Error("Failed to fetch voting details");
-        const data = await response.json();
-        setVoting(data);
-      } catch (err) {
-        setError("An error occurred while fetching the voting details.");
-        console.error(err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchVoting();
-  }, [id]);
-
-  if (isLoading || !voting)
-    return <LoadableContainer>Ładowanie...</LoadableContainer>;
-  if (error) return <LoadableContainer>{error}</LoadableContainer>;
+  if (isLoading) return <SkeletonComponent />;
+  if (error) return <>{error.message}</>;
+  if (!voting) return null;
 
   const totalVotesData = {
     labels: voting.total_labels,
@@ -74,31 +58,6 @@ const VotingDetail: React.FC = () => {
       },
     ],
   };
-
-  const sexVotesData = {
-    labels: ["Za", "Przeciw", "Brak głosu"],
-    datasets: [
-      {
-        label: "Mężczyźni",
-        data: [
-          voting.sex_votes.male.yes,
-          voting.sex_votes.male.no,
-          voting.sex_votes.male.abstain,
-        ],
-        backgroundColor: "#3B82F6",
-      },
-      {
-        label: "Kobiety",
-        data: [
-          voting.sex_votes.female.yes,
-          voting.sex_votes.female.no,
-          voting.sex_votes.female.abstain,
-        ],
-        backgroundColor: "#EC4899",
-      },
-    ],
-  };
-
   const genderVotesData = {
     labels: ["Za", "Przeciw", "Wstrzymał się"],
     datasets: [
@@ -232,8 +191,8 @@ const VotingDetail: React.FC = () => {
               Głosy posłów
             </CardTitle>
           </CardHeader>
-          <CardContent className="max-h-64 py-1 overflow-x-hidden overflow-y-scroll">
-            <DataTable columns={voteColumns} data={voting.votes} filters={[]} />
+          <CardContent className=" overflow-x-hidden">
+            <DataTable columns={voteColumns} data={voting.votes} filters={[]} rowsPerPage={2} />
           </CardContent>
         </Card>
         <Card className="md:col-span-3">

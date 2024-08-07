@@ -21,7 +21,7 @@ const SkeletonLoader: React.FC = () => {
   );
 };
 
-export const LoadingSpinner: React.FC = () => {
+export const SkeletonComponent: React.FC = () => {
   return (
     <div className="min-h-[87vh]  p-8">
       <div className="max-w-6xl mx-auto space-y-8">

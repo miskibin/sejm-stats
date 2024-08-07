@@ -1,7 +1,7 @@
 "use client";
 import ClubsList from "@/app/clubs/clubList";
 import ClubsChart from "@/app/clubs/clubChart";
-import { LoadingSpinner } from "@/components/ui/spinner";
+import { SkeletonComponent } from "@/components/ui/skeleton-page";
 import LoadableContainer from "@/components/loadableContainer";
 import { useSearchParams } from "next/navigation";
 import { APIResponse, Club } from "@/lib/types";
@@ -10,7 +10,7 @@ import { useFetchData } from "@/lib/api";
 export default function ClubsPage() {
   const searchParams = useSearchParams();
   const { data, isLoading, error } = useFetchData<APIResponse<Club>>(`/clubs/`);
-  if (isLoading) return <LoadingSpinner />;
+  if (isLoading) return <SkeletonComponent />;
   if (error) return <LoadableContainer>{error.message}</LoadableContainer>;
   if (!data) return null;
 

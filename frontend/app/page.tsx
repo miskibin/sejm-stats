@@ -1,14 +1,14 @@
 "use client"
 import Home from "@/components/home";
 import { Suspense } from "react";
-import { LoadingSpinner } from "@/components/ui/spinner";
+import { SkeletonComponent } from "@/components/ui/skeleton-page";
 import type { Metadata } from 'next'
 import { useFetchData } from "@/lib/api";
 import LoadableContainer from "@/components/loadableContainer";
 
 async function HomeContainer() {
   const { data, isLoading, error } = useFetchData<any>(`/home/`);
-  if (isLoading) return <LoadingSpinner/>
+  if (isLoading) return <SkeletonComponent/>
   if (error) return <LoadableContainer>{error.message}</LoadableContainer>;
   if (!data) return null;
   return (
@@ -22,7 +22,7 @@ async function HomeContainer() {
 
 export default function Page() {
   return (
-    <Suspense fallback={<LoadingSpinner />}>
+    <Suspense fallback={<SkeletonComponent />}>
       <HomeContainer />
     </Suspense>
   );

@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import router from "next/router";
 import ConfirmButton from "@/components/ui/confirm";
 import { useFetchData } from "@/lib/api";
-import { LoadingSpinner } from "@/components/ui/spinner";
+import { SkeletonComponent } from "@/components/ui/skeleton-page";
 import { ActsMeta } from "@/lib/types";
 
 
@@ -34,7 +34,7 @@ export default function StepperDemo() {
 
  
   const { data, isLoading, error } = useFetchData<ActsMeta>("/acts-meta/");
-  if (isLoading) return <LoadingSpinner/>
+  if (isLoading) return <SkeletonComponent/>
   if (error) return <LoadableContainer>{error.message}</LoadableContainer>;
   if (!data) return null;
   return (

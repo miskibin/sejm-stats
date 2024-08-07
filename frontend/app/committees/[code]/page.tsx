@@ -28,7 +28,7 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { CommitteeMember, CommitteeResponse } from "@/lib/types";
-import { LoadingSpinner } from "@/components/ui/spinner";
+import { SkeletonComponent } from "@/components/ui/skeleton-page";
 import { useFetchData } from "@/lib/api";
 
 const CommitteeDetail: React.FC = () => {
@@ -40,7 +40,7 @@ const CommitteeDetail: React.FC = () => {
   const { data, isLoading, error } = useFetchData<CommitteeResponse>(
     `/committees/${code}/`
   );
-  if (isLoading) return <LoadingSpinner />;
+  if (isLoading) return <SkeletonComponent />;
   if (error) return <LoadableContainer>{error.message}</LoadableContainer>;
   if (!data) return null;
   const committee = data;

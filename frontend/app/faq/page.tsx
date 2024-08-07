@@ -13,11 +13,11 @@ import { ExternalLink, Crown } from "lucide-react";
 import LoadableContainer from "@/components/loadableContainer";
 import { FAQItem, FaqViewAPIResponse, TeamMember } from "@/lib/types";
 import { useFetchData } from "@/lib/api";
-import { LoadingSpinner } from "@/components/ui/spinner";
+import { SkeletonComponent } from "@/components/ui/skeleton-page";
 
 const FAQAndTeamPage: React.FC = () => {
   const { data, isLoading, error } = useFetchData<FaqViewAPIResponse>("/faq/");
-  if (isLoading) return <LoadingSpinner />;
+  if (isLoading) return <SkeletonComponent />;
   if (error) return <LoadableContainer>{error.message}</LoadableContainer>;
   if (!data) return null;
   let faqs = data.faqs.results;

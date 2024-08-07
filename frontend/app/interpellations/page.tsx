@@ -3,17 +3,17 @@ import { DataTable } from "@/components/dataTable/dataTable";
 import { columns, getColumnsWithClickHandler } from "./columns";
 import LoadableContainer from "@/components/loadableContainer";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { APIResponse, Interpellation } from "@/lib/types";
 import { useFetchData } from "@/lib/api";
-import { LoadingSpinner } from "@/components/ui/spinner";
+import { SkeletonComponent } from "@/components/ui/skeleton-page";
 
 async function InterpellationsTable() {
   const searchParams = useSearchParams();
   const { data, isLoading, error } = useFetchData<APIResponse<Interpellation>>(
     `/interpellations/?${searchParams?.toString()}`
   );
-  if (isLoading) return <LoadingSpinner />;
+  if (isLoading) return <SkeletonComponent />;
   if (error) return <>{error.message}</>;
   if (!data) return null;
 
@@ -35,7 +35,9 @@ async function InterpellationsTable() {
 export default function InterpellationsPage() {
   return (
     <div className="mx-1">
+      <Suspense fallback={<SkeletonComponent />}>
         <InterpellationsTable />
+      </Suspense>
     </div>
   );
 }

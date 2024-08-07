@@ -39,12 +39,14 @@ interface DataTableProps<TData, TValue> {
     columnKey: string;
     title: string;
   }[];
+  rowsPerPage?: number;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   filters = [],
+  rowsPerPage = 10,
 }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = useState({});
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -176,7 +178,7 @@ export function DataTable<TData, TValue>({
 
       <Card className="shadow-md">
         <CardContent className="py-3">
-          <DataTablePagination table={table} />
+          <DataTablePagination table={table}  rowsPerPage={rowsPerPage}/>
         </CardContent>
       </Card>
     </div>

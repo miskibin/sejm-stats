@@ -1,33 +1,21 @@
 "use client";
-import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { DataTable } from "@/components/dataTable/dataTable";
-import LoadableContainer from "@/components/loadableContainer";
-// import { Voting } from "@/lib/types";
-import { columns,useColumnsWithClickHandler } from "./columns";
+import { columns, useColumnsWithClickHandler } from "./columns";
+import { useFetchData } from "@/lib/api";
+import { APIResponse, Voting } from "@/lib/types";
+import { SkeletonComponent } from "@/components/ui/skeleton-page";
+import { Suspense } from "react";
 
-export default function VotingResultsPage() {
+async function VotingResultsTable() {
   const searchParams = useSearchParams();
-  const [votings, setVotings] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const { data, isLoading, error } = useFetchData<APIResponse<Voting>>(
+    `/votings/?${searchParams?.toString()}`
+  );
 
-  useEffect(() => {
-    async function fetchVotings() {
-      setIsLoading(true);
-      try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/votings/?${searchParams?.toString()}`
-        );
-        const data = await response.json();
-        setVotings(data.results);
-      } catch (error) {
-        console.error("Error fetching votings:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    fetchVotings();
-  }, [searchParams]);
+  if (isLoading) return <SkeletonComponent />;
+  if (error) return <>{error.message}</>;
+  if (!data) return null;
 
   const filters = [
     { columnKey: "category", title: "Kategoria" },
@@ -35,8 +23,22 @@ export default function VotingResultsPage() {
     { columnKey: "date", title: "Data głosowania" },
     { columnKey: "success", title: "Status" },
   ];
-  const columnsWithClickHandler = useColumnsWithClickHandler();
+
   return (
-        <DataTable columns={columnsWithClickHandler} data={votings} filters={filters} />
+    <DataTable
+      columns={useColumnsWithClickHandler()}
+      data={data.results}
+      filters={filters}
+    />
+  );
+}
+
+export default function VotingResultsPage() {
+  return (
+    <div className="mx-1">
+      <Suspense fallback={<SkeletonComponent />}>
+        <VotingResultsTable />
+      </Suspense>
+    </div>
   );
 }

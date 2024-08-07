@@ -2,7 +2,7 @@ import { useQuery, QueryKey, UseQueryOptions } from '@tanstack/react-query';
 
 async function fetchData<T>(endpoint: string): Promise<T> {
   const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${endpoint}`);
-  if (!response.ok) throw new Error("Failed to fetch data");
+  if (!response.ok) throw new Error("Błąd podczas pobierania danych");
   return response.json();
 }
 
