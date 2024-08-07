@@ -1,32 +1,17 @@
 "use client";
-import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { DataTable } from "@/components/dataTable/dataTable";
-import LoadableContainer from "@/components/loadableContainer";
 import { useColumnsWithClickHandler } from "./columns";
+import { useFetchData } from "@/lib/api";
+import { SkeletonComponent } from "@/components/ui/skeleton-page";
 
 export default function ProcessesResultsPage() {
   const searchParams = useSearchParams();
-  const [processes, setProcesses] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    async function fetchProcesses() {
-      setIsLoading(true);
-      try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/processes/?${searchParams?.toString()}`
-        );
-        const data = await response.json();
-        setProcesses(data.results);
-      } catch (error) {
-        console.error("Error fetching processes:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    fetchProcesses();
-  }, [searchParams]);
+  const {
+    data: processes,
+    isLoading,
+    error,
+  } = useFetchData<any>(`/processes/?${searchParams?.toString()}`);
 
   const filters = [
     { columnKey: "documentType", title: "Typ dokumentu" },
@@ -36,7 +21,15 @@ export default function ProcessesResultsPage() {
 
   const columnsWithClickHandler = useColumnsWithClickHandler();
 
+  if (isLoading) return <SkeletonComponent />;
+  if (error) return <>{error.message}</>;
+  if (!processes) return null;
+
   return (
-        <DataTable columns={columnsWithClickHandler} data={processes} filters={filters} />
+    <DataTable
+      columns={columnsWithClickHandler}
+      data={processes.results}
+      filters={filters}
+    />
   );
 }

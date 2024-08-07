@@ -41,6 +41,8 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile.nextjs
+    volumes:
+      - media_volume:/app/public/media
     depends_on:
       - web
 
