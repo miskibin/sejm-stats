@@ -6,7 +6,7 @@ from sejm_app.views.handlers import Error413View
 from .views import *
 
 urlpatterns = [
-    path("", HomeView.as_view(), name="home"),
+    # path("", HomeView.as_view(), name="home"),
     # path(
     #     "last-update/",
     #     cache_page(60 * 15)(LastUpdateView.as_view()),
@@ -63,7 +63,7 @@ urlpatterns = [
     #     ProcessJSONListView.as_view(),
     #     name="api_processes",
     # ),
-    path("update/", UpdateView.as_view(), name="update"),
+    path("api/update/", UpdateView.as_view(), name="update"),
     # path(
     #     "process/<int:pk>/",
     #     ProcessDetailView.as_view(),
