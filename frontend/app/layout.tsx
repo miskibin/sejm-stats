@@ -123,7 +123,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           >
             <div className="flex overflow-hidden bg-neutral-50 dark:bg-neutral-700">
               {/* Sidebar for larger screens */}
-              <div className="hidden md:flex">
+              <div className="hidden lg:flex">
                 <Sidebar
                   menuItems={menuItems}
                   isOpen={sidebarOpen}
@@ -132,7 +132,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               </div>
               {/* Sidebar for mobile, shown when sidebarOpen is true */}
               <div
-                className={`md:hidden fixed inset-0 z-50 ${
+                className={`lg:hidden fixed inset-0 z-50 ${
                   sidebarOpen ? "block" : "hidden"
                 }`}
               >
@@ -152,7 +152,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               <div className="flex flex-col flex-1 overflow-hidden ">
                 <Navbar>
                   <button
-                    className="md:hidden p-2"
+                    className="lg:hidden p-2"
                     onClick={() => setSidebarOpen(!sidebarOpen)}
                     aria-label="Toggle sidebar"
                   >
