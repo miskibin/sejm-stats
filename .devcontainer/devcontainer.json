@@ -1,6 +1,6 @@
 {
     "name": "transparlament",
-    "workspaceFolder": "/code",
+    "workspaceFolder": "/code/src",
     "dockerComposeFile": [
         "../docker-compose-dev.yml"
     ],

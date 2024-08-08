@@ -5,6 +5,7 @@ import { SkeletonComponent } from "@/components/ui/skeleton-page";
 import type { Metadata } from 'next'
 import { useFetchData } from "@/lib/api";
 import LoadableContainer from "@/components/loadableContainer";
+import LoginButton from "@/components/ui/loginButton";
 
 async function HomeContainer() {
   const { data, isLoading, error } = useFetchData<any>(`/home/`);
@@ -24,6 +25,8 @@ export default function Page() {
   return (
     <Suspense fallback={<SkeletonComponent />}>
       <HomeContainer />
+
     </Suspense>
   );
 }
+

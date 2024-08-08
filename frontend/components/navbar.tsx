@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { FaUser, FaSignOutAlt } from "react-icons/fa";
 import { ModeToggle } from "./ModeToggle"; // Adjust the import path as necessary
+import LoginButton from "./ui/loginButton";
 
 interface NavbarProps {
   children?: React.ReactNode;
@@ -27,13 +28,15 @@ const Navbar: React.FC<NavbarProps> = ({ children }) => {
             >
               <FaUser />
             </Link>
-            <Link
-              href="/logout"
+            <LoginButton />
+
+            {/* <Link
+              href="/login"
               className="text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white"
               aria-label="Logout"
-            >
               <FaSignOutAlt />
             </Link>
+            > */}
           </div>
         </div>
       </div>

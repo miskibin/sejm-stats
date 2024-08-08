@@ -25,6 +25,8 @@ import { SiDiscord } from "react-icons/si";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import Breadcrumbs from "@/components/breadcrumbs";
+import { Session } from "inspector";
+import { SessionProvider } from "next-auth/react";
 
 type LayoutProps = {
   children: ReactNode;
@@ -113,6 +115,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <SessionProvider>
       <html lang="pl" className="h-full ">
         <body className="h-min-screen">
           <ThemeProvider
@@ -170,6 +173,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           </ThemeProvider>
         </body>
       </html>
+      </SessionProvider>
     </QueryClientProvider>
   );
 };
