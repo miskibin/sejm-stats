@@ -32,7 +32,7 @@ const Sidebar: React.FC<SidebarProps> = ({ menuItems, isOpen, onClose }) => {
       {/* Sidebar */}
       <div
         className={`
-          fixed inset-y-0 left-0 z-30 w-64 bg-gray-800 dark:bg-gray-300 text-gray-100 dark:text-gray-900 p-4
+          fixed inset-y-0 left-0 z-30 w-64 bg-gray-800 dark:bg-gray-700 text-gray-100 dark:text-gray-100 p-4
           transform transition-transform duration-300 ease-in-out
           ${isOpen ? "translate-x-0" : "-translate-x-full"}
           md:translate-x-0 md:static
@@ -45,7 +45,7 @@ const Sidebar: React.FC<SidebarProps> = ({ menuItems, isOpen, onClose }) => {
           </Link>
           <button
             onClick={onClose}
-            className="md:hidden text-gray-300 dark:text-gray-600 hover:text-white dark:hover:text-gray-900"
+            className="md:hidden text-gray-300 dark:text-gray-100  hover:text-white dark:hover:text-gray-200"
             aria-label="Close sidebar"
           >
             <FaTimes size={24} />
@@ -58,8 +58,8 @@ const Sidebar: React.FC<SidebarProps> = ({ menuItems, isOpen, onClose }) => {
               href={item.href}
               className={`flex items-center space-x-2 py-2.5 px-4 rounded transition duration-200 ${
                 pathname === item.href
-                  ? "bg-blue-500 text-white dark:bg-blue-300 dark:text-gray-900"
-                  : "text-gray-300 dark:text-gray-700 hover:bg-gray-700 dark:hover:bg-gray-300 hover:text-white dark:hover:text-gray-900"
+                  ? "bg-blue-500 text-white dark:bg-blue-800 dark:text-gray-100"
+                  : "text-gray-300  hover:bg-gray-700 dark:hover:bg-gray-600 hover:text-white dark:hover:text-gray-900"
               }`}
               onClick={() => {
                 if (window.innerWidth < 768) {

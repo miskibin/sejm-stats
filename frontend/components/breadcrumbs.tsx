@@ -26,12 +26,12 @@ const Breadcrumbs: React.FC = () => {
   const pathSegments = pathname?.split("/").filter((segment) => segment !== "");
 
   return (
-    <nav className="flex px-5 py-3 text-gray-700" aria-label="Breadcrumb">
+    <nav className="flex px-5 py-3 text-gray-700 dark:text-gray-200" aria-label="Breadcrumb">
       <ol className="inline-flex items-center space-x-1 md:space-x-2">
         <li className="inline-flex items-center">
           <Link
             href="/"
-            className="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600"
+            className="inline-flex items-center text-sm font-medium  hover:text-blue-600"
           >
             <svg
               className="w-3 h-3 mr-2.5"
@@ -69,13 +69,13 @@ const Breadcrumbs: React.FC = () => {
                   />
                 </svg>
                 {isLast ? (
-                  <span className="ml-1 text-sm font-medium text-gray-500 md:ml-2">
+                  <span className="ml-1 text-sm font-medium text-gray-500 dark:text-gray-300 md:ml-2">
                     {polishName}
                   </span>
                 ) : (
                   <Link
                     href={href}
-                    className="ml-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ml-2"
+                    className="ml-1 text-sm font-medium  hover:text-blue-600 md:ml-2"
                   >
                     {polishName}
                   </Link>

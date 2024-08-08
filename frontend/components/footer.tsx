@@ -14,7 +14,7 @@ type FooterProps = {
 
 const Footer: React.FC<FooterProps> = ({ links }) => {
   return (
-    <footer className="bg-white border-t-1 rounded-t py-4">
+    <footer className="bg-white dark:bg-gray-800 border-t-1 rounded-t py-4 text-neutral-700 dark:text-neutral-100">
       <div className="max-w-9xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row justify-between items-center">
           <div className="flex items-center mb-4 md:mb-0">
@@ -25,12 +25,12 @@ const Footer: React.FC<FooterProps> = ({ links }) => {
               height={24}
               className="mr-2"
             />
-            <span className="text-sm text-neutral-700">
+            <span className="text-sm ">
               © 2024 Michał Skibiński. Wszelkie prawa zastrzeżone.
             </span>
           </div>
           <div className="flex items-center mb-4 md:mb-0">
-            <span className="text-sm text-neutral-600  mr-2">
+            <span className="text-sm   mr-2">
               Hosting sponsorowany przez
             </span>
             <Link

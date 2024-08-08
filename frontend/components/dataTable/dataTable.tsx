@@ -120,16 +120,16 @@ export function DataTable<TData, TValue>({
 
       <Card className="shadow-md overflow-hidden ">
         <CardContent className="p-0">
-          <div className="rounded-md border p-2 bg-white">
+          <div className="rounded-md border p-2 bg-white dark:bg-gray-700">
             <Table>
-              <TableHeader className="bg-gray-100">
+              <TableHeader className="bg-gray-100 dark:bg-gray-700">
                 {table.getHeaderGroups().map((headerGroup) => (
                   <TableRow key={headerGroup.id}>
                     {headerGroup.headers.map((header) => (
                       <TableHead
                         key={header.id}
                         colSpan={header.colSpan}
-                        className="font-bold text-gray-700"
+                        className="font-bold text-gray-600  dark:text-gray-100 dark:bg-gray-600"
                       >
                         {header.isPlaceholder
                           ? null
@@ -148,7 +148,7 @@ export function DataTable<TData, TValue>({
                     <TableRow
                       key={row.id}
                       data-state={row.getIsSelected() && "selected"}
-                      className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}
+                      className={index % 2 === 0 ? "bg-gray-50 dark:bg-gray-700" : "bg-white dark:bg-gray-800"}
                     >
                       {row.getVisibleCells().map((cell) => (
                         <TableCell key={cell.id}>

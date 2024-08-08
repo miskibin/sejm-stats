@@ -57,7 +57,7 @@ const Home: React.FC<HomeProps> = ({ latestVotings, allClubs, cards }) => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12 px-4 max-w-7xl mx-auto">
         <div>
-          <h2 className="text-4xl text-neutral-700 mb-4">Statystyki</h2>
+          <h2 className="text-4xl  mb-4">Statystyki</h2>
           <div className="grid grid-cols-2 gap-4">
             {cards.map((card, index) => (
               <StatCard key={index} {...card} />
@@ -66,7 +66,7 @@ const Home: React.FC<HomeProps> = ({ latestVotings, allClubs, cards }) => {
         </div>
 
         <div>
-          <h2 className="text-4xl text-neutral-700  mb-4">
+          <h2 className="text-4xl  mb-4">
             Ostatnie Głosowania
           </h2>
           <div className="space-y-4">
@@ -77,7 +77,7 @@ const Home: React.FC<HomeProps> = ({ latestVotings, allClubs, cards }) => {
         </div>
       </div>
       <div className=" max-w-7xl px-4 mx-auto">
-        <h1 className="text-5xl text-neutral-700  mt-8 mb-4">Aktualności</h1>
+        <h1 className="text-5xl   mt-8 mb-4">Aktualności</h1>
         <hr className="my-4" />
         <section
           id="articles"

@@ -15,7 +15,7 @@ const VotingCard: React.FC<VotingCardProps> = ({ voting }) => {
   return (
     <Link
       href={`/votings/${voting.id}`}
-      className="block bg-white shadow rounded-lg p-4 hover:shadow-md transition-shadow"
+      className="block bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-300 shadow rounded-lg p-4 hover:shadow-md transition-shadow"
     >
       <div className="flex items-center">
         <div className="flex-shrink-0 mr-4">
@@ -26,7 +26,7 @@ const VotingCard: React.FC<VotingCardProps> = ({ voting }) => {
           )}
         </div>
         <div className="flex-grow">
-          <p className="text-gray-800">{truncateWords(voting.title, 15)}</p>
+          <p className="">{truncateWords(voting.title, 15)}</p>
         </div>
         {voting.category === "WHOLE_PROJECT" && (
           <FaExclamationCircle className="text-blue-500 text-3xl" />

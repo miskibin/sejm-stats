@@ -21,9 +21,9 @@ export const EnvoyCard: React.FC<EnvoyCardProps> = ({
   numberOfVotes,
 }) => {
   return (
-    <Link href={`/envoy/${id}`} className="block">
+    <Link href={`/envoy/${id}`} className="block  ">
       <div
-        className={`flex bg-white rounded-lg shadow-md overflow-hidden transition-transform hover:scale-105 ${
+        className={`flex rounded-lg shadow-md overflow-hidden bg-gray-900 transition-transform hover:scale-105 ${
           numberOfVotes > 100000 ? "border-t-4 border-blue-500" : ""
         }`}
       >

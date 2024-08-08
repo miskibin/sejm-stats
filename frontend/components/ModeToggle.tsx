@@ -28,7 +28,7 @@ export function ModeToggle() {
         <DropdownMenuItem onClick={() => setTheme("light")}>
           Jasny
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("dark")} disabled>
+        <DropdownMenuItem onClick={() => setTheme("dark")} >
             Ciemny
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => setTheme("system")} disabled>
