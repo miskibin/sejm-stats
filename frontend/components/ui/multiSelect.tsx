@@ -47,7 +47,7 @@ export function MultiSelect({ options, selected, onChange, placeholder }: MultiS
       </div>
       <Command className="border rounded-md">
         <CommandInput placeholder={placeholder} className="text-sm sm:text-base" />
-        <CommandList className="max-h-[200px] sm:max-h-[300px] overflow-y-auto">
+        <CommandList className="max-h-[200px] sm:max-h-[300px] max-w-[83vw] overflow-y-auto">
           <CommandEmpty className="text-sm sm:text-base">Nie znaleziono wyników.</CommandEmpty>
           <CommandGroup>
             {options.map((option) => {

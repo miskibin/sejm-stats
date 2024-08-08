@@ -369,7 +369,7 @@ interface StepProps extends React.HTMLAttributes<HTMLLIElement> {
   onClickStep?: (step: number, setStep: (step: number) => void) => void
 }
 
-interface StepSharedProps extends StepProps {
+interface StepShablueProps extends StepProps {
   isLastStep?: boolean
   isCurrentStep?: boolean
   index?: number
@@ -410,7 +410,7 @@ const Step = React.forwardRef<HTMLLIElement, StepProps>(
 
     const hasVisited = isCurrentStep || isCompletedStep
 
-    const sharedProps = {
+    const shablueProps = {
       isLastStep,
       isCompletedStep,
       isCurrentStep,
@@ -433,12 +433,12 @@ const Step = React.forwardRef<HTMLLIElement, StepProps>(
       switch (isVertical) {
         case true:
           return (
-            <VerticalStep ref={ref} {...sharedProps}>
+            <VerticalStep ref={ref} {...shablueProps}>
               {children}
             </VerticalStep>
           )
         default:
-          return <HorizontalStep ref={ref} {...sharedProps} />
+          return <HorizontalStep ref={ref} {...shablueProps} />
       }
     }
 
@@ -448,7 +448,7 @@ const Step = React.forwardRef<HTMLLIElement, StepProps>(
 
 // <---------- VERTICAL STEP ---------->
 
-type VerticalStepProps = StepSharedProps & {
+type VerticalStepProps = StepShablueProps & {
   children?: React.ReactNode
 }
 
@@ -535,7 +535,7 @@ const VerticalStep = React.forwardRef<HTMLDivElement, VerticalStepProps>(
           verticalStepVariants({
             variant: variant?.includes("circle") ? "circle" : "line",
           }),
-          "data-[completed=true]:[&:not(:last-child)]:after:bg-red-500",
+          "data-[completed=true]:[&:not(:last-child)]:after:bg-blue-500",
           "data-[invalid=true]:[&:not(:last-child)]:after:bg-destructive",
           styles?.["vertical-step"]
         )}
@@ -556,7 +556,7 @@ const VerticalStep = React.forwardRef<HTMLDivElement, VerticalStepProps>(
             "stepper__vertical-step-container",
             "flex items-center",
             variant === "line" &&
-              "border-s-[3px] data-[active=true]:border-red-500 py-2 ps-3",
+              "border-s-[3px] data-[active=true]:border-blue-500 py-2 ps-3",
             styles?.["vertical-step-container"]
           )}
         >
@@ -608,7 +608,7 @@ const VerticalStep = React.forwardRef<HTMLDivElement, VerticalStepProps>(
 
 // <---------- HORIZONTAL STEP ---------->
 
-const HorizontalStep = React.forwardRef<HTMLDivElement, StepSharedProps>(
+const HorizontalStep = React.forwardRef<HTMLDivElement, StepShablueProps>(
   (props, ref) => {
     const {
       isError,
@@ -657,14 +657,14 @@ const HorizontalStep = React.forwardRef<HTMLDivElement, StepSharedProps>(
           "[&:not(:last-child)]:flex-1",
           "[&:not(:last-child)]:after:transition-all [&:not(:last-child)]:after:duration-200",
           "[&:not(:last-child)]:after:content-[''] [&:not(:last-child)]:after:h-[2px] [&:not(:last-child)]:after:bg-border",
-          "data-[completed=true]:[&:not(:last-child)]:after:bg-red-500",
+          "data-[completed=true]:[&:not(:last-child)]:after:bg-blue-500",
           "data-[invalid=true]:[&:not(:last-child)]:after:bg-destructive",
           variant === "circle-alt" &&
             "justify-start flex-col flex-1 [&:not(:last-child)]:after:relative [&:not(:last-child)]:after:order-[-1] [&:not(:last-child)]:after:start-[50%] [&:not(:last-child)]:after:end-[50%] [&:not(:last-child)]:after:top-[calc(var(--step-icon-size)/2)] [&:not(:last-child)]:after:w-[calc((100%-var(--step-icon-size))-(var(--step-gap)))]",
           variant === "circle" &&
             "[&:not(:last-child)]:after:flex-1 [&:not(:last-child)]:after:ms-[var(--step-gap)] [&:not(:last-child)]:after:me-[var(--step-gap)]",
           variant === "line" &&
-            "flex-col flex-1 border-t-[3px] data-[active=true]:border-red-500",
+            "flex-col flex-1 border-t-[3px] data-[active=true]:border-blue-500",
           styles?.["horizontal-step"]
         )}
         data-optional={steps[index || 0]?.optional}
@@ -714,7 +714,7 @@ const HorizontalStep = React.forwardRef<HTMLDivElement, StepSharedProps>(
 
 // <---------- STEP BUTTON CONTAINER ---------->
 
-type StepButtonContainerProps = StepSharedProps & {
+type StepButtonContainerProps = StepShablueProps & {
   children?: React.ReactNode
 }
 
@@ -750,8 +750,8 @@ const StepButtonContainer = ({
         "w-[var(--step-icon-size)] h-[var(--step-icon-size)]",
         "border-2 flex rounded-full justify-center items-center",
         "data-[clickable=true]:pointer-events-auto",
-        "data-[active=true]:bg-red-500 data-[active=true]:border-red-500 data-[active=true]:text-primary-foreground dark:data-[active=true]:text-primary",
-        "data-[current=true]:border-red-500 data-[current=true]:bg-secondary",
+        "data-[active=true]:bg-blue-500 data-[active=true]:border-blue-500 data-[active=true]:text-primary-foreground dark:data-[active=true]:text-primary",
+        "data-[current=true]:border-blue-500 data-[current=true]:bg-secondary",
         "data-[invalid=true]:!bg-destructive data-[invalid=true]:!border-destructive data-[invalid=true]:!text-primary-foreground dark:data-[invalid=true]:!text-primary",
         styles?.["step-button-container"]
       )}

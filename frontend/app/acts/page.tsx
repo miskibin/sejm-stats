@@ -99,9 +99,6 @@ export default function StepperDemo() {
           </Step>
           <Step label="Instytucje">
             <div className="my-4">
-              {isLoading ? (
-                <div>Ładowanie...</div>
-              ) : (
                 <MultiSelect
                   options={data.institutions.map(
                     (i) => `${i.name} (${i.count})`
@@ -110,7 +107,6 @@ export default function StepperDemo() {
                   onChange={setSelectedInstitutions}
                   placeholder="Wybierz instytucje"
                 />
-              )}
             </div>
             <Footer />
           </Step>

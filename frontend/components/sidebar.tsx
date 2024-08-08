@@ -58,7 +58,7 @@ const Sidebar: React.FC<SidebarProps> = ({ menuItems, isOpen, onClose }) => {
               href={item.href}
               className={`flex items-center space-x-2 py-2.5 px-4 rounded transition duration-200 ${
                 pathname === item.href
-                  ? "bg-blue-500 text-white dark:bg-blue-800 dark:text-gray-100"
+                  ? "bg-blue-500 text-white dark:bg-blue-500 dark:text-gray-100"
                   : "text-gray-300  hover:bg-gray-700 dark:hover:bg-gray-600 hover:text-white dark:hover:text-gray-900"
               }`}
               onClick={() => {

@@ -2,8 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+
+
 @layer base {
   :root {
+    --banner-image-start: rgba(255, 255, 255, 0.9);
+    --banner-image-end: rgba(255, 255, 255, 0.171);
     --background: 350 59% 100%;
     --foreground: 350 60% 4%;
     --muted: 350 27% 92%;
@@ -25,26 +29,37 @@
     --ring: 350 67% 58%;
     --radius: 0.5rem;
   }
-  /* hsl(217 19% 27% / 1) */
+
   .dark {
-    --background: 220 17% 17%; /* gray-800 */
+    --banner-image-start: rgba(18, 24, 39, 0.993);
+    --banner-image-end: rgba(37, 37, 37, 0.295);
+
+    --background: 220 17% 17%;
+    /* gray-800 */
     --foreground: 210 40% 98%;
-    --card: 220 17% 20%; /* Slightly lighter than background */
+    --card: 220 17% 20%;
+    /* Slightly lighter than background */
     --card-foreground: 210 40% 98%;
-    --popover: 220 17% 17%; /* Same as background */
+    --popover: 220 17% 17%;
+    /* Same as background */
     --popover-foreground: 210 40% 98%;
     --primary: 210 40% 98%;
     --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217 19% 27% ; /* gray-700 */
+    --secondary: 217 19% 27%;
+    /* gray-700 */
     --secondary-foreground: 210 40% 98%;
-    --muted: 217 19% 27% ; /* gray-700 */
+    --muted: 217 19% 27%;
+    /* gray-700 */
     --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217 19% 27% ; /* gray-700 */
+    --accent: 217 19% 27%;
+    /* gray-700 */
     --accent-foreground: 210 40% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
-    --border: 217 19% 27% ; /* gray-700 */
-    --input: 217 19% 27% ; /* gray-700 */
+    --border: 217 19% 27%;
+    /* gray-700 */
+    --input: 217 19% 27%;
+    /* gray-700 */
     --ring: 212.7 26.8% 83.9%;
   }
 }

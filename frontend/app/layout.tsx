@@ -117,7 +117,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         <body className="h-min-screen">
           <ThemeProvider
             attribute="class"
-            defaultTheme="light"
+            defaultTheme="system"
             enableSystem
             
           >

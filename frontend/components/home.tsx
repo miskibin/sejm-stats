@@ -20,10 +20,10 @@ const Home: React.FC<HomeProps> = ({ latestVotings, allClubs, cards }) => {
         className={`relative overflow-hidden ${styles.bgBanner} border-b border-gray-200 py-16 lg:px-12 sm:px-1 `}
       >
         <div className="mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <h1 className="text-6xl font-light text-gray-700 mb-4">
+          <h1 className="text-6xl font-light text-gray-700 dark:text-gray-100 mb-4">
             Parlament Pod Lupą
           </h1>
-          <p className="text-xl text-gray-500 mb-8">
+          <p className="text-xl text-gray-500 dark:text-gray-400 mb-8">
             <strong>Kompleksowy przegląd aktywności sejmowej</strong>
           </p>
           <div className="max-w-md mb-8">
@@ -58,7 +58,7 @@ const Home: React.FC<HomeProps> = ({ latestVotings, allClubs, cards }) => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12 px-4 max-w-7xl mx-auto">
         <div>
           <h2 className="text-4xl  mb-4">Statystyki</h2>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid md:grid-cols-2 grid-cols-1 gap-4">
             {cards.map((card, index) => (
               <StatCard key={index} {...card} />
             ))}

@@ -29,7 +29,7 @@ const EnvoyCard: React.FC<EnvoyCardProps> = ({
 
   return (
     <Card
-      className="hover:shadow-lg transition-shadow bg-neutral-50 border-2 overflow-hidden cursor-pointer"
+      className="hover:shadow-lg transition-shadow  overflow-hidden cursor-pointer"
       onClick={handleClick}
     >
       <CardContent className="p-0">
@@ -40,7 +40,7 @@ const EnvoyCard: React.FC<EnvoyCardProps> = ({
               alt={`${firstName} ${lastName}`}
               width={120}
               height={160}
-              className="object-cover h-full w-full"
+              className="object-cover h-full w-full bg-gray-100"
             />
           </div>
           <div className="flex-grow p-4">
@@ -51,7 +51,7 @@ const EnvoyCard: React.FC<EnvoyCardProps> = ({
                 alt="Club logo"
                 width={40}
                 height={40}
-                className="rounded-sm border-gray-200"
+                className="rounded-sm border-gray-200 p-1 bg-gray-100"
               />
             </div>
             <p className="text-sm text-gray-600 mb-1">{educationLevel}</p>
