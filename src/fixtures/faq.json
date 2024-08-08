@@ -38,13 +38,5 @@
             "url1": "https://patronite.pl/sejm-stats",
             "url2": null
         }
-    },
-    {
-        "model": "sejm_app.faq",
-        "pk": 5,
-        "fields": {
-            "question": "Dlaczego projekt nie jest otwarto-źródłowy?",
-            "answer": "Projekt Sejm Stats nie jest otwarto-źródłowy z kilku ważnych powodów:</br>Istnieje ryzyko, że kod źródłowy mógłby być wykorzystywany do celów zarobkowych przez osoby trzecie, co byłoby sprzeczne z pierwotnymi założeniami projektu. Dlatego zdecydowałem się na utrzymanie kodu jako zamkniętego źródła, aby zapobiec nieautoryzowanemu użyciu komercyjnemu.</br>Używam w projekcie biblioteki MDB Pro, której licencja ogranicza możliwości udostępniania kodu źródłowego aplikacji, która z niej korzysta. Zgodnie z warunkami licencyjnymi, rozpowszechnianie kodu, który bezpośrednio wykorzystuje elementy tej biblioteki, może być niezgodne z umową licencyjną.</br>Dodatkowo, aby zapewnić przejrzystość rozwoju projektu, wspierający na platformie Patronite mają dostęp do prywatnego repozytorium kodu. Dzięki temu mogą śledzić postępy i mieć realny wpływ na kierunek, w jakim rozwija się aplikacja, co jest formą podziękowania za ich wsparcie i zaangażowanie w projekt."
-        }
     }
 ]
