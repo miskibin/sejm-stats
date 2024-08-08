@@ -1,4 +1,5 @@
 "use client";
+import { ThemeProvider } from "@/components/theme-provider";
 import React, { ReactNode, useState } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Sidebar from "@/components/sidebar";
@@ -112,54 +113,61 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <html lang="en" className="h-full bg-neutral-50">
+      <html lang="pl" className="h-full ">
         <body className="h-min-screen">
-          <div className="flex overflow-hidden">
-            {/* Sidebar for larger screens */}
-            <div className="hidden md:flex">
-              <Sidebar
-                menuItems={menuItems}
-                isOpen={sidebarOpen}
-                onClose={() => setSidebarOpen(false)}
-              />
-            </div>
-            {/* Sidebar for mobile, shown when sidebarOpen is true */}
-            <div
-              className={`md:hidden fixed inset-0 z-50 ${
-                sidebarOpen ? "block" : "hidden"
-              }`}
-            >
-              <div
-                className="absolute inset-0 bg-gray-600 opacity-75"
-                onClick={() => setSidebarOpen(false)}
-              ></div>
-              <div className="absolute  left-0 w-64 bg-white">
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="light"
+            enableSystem
+            
+          >
+            <div className="flex overflow-hidden bg-neutral-50 dark:bg-neutral-700">
+              {/* Sidebar for larger screens */}
+              <div className="hidden md:flex">
                 <Sidebar
                   menuItems={menuItems}
                   isOpen={sidebarOpen}
                   onClose={() => setSidebarOpen(false)}
                 />
               </div>
-            </div>
+              {/* Sidebar for mobile, shown when sidebarOpen is true */}
+              <div
+                className={`md:hidden fixed inset-0 z-50 ${
+                  sidebarOpen ? "block" : "hidden"
+                }`}
+              >
+                <div
+                  className="absolute inset-0 bg-gray-600 opacity-75"
+                  onClick={() => setSidebarOpen(false)}
+                ></div>
+                <div className="absolute  left-0 w-64 bg-white">
+                  <Sidebar
+                    menuItems={menuItems}
+                    isOpen={sidebarOpen}
+                    onClose={() => setSidebarOpen(false)}
+                  />
+                </div>
+              </div>
 
-            <div className="flex flex-col flex-1 overflow-hidden ">
-              <Navbar>
-                <button
-                  className="md:hidden p-2"
-                  onClick={() => setSidebarOpen(!sidebarOpen)}
-                  aria-label="Toggle sidebar"
-                >
-                  <FaBars className="h-6 w-6" />
-                </button>
-              </Navbar>
+              <div className="flex flex-col flex-1 overflow-hidden ">
+                <Navbar>
+                  <button
+                    className="md:hidden p-2"
+                    onClick={() => setSidebarOpen(!sidebarOpen)}
+                    aria-label="Toggle sidebar"
+                  >
+                    <FaBars className="h-6 w-6" />
+                  </button>
+                </Navbar>
 
-              <main className="min-h-[85vh]   bg-neutral-100">
-                <Breadcrumbs />
-                {children}
-              </main>
-              <Footer links={footerLinks} />
+                <main className="min-h-[85vh]  dark:bg-gray-900  bg-neutral-100">
+                  <Breadcrumbs />
+                  {children}
+                </main>
+                <Footer links={footerLinks} />
+              </div>
             </div>
-          </div>
+          </ThemeProvider>
         </body>
       </html>
     </QueryClientProvider>
