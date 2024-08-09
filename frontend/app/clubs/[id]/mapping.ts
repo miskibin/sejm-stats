@@ -1,0 +1,43 @@
+export interface DistrictData {
+  districtName: string;
+  count: number;
+}
+
+export const districtToRegionMapping: Record<string, string> = {
+  Katowice: "pl-sl",
+  Legnica: "pl-ds",
+  Siedlce: "pl-mz",
+  Kielce: "pl-sk",
+  Chełm: "pl-lu",
+  Radom: "pl-mz",
+  Warszawa: "pl-mz",
+  Kalisz: "pl-wp",
+  Białystok: "pl-pd",
+  Lublin: "pl-lu",
+  Toruń: "pl-kp",
+  Bydgoszcz: "pl-kp",
+  Krosno: "pl-pk",
+  Poznań: "pl-wp",
+  Tarnów: "pl-ma",
+  Wrocław: "pl-ds",
+  Koszalin: "pl-zp",
+  Olsztyn: "pl-wn",
+  "Nowy Sącz": "pl-ma",
+  Łódź: "pl-ld",
+  Piła: "pl-wp",
+  Słupsk: "pl-pm",
+  Szczecin: "pl-zp",
+  Płock: "pl-mz",
+  Sieradz: "pl-ld",
+  Kraków: "pl-ma",
+  Wałbrzych: "pl-ds",
+  Częstochowa: "pl-sl",
+  Elbląg: "pl-wn",
+  "Zielona Góra": "pl-lb",
+  Gdańsk: "pl-pm",
+  Konin: "pl-wp",
+  "Piotrków Trybunalski": "pl-ld",
+  "Bielsko-Biała": "pl-sl",
+  Opole: "pl-op",
+  Rzeszów: "pl-pk",
+};

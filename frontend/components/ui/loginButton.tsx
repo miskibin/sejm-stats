@@ -16,16 +16,16 @@ import {
 export default function LoginButton() {
   const { data: session } = useSession();
 
-  if (session) {
+  if (session && session.user) {
     return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="flex items-center space-x-2">
             <Avatar className="h-8 w-8">
-              <AvatarImage src={session.user.image} alt={session.user.name} />
-              <AvatarFallback>{session.user.name[0]}</AvatarFallback>
+              <AvatarImage src={session?.user?.image ?? undefined} alt={session.user.name ?? ""} />
+              <AvatarFallback>{session.user.name?.[0] ?? '?'}</AvatarFallback>
             </Avatar>
-            <span className="text-sm font-medium">{session.user.name}</span>
+            <span className="text-sm font-medium">{session.user.name ?? 'User'}</span>
             <ChevronDown className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
