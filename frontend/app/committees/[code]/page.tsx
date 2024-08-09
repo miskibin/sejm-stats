@@ -114,7 +114,7 @@ const CommitteeDetail: React.FC = () => {
                   open={openSections[club]}
                   onOpenChange={() => toggleSection(club)}
                 >
-                  <CollapsibleTrigger className="flex items-center justify-between w-full p-2 bg-gray-100 rounded-md">
+                  <CollapsibleTrigger className="flex items-center justify-between w-full p-2 bg-gray-100 dark:bg-gray-700 rounded-md">
                     <span className="font-semibold">
                       {club} ({members.length})
                     </span>

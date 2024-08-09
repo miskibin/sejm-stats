@@ -93,6 +93,8 @@ const VotingDetail: React.FC = () => {
         text: "Głosy według płci",
       },
     },
+    maintainAspectRatio: false,
+    aspectRatio: 0.7,
     scales: {
       x: {
         stacked: false,
@@ -129,8 +131,23 @@ const VotingDetail: React.FC = () => {
     { accessorKey: "vote", header: "Głos" },
   ];
 
+  const clubVotesOptions = {
+    responsive: true,
+    plugins: {
+      legend: {
+        position: "top" as const,
+      },
+      title: {
+        display: true,
+        text: "Głosowanie ze względu na klub parlamentarny",
+      },
+    },
+    maintainAspectRatio: false,
+    aspectRatio: 0.7,
+  };
+
   return (
-    <div className="container mx-auto p-4 md:p-8 sm:p-1 sm:px-0 space-y-8">
+    <div className="container mx-auto p-4 md:p-8 sm:p-0 sm:px-0 space-y-8">
       <h1 className="text-3xl font-bold">{voting.topic}</h1>
 
       <Card className="md:col-span-2">
@@ -168,8 +185,8 @@ const VotingDetail: React.FC = () => {
               Głosowanie ze względu na klub parlamentarny
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <Bar data={clubVotesData} />
+          <CardContent className="min-h-64">
+            <Bar data={clubVotesData}  options={clubVotesOptions}/>
           </CardContent>
         </Card>
 
@@ -184,7 +201,7 @@ const VotingDetail: React.FC = () => {
             <Pie data={totalVotesData} />
           </CardContent>
         </Card>
-        <Card className="md:col-span-3">
+        <Card className="md:col-span-3 p-0">
           <CardHeader>
             <CardTitle className="flex items-center">
               <Users className="w-6 h-6 mr-2" />
@@ -202,7 +219,7 @@ const VotingDetail: React.FC = () => {
               Głosy według płci
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="min-h-64">
             <Bar data={genderVotesData} options={genderVotesOptions} />
           </CardContent>
         </Card>

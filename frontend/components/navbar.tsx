@@ -21,13 +21,7 @@ const Navbar: React.FC<NavbarProps> = ({ children }) => {
           <div className="flex items-center">{children}</div>
           <div className="flex items-center space-x-4">
             <ModeToggle />
-            <Link
-              href="/profile"
-              className="text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white"
-              aria-label="Profile"
-            >
-              <FaUser />
-            </Link>
+           
             <LoginButton />
 
             {/* <Link
