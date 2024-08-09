@@ -85,6 +85,7 @@ const DistrictMap: React.FC<{ districtData: DistrictData[] }> = ({
         if (chartRef.current && chartRef.current.chart) {
           chartRef.current.chart.update({
             chart: {
+              backgroundColor: undefined, 
               map: topology,
             },
             series: [
@@ -92,14 +93,14 @@ const DistrictMap: React.FC<{ districtData: DistrictData[] }> = ({
                 type: "map",
                 data: mapDistrictDataToHighcharts(districtData),
                 mapData: topology,
-                name: "Number of MPs",
+                name: "Ilość posłów z okręgu",
                 states: {
                   hover: {
                     color: "#BADA55",
                   },
                 },
                 dataLabels: {
-                  enabled: true,
+                  enabled: false,
                   format: "{point.name}",
                 },
               },
