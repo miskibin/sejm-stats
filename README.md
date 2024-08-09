@@ -65,7 +65,7 @@ C_FORCE_ROOT=true
 #### Frontend Development
 
 > [!Tip]  
-> 🤖 If you don't want to run the backend locally, you can use the production API. Set `NEXT_PUBLIC_API_URL=https://sejm-stats.pl/api` in `/frontend/.env` file.
+> 🤖 If you don't want to run the backend locally, you can use the production API. Set `NEXT_PUBLIC_API_URL=https://sejm-stats.pl/apiInt` in `/frontend/.env` file.
 
 1. [Install npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
 
