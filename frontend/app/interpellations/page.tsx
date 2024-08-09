@@ -20,6 +20,7 @@ async function InterpellationsTable() {
   const filters = [
     { columnKey: "member", title: "Autor" },
     { columnKey: "sentDate", title: "Data wysłania" },
+    { columnKey: "to", title: "Adresat" },
   ];
   return (
     <>
