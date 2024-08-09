@@ -16,7 +16,7 @@ const ClubsList: React.FC<ClubsListProps> = ({ clubs }) => {
         .map((club: Club) => (
           <li key={club.id}>
             <Link
-              href={`/clubs/${club.id}`}
+              href={`/clubs/${club.id.replace(/\./g, "")}`}
               className={`flex items-center p-2 rounded border transition-all duration-300 hover:shadow-md`}
               style={{
                 background: `linear-gradient(90deg, rgba(120,120,120,0.2) ${
