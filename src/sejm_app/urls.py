@@ -63,7 +63,7 @@ urlpatterns = [
     #     ProcessJSONListView.as_view(),
     #     name="api_processes",
     # ),
-    path("api/update/", UpdateView.as_view(), name="update"),
+    path("apiInt/update/", UpdateView.as_view(), name="update"),
     # path(
     #     "process/<int:pk>/",
     #     ProcessDetailView.as_view(),
