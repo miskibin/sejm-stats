@@ -34,8 +34,9 @@ import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
 import highchartsMap from "highcharts/modules/map";
 import proj4 from "proj4";
-import { DistrictData, districtToRegionMapping } from "./mapping";
 import Image from "next/image";
+import { DistrictMap } from "./mapping";
+import useChartDefaults from "@/utils/chartDefaults";
 // Initialize Highcharts modules
 if (typeof window !== "undefined") {
   highchartsMap(Highcharts);
@@ -53,134 +54,14 @@ ChartJS.register(
   LineElement
 );
 
-function mapDistrictDataToHighcharts(
-  districtData: DistrictData[]
-): [string, number][] {
-  const mappedData: Record<string, number> = {};
-
-  districtData.forEach((district) => {
-    const regionCode = districtToRegionMapping[district.districtName];
-    if (regionCode) {
-      mappedData[regionCode] = (mappedData[regionCode] || 0) + district.count;
-    }
-  });
-
-  return Object.entries(mappedData);
-}
-
-const DistrictMap: React.FC<{ districtData: DistrictData[] }> = ({
-  districtData,
-}) => {
-  const chartRef = useRef<HighchartsReact.RefObject>(null);
-
-  useEffect(() => {
-    const fetchTopology = async () => {
-      try {
-        const response = await fetch(
-          "https://code.highcharts.com/mapdata/countries/pl/pl-all.topo.json"
-        );
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const topology = await response.json();
-
-        if (chartRef.current && chartRef.current.chart) {
-          chartRef.current.chart.update({
-            chart: {
-              backgroundColor: undefined,
-              map: topology,
-            },
-            series: [
-              {
-                type: "map",
-                data: mapDistrictDataToHighcharts(districtData),
-                mapData: topology,
-                name: "Ilość posłów z okręgu",
-                states: {
-                  hover: {
-                    color: "#BADA55",
-                  },
-                },
-                dataLabels: {
-                  enabled: false,
-                  format: "{point.name}",
-                },
-              },
-            ],
-          });
-        }
-      } catch (error) {
-        console.error("Failed to fetch topology:", error);
-      }
-    };
-
-    fetchTopology();
-  }, [districtData]);
-
-  const options: Highcharts.Options = {
-    chart: {
-      map: undefined,
-    },
-    title: {
-      text: undefined,
-    },
-    mapNavigation: {
-      enabled: true,
-      buttonOptions: {
-        verticalAlign: "bottom",
-      },
-    },
-    colorAxis: {
-      min: 0,
-    },
-    series: [
-      {
-        type: "map",
-        name: "Number of MPs",
-        states: {
-          hover: {
-            color: "#BADA55",
-          },
-        },
-        dataLabels: {
-          enabled: true,
-          format: "{point.name}",
-        },
-        allAreas: true,
-        data: [],
-      },
-    ],
-  };
-
-  return (
-    <HighchartsReact
-      highcharts={Highcharts}
-      options={options}
-      constructorType={"mapChart"}
-      ref={chartRef}
-    />
-  );
-};
-
 const ClubDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>() || { id: "" };
   const { data: club, isLoading, error } = useFetchData<any>(`/clubs/${id}/`);
+  const chartDefaults = useChartDefaults();
 
   if (isLoading) return <SkeletonComponent />;
   if (error) return <div>Error: {error.message}</div>;
   if (!club) return null;
-
-  const chartColors = ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF"];
-
-  const commonOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        position: "top" as const,
-      },
-    },
-  };
 
   const ageDistributionData = {
     labels: Object.keys(club.age_distribution),
@@ -188,7 +69,7 @@ const ClubDetail: React.FC = () => {
       {
         label: "Liczba posłów",
         data: Object.values(club.age_distribution),
-        backgroundColor: chartColors,
+        backgroundColor: chartDefaults.colors.background,
       },
     ],
   };
@@ -201,7 +82,7 @@ const ClubDetail: React.FC = () => {
           club.sex_distribution.find((item: any) => !item.isFemale)?.count || 0,
           club.sex_distribution.find((item: any) => item.isFemale)?.count || 0,
         ],
-        backgroundColor: chartColors,
+        backgroundColor: chartDefaults.colors.background,
       },
     ],
   };
@@ -211,7 +92,7 @@ const ClubDetail: React.FC = () => {
     datasets: [
       {
         data: club.education_distribution.map((item: any) => item.count),
-        backgroundColor: chartColors,
+        backgroundColor: chartDefaults.colors.background,
       },
     ],
   };
@@ -224,8 +105,8 @@ const ClubDetail: React.FC = () => {
       {
         label: "Interpelacje",
         data: club.interpellations_per_month.map((item: any) => item.count),
-        borderColor: chartColors[0],
-        backgroundColor: `${chartColors[0]}33`,
+        borderColor: chartDefaults.colors.border[0],
+        backgroundColor: `${chartDefaults.colors.border[0]}`,
         fill: true,
         tension: 0.4,
       },
@@ -242,7 +123,7 @@ const ClubDetail: React.FC = () => {
           club.voting_stats.no,
           club.voting_stats.abstain,
         ],
-        backgroundColor: chartColors.slice(0, 3),
+        backgroundColor: chartDefaults.colors.border.slice(0, 3),
       },
     ],
   };
@@ -344,17 +225,8 @@ const ClubDetail: React.FC = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="h-[300px]">
-            <Bar
-              data={ageDistributionData}
-              options={{
-                ...commonOptions,
-                scales: {
-                  y: {
-                    beginAtZero: true,
-                  },
-                },
-              }}
-            />
+            {/* @ts-ignore */}
+            <Bar data={ageDistributionData} options={chartDefaults} />
           </CardContent>
         </Card>
 
@@ -366,7 +238,8 @@ const ClubDetail: React.FC = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="h-[300px]">
-            <Pie data={sexDistributionData} options={commonOptions} />
+            {/* @ts-ignore */}
+            <Pie data={sexDistributionData} options={chartDefaults} />
           </CardContent>
         </Card>
 
@@ -378,7 +251,8 @@ const ClubDetail: React.FC = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="h-[300px]">
-            <Pie data={educationDistributionData} options={commonOptions} />
+            {/* @ts-ignore */}
+            <Pie data={educationDistributionData} options={chartDefaults} />
           </CardContent>
         </Card>
 
@@ -390,17 +264,8 @@ const ClubDetail: React.FC = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="h-[300px]">
-            <Line
-              data={interpellationsData}
-              options={{
-                ...commonOptions,
-                scales: {
-                  y: {
-                    beginAtZero: true,
-                  },
-                },
-              }}
-            />
+            {/* @ts-ignore */}
+            <Line data={interpellationsData} options={chartDefaults} />
           </CardContent>
         </Card>
       </div>
@@ -425,17 +290,8 @@ const ClubDetail: React.FC = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="h-[400px]">
-            <Bar
-              data={votingStatsData}
-              options={{
-                ...commonOptions,
-                scales: {
-                  y: {
-                    beginAtZero: true,
-                  },
-                },
-              }}
-            />
+            {/* @ts-ignore */}
+            <Bar data={votingStatsData} options={chartDefaults} />
           </CardContent>
         </Card>
       </div>

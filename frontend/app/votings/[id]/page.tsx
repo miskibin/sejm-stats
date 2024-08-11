@@ -27,6 +27,7 @@ import {
 import { DataTable } from "@/components/dataTable/dataTable";
 import { useFetchData } from "@/lib/api";
 import { SkeletonComponent } from "@/components/ui/skeleton-page";
+import useChartDefaults from "@/utils/chartDefaults";
 
 ChartJS.register(
   ArcElement,
@@ -38,6 +39,7 @@ ChartJS.register(
 );
 
 const VotingDetail: React.FC = () => {
+  const chardDefaults = useChartDefaults();
   const { id } = useParams<{ id: string }>() || { id: "" };
   const {
     data: voting,
@@ -54,7 +56,7 @@ const VotingDetail: React.FC = () => {
     datasets: [
       {
         data: voting.total_data,
-        backgroundColor: ["#10B981", "#EF4444", "#F59E0B"],
+        backgroundColor: chardDefaults.colors.background,
       },
     ],
   };
@@ -68,7 +70,8 @@ const VotingDetail: React.FC = () => {
           voting.sex_votes.male.no,
           voting.sex_votes.male.abstain,
         ],
-        backgroundColor: "#3B82F6",
+    backgroundColor: chardDefaults.colors.background[0],
+
       },
       {
         label: "Kobiety",
@@ -77,33 +80,11 @@ const VotingDetail: React.FC = () => {
           voting.sex_votes.female.no,
           voting.sex_votes.female.abstain,
         ],
-        backgroundColor: "#EC4899",
+        backgroundColor: chardDefaults.colors.background[1],
       },
     ],
   };
 
-  const genderVotesOptions = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: "top" as const,
-      },
-      title: {
-        display: true,
-        text: "Głosy według płci",
-      },
-    },
-    maintainAspectRatio: false,
-    aspectRatio: 0.7,
-    scales: {
-      x: {
-        stacked: false,
-      },
-      y: {
-        stacked: false,
-      },
-    },
-  };
 
   const clubVotesData = {
     labels: voting.club_votes.map((cv: any) => cv.club.id),
@@ -220,7 +201,8 @@ const VotingDetail: React.FC = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="min-h-64">
-            <Bar data={genderVotesData} options={genderVotesOptions} />
+                 {/* @ts-ignore */}
+            <Bar data={genderVotesData} options={chardDefaults} />
           </CardContent>
         </Card>
       </div>

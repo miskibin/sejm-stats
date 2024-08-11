@@ -94,6 +94,7 @@ class ClubDetailSerializer(serializers.ModelSerializer):
             )
             .values("receiptDate__year", "receiptDate__month")
             .annotate(count=Count("id"))
+            .order_by("receiptDate__year", "receiptDate__month")
         )
 
     def get_total_votes_number(self, obj):
