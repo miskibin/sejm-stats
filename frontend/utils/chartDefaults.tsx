@@ -27,10 +27,10 @@ const useChartDefaults = (): ChartDefaults => {
     light: {
       background: [
         '#f56565', // red-500
-        '#ed8936', // orange-500
-        '#ecc94b', // yellow-500
         '#48bb78', // green-500
+        '#ed8936', // orange-500
         '#38b2ac', // teal-500
+        '#ecc94b', // yellow-500
         '#4299e1', // blue-500
         '#667eea', // indigo-500
         '#9f7aea', // purple-500
@@ -38,10 +38,10 @@ const useChartDefaults = (): ChartDefaults => {
       ],
       border: [
         '#e53e3e', // red-600
-        '#dd6b20', // orange-600
-        '#d69e2e', // yellow-600
         '#38a169', // green-600
+        '#dd6b20', // orange-600
         '#319795', // teal-600
+        '#d69e2e', // yellow-600
         '#3182ce', // blue-600
         '#5a67d8', // indigo-600
         '#805ad5', // purple-600
@@ -53,10 +53,10 @@ const useChartDefaults = (): ChartDefaults => {
     dark: {
       background: [
         '#fc8181', // red-400
-        '#f6ad55', // orange-400
-        '#f6e05e', // yellow-400
         '#68d391', // green-400
+        '#f6ad55', // orange-400
         '#4fd1c5', // teal-400
+        '#f6e05e', // yellow-400
         '#63b3ed', // blue-400
         '#7f9cf5', // indigo-400
         '#b794f4', // purple-400
@@ -81,9 +81,9 @@ const useChartDefaults = (): ChartDefaults => {
   const currentColors = isDarkMode ? colors.dark : colors.light;
 
   return {
-    aspectRatio: 2,
+    aspectRatio: 0.9,
     responsive: true,
-    maintainAspectRatio: true,
+    maintainAspectRatio: false,
     plugins: {
       legend: {
         position: 'top',
@@ -98,17 +98,13 @@ const useChartDefaults = (): ChartDefaults => {
     },
     scales: {
       x: {
-        grid: {
-          color: currentColors.grid,
-        },
+      
         ticks: {
           color: currentColors.text,
         },
       },
       y: {
-        grid: {
-          color: currentColors.grid,
-        },
+       
         ticks: {
           color: currentColors.text,
         },
