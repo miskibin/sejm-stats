@@ -49,7 +49,7 @@ CSRF_TRUSTED_ORIGINS = [
     "http://127.0.0.1",
     "https://sejm.aleksander-kowalski.pl",
 ]
-API_URL_ROOT = "/api"
+API_URL_ROOT = "/apiInt"
 
 # Application definition
 
@@ -73,7 +73,6 @@ INSTALLED_APPS = [
     "ckeditor",
     "rolepermissions",
     "api.apps.ApiConfig",
-    "accounts.apps.AccountsConfig",
     "sejm_app.apps.SejmAppConfig",
     "community_app.apps.ArticlesAppConfig",
     "eli_app.apps.EliAppConfig",
@@ -156,11 +155,7 @@ AUTH_PASSWORD_VALIDATORS = [
 LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "home"
 
-AUTH_USER_MODEL = "accounts.User"
-AUTHENTICATION_BACKENDS = [
-    "django.contrib.auth.backends.ModelBackend",
-]
-ROLEPERMISSIONS_MODULE = "core.roles"
+
 REST_FRAMEWORK = {
     "DEFAULT_PARSER_CLASSES": [
         "rest_framework.parsers.JSONParser",
@@ -238,9 +233,6 @@ EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = "sejmstats@gmail.com"  # Your Gmail address
-EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD")
-EMAIL_FILE_PATH = "/tmp/app-messages"  # change this to a proper directory
-EMAIL_USER_ACTIVATION_REQUIRED = True  # OVH blocks sending emails
 
 
 # CELERY
@@ -277,35 +269,14 @@ LOGGING = {
             "class": "logging.StreamHandler",
             "formatter": "simple",
         },
-        "mail_admins": {
-            "level": "ERROR",
-            "class": "django.utils.log.AdminEmailHandler",
-            "email_backend": "django.core.mail.backends.filebased.EmailBackend",
-        },
     },
     "loggers": {
         "django": {
             "handlers": ["console"],
             "propagate": True,
         },
-        "django.request": {
-            "handlers": ["mail_admins"],
-            "level": "ERROR",
-            "propagate": False,
-        },
     },
 }
-
-
-class COLORS:
-    PRIMARY = "#3B71CA"
-    SECONDARY = "#9FA6B2"
-    SUCCESS = "#14A44D"
-    DANGER = "#DC4C64"
-    WARNING = "#E4A11B"
-    INFO = "#54B4D3"
-    LIGHT = "#FBFBFB"
-    DARK = "#332D2D"
 
 
 SILENCED_SYSTEM_CHECKS = ["ckeditor.W001"]

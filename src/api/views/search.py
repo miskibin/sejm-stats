@@ -11,7 +11,8 @@ from rest_framework.response import Response
 
 from api.serializers import *
 from eli_app.models import Act
-from sejm_app.models import CommitteeSitting, Envoy, Interpellation, PrintModel, Process
+from sejm_app.models import (CommitteeSitting, Envoy, Interpellation,
+                             PrintModel, Process)
 
 
 class SearchViewSet(viewsets.ViewSet):

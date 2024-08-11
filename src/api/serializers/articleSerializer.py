@@ -1,8 +1,5 @@
-from django.template.defaultfilters import truncatechars
-from rest_framework import serializers
-
 from community_app.models import Article
-from sejm_app.utils import format_human_friendly_date
+from rest_framework import serializers
 
 
 class ArticleSerializer(serializers.ModelSerializer):

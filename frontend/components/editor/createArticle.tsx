@@ -20,13 +20,22 @@ import {
 import { withHistory } from "slate-history";
 import isHotkey from "is-hotkey";
 import { Button } from "@/components/ui/button";
-import { useFetchData } from "@/lib/api";
+import { useFetchData, useSendArticle } from "@/lib/api";
 import { Portal } from "@/components/ui/portal";
 import { CustomEditor, HOTKEYS, CustomElement } from "./types";
 import { withImages, withMentions } from "./plugins";
 import { Element, Leaf } from "./elements";
 import { Toolbar } from "./toolbar";
 import { toggleMark, insertMention } from "./utils";
+
+const initialValue: Descendant[] = [
+  {
+    type: "paragraph",
+    children: [
+      { text: "Zacznij pisać swój artykuł i użyj @ do wzmianki..." },
+    ],
+  },
+];
 
 const CreateArticle: React.FC = () => {
   const [editor] = useState(() =>
@@ -39,8 +48,10 @@ const CreateArticle: React.FC = () => {
   const [mentionItems, setMentionItems] = useState<string[]>([]);
   const [title, setTitle] = useState("");
   const [image, setImage] = useState<string | null>(null);
-
-  const { data, isLoading, error } = useFetchData<any>("/create-article/");
+  const [content, setContent] = useState<Descendant[]>(initialValue);
+  
+  const { data, isLoading, error } = useFetchData<any>("/article-context/");
+  const sendArticleMutation = useSendArticle();
 
   useEffect(() => {
     if (data) {
@@ -115,15 +126,6 @@ const CreateArticle: React.FC = () => {
     []
   );
 
-  const initialValue: Descendant[] = [
-    {
-      type: "paragraph",
-      children: [
-        { text: "Zacznij pisać swój artykuł i użyj @ do wzmianki..." },
-      ],
-    },
-  ];
-
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -136,6 +138,21 @@ const CreateArticle: React.FC = () => {
     }
   };
 
+  const handleSaveArticle = async () => {
+    const articleData = {
+      title,
+      content: JSON.stringify(content),
+      image,
+    };
+
+    try {
+      await sendArticleMutation.mutateAsync(articleData);
+      console.log("Article saved successfully");
+    } catch (error) {
+      console.error("Failed to save article:", error);
+    }
+  };
+
   if (isLoading) return <div className="text-center">Ładowanie...</div>;
   if (error) return <div>Błąd: {error.message}</div>;
 
@@ -143,7 +160,6 @@ const CreateArticle: React.FC = () => {
     <div className="max-w-4xl mx-auto my-10 p-6 bg-white rounded-lg shadow-lg">
       <h1 className="text-3xl font-bold mb-6">Utwórz artykuł</h1>
 
-      {/* Pole tytułu */}
       <div className="mb-4">
         <input
           type="text"
@@ -154,7 +170,6 @@ const CreateArticle: React.FC = () => {
         />
       </div>
 
-      {/* Pole obrazu */}
       <div className="mb-6">
         <h3 className="text-lg font-semibold mb-2">Grafika</h3>
         <div className="p-4 border-2 border-dashed border-gray-300 rounded-lg">
@@ -170,7 +185,7 @@ const CreateArticle: React.FC = () => {
         file:bg-blue-50 file:text-blue-700
         hover:file:bg-blue-100"
           />
-          {image ? (
+          {image && (
             <div className="mt-4 relative">
               <Image
                 src={image}
@@ -187,15 +202,14 @@ const CreateArticle: React.FC = () => {
                 X
               </button>
             </div>
-          ) : (
-            <></>
           )}
         </div>
       </div>
       <Slate
         editor={editor}
         initialValue={initialValue}
-        onChange={() => {
+        onChange={value => {
+          setContent(value);
           const { selection } = editor;
 
           if (selection && Range.isCollapsed(selection)) {
@@ -203,8 +217,7 @@ const CreateArticle: React.FC = () => {
             const wordBefore = Editor.before(editor, start, { unit: "word" });
             const before = wordBefore && Editor.before(editor, wordBefore);
             const beforeRange = before && Editor.range(editor, before, start);
-            const beforeText =
-              beforeRange && Editor.string(editor, beforeRange);
+            const beforeText = beforeRange && Editor.string(editor, beforeRange);
             const beforeMatch = beforeText && beforeText.match(/^@(\w+)$/);
             const after = Editor.after(editor, start);
             const afterRange = Editor.range(editor, start, after);
@@ -261,10 +274,20 @@ const CreateArticle: React.FC = () => {
         )}
       </Slate>
       <div className="mt-6">
-        <Button className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-          Opublikuj artykuł
+        <Button 
+          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          onClick={handleSaveArticle}
+          disabled={sendArticleMutation.isLoading}
+        >
+          {sendArticleMutation.isLoading ? 'Zapisywanie...' : 'Opublikuj artykuł'}
         </Button>
       </div>
+      
+      {sendArticleMutation.isError && (
+        <div className="mt-4 text-red-500">
+          Błąd podczas zapisywania artykułu. Spróbuj ponownie.
+        </div>
+      )}
     </div>
   );
 };
