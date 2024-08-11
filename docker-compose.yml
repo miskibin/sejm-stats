@@ -1,4 +1,4 @@
-version: "3"
+version: "3.8"
 
 services:
   db:
@@ -9,11 +9,12 @@ services:
       - postgres_data:/db/data
     env_file:
       - .env
+    deploy:
+      placement:
+        constraints: [node.role == manager]
 
   web:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: your-registry/web:${TAG:-latest}
     command:
       [
         "gunicorn",
@@ -27,8 +28,6 @@ services:
         "--capture-output",
       ]
     volumes:
-      - ./src:/code/src
-      - ./src/manage.py:/code/manage.py
       - static_volume:/code/static
       - media_volume:/code/media
     depends_on:
@@ -36,15 +35,27 @@ services:
       - redis
     env_file:
       - .env
+    deploy:
+      replicas: 2
+      update_config:
+        parallelism: 1
+        order: start-first
+    ports:
+      - "${BACKEND_PORT_PLACEHOLDER}:8000"
 
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile.nextjs
+    image: your-registry/frontend:${TAG:-latest}
     volumes:
       - media_volume:/app/public/media
     depends_on:
       - web
+    deploy:
+      replicas: 2
+      update_config:
+        parallelism: 1
+        order: start-first
+    ports:
+      - "${FRONTEND_PORT_PLACEHOLDER}:3000"
 
   nginx:
     image: nginx:latest
@@ -60,18 +71,20 @@ services:
     depends_on:
       - web
       - frontend
+    deploy:
+      placement:
+        constraints: [node.role == manager]
 
   redis:
     image: redis:latest
+    deploy:
+      placement:
+        constraints: [node.role == manager]
 
   celery:
-    build:
-      context: .
-      dockerfile: Dockerfile.celery
+    image: your-registry/celery:${TAG:-latest}
     command: ["celery", "-A", "core", "worker", "-l", "INFO"]
     volumes:
-      - ./src:/code/src
-      - ./src/manage.py:/code/manage.py
       - media_volume:/code/media
     depends_on:
       - db
@@ -81,7 +94,14 @@ services:
       - C_FORCE_ROOT=true
     env_file:
       - .env
-    mem_limit: 2g
+    deploy:
+      replicas: 2
+      update_config:
+        parallelism: 1
+        order: start-first
+      resources:
+        limits:
+          memory: 2g
 
   certbot:
     image: certbot/dns-cloudflare
@@ -89,9 +109,16 @@ services:
       - certbot_conf:/etc/letsencrypt
       - ./cloudflare.ini:/etc/cloudflare/cloudflare.ini:ro
     command: certonly --dns-cloudflare --dns-cloudflare-credentials /etc/cloudflare/cloudflare.ini -d sejm-stats.pl --email michalskibinski109@gmail.com --agree-tos --non-interactive --expand --dns-cloudflare-propagation-seconds 60
+    deploy:
+      placement:
+        constraints: [node.role == manager]
 
 volumes:
   postgres_data:
   static_volume:
   media_volume:
   certbot_conf:
+
+networks:
+  default:
+    driver: overlay
