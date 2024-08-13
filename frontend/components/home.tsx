@@ -47,7 +47,7 @@ const Home: React.FC<HomeProps> = ({ latestVotings, allClubs, cards }) => {
               <input
                 type="search"
                 className="form-input flex-grow rounded-l-lg p-2"
-                placeholder="Wpisz hasła odzielone przecinkami"
+                placeholder="Wpisz jakie kolwiek słowo"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
