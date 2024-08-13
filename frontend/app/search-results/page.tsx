@@ -92,7 +92,7 @@ const SearchResults: React.FC = () => {
       <Card className="mb-8">
         <CardHeader>
           <CardTitle className="text-3xl">
-            Wyniki wyszukiwania dla "{query}"
+            Wyniki wyszukiwania dla hasła:  {query}
           </CardTitle>
         </CardHeader>
         <CardContent>
