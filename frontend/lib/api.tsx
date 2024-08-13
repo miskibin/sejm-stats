@@ -3,6 +3,7 @@ import {
   QueryKey,
   UseQueryOptions,
   QueryClient,
+  useMutation,
 } from "@tanstack/react-query";
 
 export const queryClient = new QueryClient({
@@ -63,4 +64,32 @@ export async function fetchEnvoys(page: number = 1) {
   }
 
   return res.json();
+}
+export async function sendArticleToApi(articleData: {
+  title: string;
+  content: any;
+  image: string | null;
+}) {
+  console.log("Sending article to API", articleData);
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/article-create`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      // Add any necessary authentication headers here
+    },
+    body: JSON.stringify(articleData),
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to save article');
+  }
+
+  return response.json();
+}
+
+// Hook for using the sendArticleToApi function with react-query
+export function useSendArticle() {
+  return useMutation({
+    mutationFn: sendArticleToApi,
+  });
 }

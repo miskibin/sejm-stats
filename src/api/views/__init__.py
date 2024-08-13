@@ -11,3 +11,4 @@ from .interpellations import InterpellationViewSet
 from .processes import ProcessesMetaViewSet, ProcessViewSet
 from .search import SearchViewSet
 from .votings import VotingsMetaViewSet, VotingViewSet
+from .article import ArticleCreateView

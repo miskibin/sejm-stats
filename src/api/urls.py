@@ -22,10 +22,11 @@ router.register(r"processes", views.ProcessViewSet, basename="processes")
 router.register(r"processes-meta", views.ProcessesMetaViewSet, basename="process-meta")
 router.register(r"home", views.HomeViewSet, basename="home")
 router.register(
-    r"create-article", views.ArticleContextViewSet, basename="create-article"
+    r"article-context", views.ArticleContextViewSet, basename="article-context"
 )
 app_name = "api"
 
 urlpatterns = [
     path("", include(router.urls)),
+    path("article-create", views.ArticleCreateView.as_view(), name="article-create"),
 ]

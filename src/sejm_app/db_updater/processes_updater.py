@@ -9,9 +9,7 @@ from django.utils.timezone import make_aware
 from loguru import logger
 
 from eli_app.libs.pdf_parser import (  # Ensure this import is corrected based on your actual module structure
-    get_pages_number,
-    get_pdf_authors_and_page_num,
-)
+    get_pages_number, get_pdf_authors_and_page_num)
 from sejm_app.models import Club, Envoy, Process, Stage, Voting
 from sejm_app.models.print_model import PrintModel
 from sejm_app.models.process import CreatedByEnum

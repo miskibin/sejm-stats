@@ -1,6 +1,6 @@
-from django.db.models import Count, Prefetch
-from rest_framework.viewsets import ReadOnlyModelViewSet
 from django.db.models import Count, Exists, OuterRef, Prefetch, Q
+from rest_framework.viewsets import ReadOnlyModelViewSet
+
 from api.serializers.ClubDetailSerializer import ClubDetailSerializer
 from api.serializers.list_serializers import ClubListSerializer
 from sejm_app.models.club import Club

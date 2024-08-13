@@ -1,4 +1,4 @@
-"use client";
+"use client"
 import { useEffect, useState, useMemo, useCallback, useRef } from "react";
 import LoadableContainer from "@/components/loadableContainer";
 import { Input } from "@/components/ui/input";
@@ -9,10 +9,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 import EnvoyCard from "./envoyCard";
 import { Envoy } from "@/lib/types";
-import { Skeleton } from "@/components/ui/skeleton";
-import { SkeletonComponent } from "@/components/ui/skeleton-page";
 import Spinner from "@/components/ui/spinner";
 
 interface ApiResponse {
@@ -30,7 +29,6 @@ export default function EnvoysPage() {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
-  const [isSearching, setIsSearching] = useState(false);
   const [search, setSearch] = useState("");
   const [educationFilter, setEducationFilter] = useState("all");
   const [clubFilter, setClubFilter] = useState("all");
@@ -48,24 +46,16 @@ export default function EnvoysPage() {
       if (isLoading) return;
       if (observer.current) observer.current.disconnect();
       observer.current = new IntersectionObserver((entries) => {
-        if (
-          entries[0].isIntersecting &&
-          hasMore &&
-          !isSearching &&
-          !allEnvoysLoadedRef.current
-        ) {
+        if (entries[0].isIntersecting && hasMore && !allEnvoysLoadedRef.current) {
           setPage((prevPage) => prevPage + 1);
         }
       });
       if (node) observer.current.observe(node);
     },
-    [isLoading, hasMore, isSearching]
+    [isLoading, hasMore]
   );
 
-  const fetchEnvoys = async (
-    pageNum: number,
-    pageSize: number
-  ): Promise<ApiResponse> => {
+  const fetchEnvoys = async (pageNum: number, pageSize: number): Promise<ApiResponse> => {
     setIsLoading(true);
     try {
       const response = await fetch(
@@ -98,14 +88,15 @@ export default function EnvoysPage() {
       return;
     }
 
-    const pageSize = isSearching ? totalCount || 500 : PAGE_SIZE;
+    const isFiltering = educationFilter !== "all" || clubFilter !== "all" || search !== "";
+    const pageSize = isFiltering ? 1000 : PAGE_SIZE; // Fetch all when filtering
     const data = await fetchEnvoys(1, pageSize);
 
     setEnvoys(data.results);
     setTotalCount(data.count);
-    setHasMore(!!data.next);
+    setHasMore(!isFiltering && !!data.next);
 
-    if (isSearching || data.results.length === data.count) {
+    if (isFiltering || data.results.length === data.count) {
       cacheRef.current = {
         data: data.results,
         timestamp: Date.now(),
@@ -120,7 +111,7 @@ export default function EnvoysPage() {
   }, []);
 
   useEffect(() => {
-    if (!isSearching && page > 1 && !allEnvoysLoadedRef.current) {
+    if (page > 1 && !allEnvoysLoadedRef.current) {
       fetchEnvoys(page, PAGE_SIZE).then((data) => {
         setEnvoys((prev) => {
           const newEnvoys = [...prev, ...data.results];
@@ -137,35 +128,27 @@ export default function EnvoysPage() {
         setHasMore(!!data.next);
       });
     }
-  }, [page, isSearching]);
+  }, [page]);
 
   useEffect(() => {
-    const shouldSearch =
-      !!search || educationFilter !== "all" || clubFilter !== "all";
-    setIsSearching(shouldSearch);
-    if (shouldSearch) {
-      loadEnvoys(true); // Force refresh when searching
-    } else {
-      setPage(1);
-      loadEnvoys();
-    }
+    setPage(1);
+    loadEnvoys(true); // Force refresh when filters change
   }, [search, educationFilter, clubFilter]);
 
   const educationLevels = useMemo(() => {
     return [
-      "all",
-      ...Array.from(new Set(envoys.map((envoy) => envoy.educationLevel))),
+      { value: "all", label: "Wszystkie" },
+      ...Array.from(new Set(envoys.map((envoy) => envoy.educationLevel))).map(
+        (level) => ({ value: level, label: level })
+      ),
     ];
   }, [envoys]);
 
   const clubs = useMemo(() => {
     return [
-      "all",
-      ...new Set(
-        envoys.map((envoy) => {
-          const clubName = envoy.club;
-          return clubName || "Unknown";
-        })
+      { value: "all", label: "Wszystkie" },
+      ...Array.from(new Set(envoys.map((envoy) => envoy.club || "Unknown"))).map(
+        (club) => ({ value: club, label: club })
       ),
     ];
   }, [envoys]);
@@ -178,7 +161,7 @@ export default function EnvoysPage() {
       const matchesEducation =
         educationFilter === "all" || envoy.educationLevel === educationFilter;
       const matchesClub =
-        clubFilter === "all" || envoy.club_photo.includes(clubFilter);
+        clubFilter === "all" || envoy.club === clubFilter;
 
       return matchesSearch && matchesEducation && matchesClub;
     });
@@ -213,8 +196,8 @@ export default function EnvoysPage() {
             </SelectTrigger>
             <SelectContent>
               {educationLevels.map((edu) => (
-                <SelectItem key={edu} value={edu}>
-                  {edu === "all" ? "Wszystkie" : edu}
+                <SelectItem key={edu.value} value={edu.value}>
+                  {edu.label}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -225,14 +208,31 @@ export default function EnvoysPage() {
             </SelectTrigger>
             <SelectContent>
               {clubs.map((club) => (
-                <SelectItem key={club} value={club}>
-                  {club === "all" ? "Wszystkie" : club}
+                <SelectItem key={club.value} value={club.value}>
+                  {club.label}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="flex flex-wrap gap-2 mb-4">
+          {search && (
+            <Badge variant="secondary">
+              Wyszukiwanie: {search}
+            </Badge>
+          )}
+          {educationFilter !== "all" && (
+            <Badge variant="secondary">
+              Wykształcenie: {educationFilter}
+            </Badge>
+          )}
+          {clubFilter !== "all" && (
+            <Badge variant="secondary">
+              Klub: {clubFilter}
+            </Badge>
+          )}
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
           {filteredEnvoys.map((envoy, index) => (
             <div
               key={`${envoy.firstName}-${envoy.lastName}-${envoy.photo}`}
@@ -254,7 +254,7 @@ export default function EnvoysPage() {
         </div>
         {isLoading && (
           <p className="text-center mt-4">
-            <Spinner  variant="primary" />
+            <Spinner variant="primary" />
           </p>
         )}
       </div>

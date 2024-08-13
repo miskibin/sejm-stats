@@ -8,8 +8,6 @@ from django.views.generic import DetailView
 from sejm_app.models import Process, Voting
 from sejm_app.models.vote import VoteOption
 
-colors = settings.COLORS
-
 
 class VotingDetailView(DetailView):
     model = Voting
@@ -28,7 +26,6 @@ class VotingDetailView(DetailView):
         ]
 
         context["total_labels"] = ["Za", "Przeciw", "Wstrzymał się"]
-        context["total_colors"] = [colors.SUCCESS, colors.DANGER, colors.WARNING]
         context["club_votes"] = json.dumps(club_votes)
 
         male_votes = self.object.votes.filter(MP__isFemale=False).aggregate(

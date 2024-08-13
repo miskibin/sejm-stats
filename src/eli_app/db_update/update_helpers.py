@@ -6,14 +6,8 @@ control over the process and can easily add more tasks in the future.
 from loguru import logger
 
 from eli_app.libs.api_endpoints import EliAPI
-from eli_app.models import (
-    ActStatus,
-    DocumentType,
-    Institution,
-    Keyword,
-    Publisher,
-    Reference,
-)
+from eli_app.models import (ActStatus, DocumentType, Institution, Keyword,
+                            Publisher, Reference)
 from sejm_app.db_updater import DbUpdaterTask
 
 # Initialize the API once at the module level to be reused across all classes

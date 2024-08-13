@@ -6,7 +6,6 @@ from .committee_list_view import CommitteeHTMLListView, CommitteeJSONListView
 from .envoy_detail_view import EnvoyDetailView
 from .envoy_list_view import EnvoyListView
 from .handlers import Error404View, Error500View
-from .home_view import HomeView
 from .interpellation_detail_view import InterpellationDetailView
 from .interpellation_list_view import (
     InterpellationHTMLListView,

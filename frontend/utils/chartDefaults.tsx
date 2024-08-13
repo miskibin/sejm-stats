@@ -13,7 +13,6 @@ type ColorModes = {
   dark: ColorScheme;
 };
 
-// Using 'any' to bypass strict type checking
 interface ChartDefaults {
   [key: string]: any;
   colors: ColorScheme;
@@ -26,21 +25,21 @@ const useChartDefaults = (): ChartDefaults => {
   const colors: ColorModes = {
     light: {
       background: [
-        '#f56565', // red-500
         '#48bb78', // green-500
-        '#ed8936', // orange-500
-        '#38b2ac', // teal-500
+        '#f56565', // red-500
         '#ecc94b', // yellow-500
+        '#38b2ac', // teal-500
+        '#ed8936', // orange-500
         '#4299e1', // blue-500
         '#667eea', // indigo-500
         '#9f7aea', // purple-500
         '#ed64a6', // pink-500
       ],
       border: [
-        '#e53e3e', // red-600
         '#38a169', // green-600
-        '#dd6b20', // orange-600
+        '#e53e3e', // red-600
         '#319795', // teal-600
+        '#dd6b20', // orange-600
         '#d69e2e', // yellow-600
         '#3182ce', // blue-600
         '#5a67d8', // indigo-600
@@ -52,11 +51,11 @@ const useChartDefaults = (): ChartDefaults => {
     },
     dark: {
       background: [
-        '#fc8181', // red-400
         '#68d391', // green-400
-        '#f6ad55', // orange-400
-        '#4fd1c5', // teal-400
+        '#fc8181', // red-400
         '#f6e05e', // yellow-400
+        '#4fd1c5', // teal-400
+        '#f6ad55', // orange-400
         '#63b3ed', // blue-400
         '#7f9cf5', // indigo-400
         '#b794f4', // purple-400
@@ -94,21 +93,6 @@ const useChartDefaults = (): ChartDefaults => {
       tooltip: {
         mode: 'index',
         intersect: false,
-      },
-    },
-    scales: {
-      x: {
-      
-        ticks: {
-          color: currentColors.text,
-        },
-      },
-      y: {
-       
-        ticks: {
-          color: currentColors.text,
-        },
-        beginAtZero: true,
       },
     },
     elements: {

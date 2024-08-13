@@ -97,8 +97,8 @@ interface Envoy {
 
 const EnvoyDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>() ?? {};
+  const chartDefaults = useChartDefaults();
   const { data, isLoading, error } = useFetchData<Envoy>(`/envoys/${id}/`);
-  const chardDefaults = useChartDefaults();
   if (isLoading) return <SkeletonComponent />;
   if (error) return <LoadableContainer>{error.message}</LoadableContainer>;
   if (!data) return null;
@@ -112,33 +112,11 @@ const EnvoyDetail: React.FC = () => {
     datasets: [
       {
         data: envoy.discipline_ratio.values,
-        backgroundColor: chardDefaults.colors.background,
+        backgroundColor: chartDefaults.colors.background,
       },
     ],
   };
 
-  const chartOptions = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: "bottom" as const,
-      },
-      tooltip: {
-        callbacks: {
-          label: function (context: any) {
-            let label = context.label || "";
-            if (label) {
-              label += ": ";
-            }
-            if (context.parsed !== null) {
-              label += context.parsed;
-            }
-            return label;
-          },
-        },
-      },
-    },
-  };
   const activityTooltipContent =
     "Aktywność względem innych posłów. Obliczana jest na podstawie liczby głosowań, interpelacji i projektów ustaw.";
   return (
@@ -276,7 +254,8 @@ const EnvoyDetail: React.FC = () => {
               <h3 className="text-xl font-bold">Dyscyplina głosowania</h3>
             </CardHeader>
             <CardContent>
-              <Pie data={disciplineChartData} options={chartOptions} />
+              {/* @ts-ignore */}
+              <Pie data={disciplineChartData} options={chartDefaults} />
             </CardContent>
           </Card>
         </div>
