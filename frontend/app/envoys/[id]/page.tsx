@@ -249,11 +249,12 @@ const EnvoyDetail: React.FC = () => {
             </CardContent>
           </Card>
 
-          <Card className="mt-6">
+          <Card className="mt-6 h-96">
             <CardHeader>
               <h3 className="text-xl font-bold">Dyscyplina głosowania</h3>
             </CardHeader>
-            <CardContent>
+
+            <CardContent className="h-fit">
               {/* @ts-ignore */}
               <Pie data={disciplineChartData} options={chartDefaults} />
             </CardContent>

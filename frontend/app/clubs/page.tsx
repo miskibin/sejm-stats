@@ -17,13 +17,13 @@ export default function ClubsPage() {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 m-1">
       <LoadableContainer className="col-span-1">
-        <h2 className="text-2xl font-normal text-gray-700  mb-4">
+        <h2 className="text-2xl font-normal   mb-4">
           Lista Klubów
         </h2>
         <ClubsList clubs={data.results} />
       </LoadableContainer>
       <LoadableContainer className="col-span-1">
-        <h2 className="text-2xl font-normal text-gray-700 mb-4">
+        <h2 className="text-2xl font-normal  mb-4">
           Rozkład mandatów{" "}
         </h2>
         <ClubsChart clubs={data.results} />

@@ -58,7 +58,7 @@ const CommitteeDetail: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto md:max-2xl:p-16 max-w-7xl">
+    <div className="container mx-auto p-4 md:p-8 sm:p-0 sm:px-0 space-y-8">
       <h1 className="text-3xl font-bold mb-6">{committee.name}</h1>
 
       <Card className="mb-8">
@@ -106,7 +106,7 @@ const CommitteeDetail: React.FC = () => {
         </TabsList>
         <TabsContent value="members">
           <Card>
-            <CardContent className="p-6">
+            <CardContent className="p-4">
               {Object.entries(groupedMembers).map(([club, members]) => (
                 <Collapsible
                   key={club}
@@ -152,7 +152,7 @@ const CommitteeDetail: React.FC = () => {
         </TabsContent>
         <TabsContent value="meetings">
           <Card>
-            <CardContent className="p-6">
+            <CardContent className="p-4">
               <Accordion type="single" collapsible className="w-full">
                 {committee.recent_sittings.map((sitting, index) => (
                   <AccordionItem key={sitting.id} value={`item-${index}`}>
