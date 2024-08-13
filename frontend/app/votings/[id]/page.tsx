@@ -166,8 +166,9 @@ const VotingDetail: React.FC = () => {
               Głosowanie ze względu na klub parlamentarny
             </CardTitle>
           </CardHeader>
-          <CardContent className="min-h-64">
-            <Bar data={clubVotesData}  options={clubVotesOptions}/>
+          <CardContent className="min-h-96">
+            {/* @ts-ignore */}
+            <Bar data={clubVotesData}  options={chardDefaults} />
           </CardContent>
         </Card>
 
@@ -178,8 +179,9 @@ const VotingDetail: React.FC = () => {
               Wyniki głosowania
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <Pie data={totalVotesData} />
+          <CardContent className="min-h-96">
+            {/* @ts-ignore */}
+            <Pie data={totalVotesData} options={chardDefaults} />
           </CardContent>
         </Card>
         <Card className="md:col-span-3 p-0">
@@ -189,7 +191,7 @@ const VotingDetail: React.FC = () => {
               Głosy posłów
             </CardTitle>
           </CardHeader>
-          <CardContent className=" overflow-x-hidden">
+          <CardContent className="p-0 overflow-x-hidden">
             <DataTable columns={voteColumns} data={voting.votes} filters={[]} rowsPerPage={2} />
           </CardContent>
         </Card>
@@ -200,7 +202,7 @@ const VotingDetail: React.FC = () => {
               Głosy według płci
             </CardTitle>
           </CardHeader>
-          <CardContent className="min-h-64">
+          <CardContent className="min-h-96">
                  {/* @ts-ignore */}
             <Bar data={genderVotesData} options={chardDefaults} />
           </CardContent>
