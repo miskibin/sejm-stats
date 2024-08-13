@@ -253,6 +253,7 @@ const EnvoyDetail: React.FC = () => {
             <CardHeader>
               <h3 className="text-xl font-bold">Dyscyplina głosowania</h3>
             </CardHeader>
+
             <CardContent className="h-fit">
               {/* @ts-ignore */}
               <Pie data={disciplineChartData} options={chartDefaults} />

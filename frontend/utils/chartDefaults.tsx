@@ -105,6 +105,9 @@ const useChartDefaults = (): ChartDefaults => {
         ticks: {
           color: currentColors.text,
         },
+    elements: {
+      line: {
+        tension: 0.3,
       },
     },
     // elements: {
