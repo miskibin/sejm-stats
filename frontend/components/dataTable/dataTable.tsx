@@ -177,7 +177,7 @@ export function DataTable<TData, TValue>({
       </Card>
 
       <Card className="shadow-md">
-        <CardContent className="py-3">
+        <CardContent className="py-3 ">
           <DataTablePagination table={table}  rowsPerPage={rowsPerPage}/>
         </CardContent>
       </Card>

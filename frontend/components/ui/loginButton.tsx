@@ -15,7 +15,6 @@ import {
 
 export default function LoginButton() {
   const { data: session } = useSession();
-
   if (session && session.user) {
     return (
       <DropdownMenu>
