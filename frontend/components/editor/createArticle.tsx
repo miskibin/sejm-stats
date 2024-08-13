@@ -31,9 +31,7 @@ import { toggleMark, insertMention } from "./utils";
 const initialValue: Descendant[] = [
   {
     type: "paragraph",
-    children: [
-      { text: "Zacznij pisać swój artykuł i użyj @ do wzmianki..." },
-    ],
+    children: [{ text: "Zacznij pisać swój artykuł i użyj @ do wzmianki..." }],
   },
 ];
 
@@ -49,7 +47,7 @@ const CreateArticle: React.FC = () => {
   const [title, setTitle] = useState("");
   const [image, setImage] = useState<string | null>(null);
   const [content, setContent] = useState<Descendant[]>(initialValue);
-  
+  const [saveSuccess, setSaveSuccess] = useState(false);
   const { data, isLoading, error } = useFetchData<any>("/article-context/");
   const sendArticleMutation = useSendArticle();
 
@@ -147,12 +145,14 @@ const CreateArticle: React.FC = () => {
 
     try {
       await sendArticleMutation.mutateAsync(articleData);
-      console.log("Article saved successfully");
+      setSaveSuccess(true);
+      // Reset the success message after 5 seconds
+      setTimeout(() => setSaveSuccess(false), 5000);
     } catch (error) {
       console.error("Failed to save article:", error);
+      setSaveSuccess(false);
     }
   };
-
   if (isLoading) return <div className="text-center">Ładowanie...</div>;
   if (error) return <div>Błąd: {error.message}</div>;
 
@@ -208,7 +208,7 @@ const CreateArticle: React.FC = () => {
       <Slate
         editor={editor}
         initialValue={initialValue}
-        onChange={value => {
+        onChange={(value) => {
           setContent(value);
           const { selection } = editor;
 
@@ -217,7 +217,8 @@ const CreateArticle: React.FC = () => {
             const wordBefore = Editor.before(editor, start, { unit: "word" });
             const before = wordBefore && Editor.before(editor, wordBefore);
             const beforeRange = before && Editor.range(editor, before, start);
-            const beforeText = beforeRange && Editor.string(editor, beforeRange);
+            const beforeText =
+              beforeRange && Editor.string(editor, beforeRange);
             const beforeMatch = beforeText && beforeText.match(/^@(\w+)$/);
             const after = Editor.after(editor, start);
             const afterRange = Editor.range(editor, start, after);
@@ -274,15 +275,20 @@ const CreateArticle: React.FC = () => {
         )}
       </Slate>
       <div className="mt-6">
-        <Button 
+        <Button
           className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
           onClick={handleSaveArticle}
-          disabled={sendArticleMutation.isLoading}
         >
-          {sendArticleMutation.isLoading ? 'Zapisywanie...' : 'Opublikuj artykuł'}
+          {"Opublikuj artykuł"}
         </Button>
       </div>
-      
+
+      {saveSuccess && (
+        <div className="mt-4 text-green-500 font-semibold">
+          Artykuł został pomyślnie zapisany!
+        </div>
+      )}
+
       {sendArticleMutation.isError && (
         <div className="mt-4 text-red-500">
           Błąd podczas zapisywania artykułu. Spróbuj ponownie.
