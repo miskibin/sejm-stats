@@ -95,11 +95,23 @@ const useChartDefaults = (): ChartDefaults => {
         intersect: false,
       },
     },
-    elements: {
-      line: {
-        tension: 0.3,
+    scales: {
+      x: {
+        ticks: {
+          color: currentColors.text,
+        },
+      },
+      y: {
+        ticks: {
+          color: currentColors.text,
+        },
       },
     },
+    // elements: {
+    //   line: {
+    //     tension: 0.3,
+    //   },
+    // },
     colors: currentColors,
   };
 };

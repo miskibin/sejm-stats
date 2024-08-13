@@ -252,7 +252,7 @@ const ClubDetail: React.FC = () => {
           </CardHeader>
           <CardContent className="h-[300px]">
             {/* @ts-ignore */}
-            <Pie data={educationDistributionData} options={chartDefaults} />
+            <Bar data={educationDistributionData} options={chartDefaults} />
           </CardContent>
         </Card>
 
