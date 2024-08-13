@@ -1,12 +1,15 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
+import { useRouter } from 'next/navigation';
 import { FaSearch, FaArrowRight } from "react-icons/fa";
 import StatCard from "./statCard";
 import VotingCard from "./votingCard";
 import styles from "@/app/home.module.css";
 import NewsCard from "./newsCard";
+import DateRangeModal from "./dateRangeModal";
+
 export interface HomeProps {
   latestVotings: any[];
   allClubs: number;
@@ -14,11 +17,24 @@ export interface HomeProps {
 }
 
 const Home: React.FC<HomeProps> = ({ latestVotings, allClubs, cards }) => {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const router = useRouter();
+
+  const handleSearch = () => {
+    if (searchQuery.trim()) {
+      setIsModalOpen(true);
+    }
+  };
+
+  const handleDateRangeSelect = (range: string) => {
+    setIsModalOpen(false);
+    router.push(`/search-results?q=${encodeURIComponent(searchQuery)}&range=${range}`);
+  };
+
   return (
     <div className="container min-w-full px-0 mx-auto">
-      <div
-        className={`relative overflow-hidden ${styles.bgBanner} border-b border-gray-200 py-16 lg:px-12 sm:px-1 `}
-      >
+      <div className={`relative overflow-hidden ${styles.bgBanner} border-b border-gray-200 py-16 lg:px-12 sm:px-1`}>
         <div className="mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <h1 className="text-6xl font-light text-gray-700 dark:text-gray-100 mb-4">
             Parlament Pod Lupą
@@ -32,8 +48,13 @@ const Home: React.FC<HomeProps> = ({ latestVotings, allClubs, cards }) => {
                 type="search"
                 className="form-input flex-grow rounded-l-lg p-2"
                 placeholder="Wpisz hasła odzielone przecinkami"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
               />
-              <button className="bg-blue-500 text-white px-4 py-2 rounded-r-lg">
+              <button 
+                className="bg-blue-500 text-white px-4 py-2 rounded-r-lg"
+                onClick={handleSearch}
+              >
                 <FaSearch />
               </button>
             </div>
@@ -53,6 +74,7 @@ const Home: React.FC<HomeProps> = ({ latestVotings, allClubs, cards }) => {
             </Link>
           </div>
         </div>
+        
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12 px-4 max-w-7xl mx-auto">
@@ -100,6 +122,11 @@ const Home: React.FC<HomeProps> = ({ latestVotings, allClubs, cards }) => {
           ))} */}
         </div>
       </div>
+      <DateRangeModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        onSelect={handleDateRangeSelect}
+      />
     </div>
   );
 };

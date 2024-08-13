@@ -9,6 +9,8 @@ from .faq import FAQViewSet
 from .home import HomeViewSet
 from .interpellations import InterpellationViewSet
 from .processes import ProcessesMetaViewSet, ProcessViewSet
-from .search import SearchViewSet
+from .search import OptimizedSearchView
 from .votings import VotingsMetaViewSet, VotingViewSet
 from .article import ArticleCreateView
+
+OptimizedSearchView.optimize_database()
