@@ -58,6 +58,7 @@ interface SearchResultsData {
   prints: Print[];
   acts: Act[];
   votings: Voting[];
+  [key: string]: any; // Add index signature
 }
 
 const tabConfig = [

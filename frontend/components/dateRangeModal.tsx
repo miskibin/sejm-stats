@@ -15,6 +15,14 @@ interface DateRangeModalProps {
   onSelect: (range: string, options: Record<string, boolean>) => void;
 }
 
+type SearchOptionKey =
+  | "committee_sittings"
+  | "interpellations"
+  | "processes"
+  | "prints"
+  | "acts"
+  | "votings";
+
 const DateRangeModal: React.FC<DateRangeModalProps> = ({
   isOpen,
   onClose,
@@ -28,7 +36,9 @@ const DateRangeModal: React.FC<DateRangeModalProps> = ({
     { label: "Wszystko", value: "all" },
   ];
 
-  const [searchOptions, setSearchOptions] = useState({
+  const [searchOptions, setSearchOptions] = useState<
+    Record<SearchOptionKey, boolean>
+  >({
     committee_sittings: true,
     interpellations: true,
     processes: true,
@@ -37,49 +47,71 @@ const DateRangeModal: React.FC<DateRangeModalProps> = ({
     votings: true,
   });
 
-  const handleOptionChange = (option: string) => {
-    setSearchOptions(prev => ({ ...prev, [option]: !prev[option] }));
+  const handleOptionChange = (option: SearchOptionKey) => {
+    setSearchOptions((prev) => ({ ...prev, [option]: !prev[option] }));
   };
 
   const handleSelect = (range: string) => {
     onSelect(range, searchOptions);
   };
 
+  const getOptionLabel = (key: SearchOptionKey): string => {
+    switch (key) {
+      case "committee_sittings":
+        return "Posiedzenia komisji";
+      case "interpellations":
+        return "Interpelacje";
+      case "processes":
+        return "Procesy";
+      case "prints":
+        return "Druki";
+      case "acts":
+        return "Akty prawne";
+      case "votings":
+        return "Głosowania";
+      default:
+        return key;
+    }
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent >
+      <DialogContent>
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold mb-4">Wybierz zakres dat i opcje wyszukiwania</DialogTitle>
+          <DialogTitle className="text-2xl font-bold mb-4">
+            Wybierz zakres dat i opcje wyszukiwania
+          </DialogTitle>
         </DialogHeader>
         <div className="space-y-6">
           <div className="grid grid-cols-2 gap-4">
-            {Object.entries(searchOptions).map(([key, value]) => (
+            {(Object.keys(searchOptions) as SearchOptionKey[]).map((key) => (
               <div key={key} className="flex items-center space-x-3">
                 <Checkbox
                   id={key}
-                  checked={value}
+                  checked={searchOptions[key]}
                   onCheckedChange={() => handleOptionChange(key)}
                   className="w-5 h-5"
                 />
                 <Label htmlFor={key} className="text-base cursor-pointer">
-                  {key === "committee_sittings" && "Posiedzenia komisji"}
-                  {key === "interpellations" && "Interpelacje"}
-                  {key === "processes" && "Procesy"}
-                  {key === "prints" && "Druki"}
-                  {key === "acts" && "Akty prawne"}
-                  {key === "votings" && "Głosowania"}
+                  {getOptionLabel(key)}
                 </Label>
               </div>
             ))}
           </div>
-          <hr/>
+          <hr />
           <div className="flex flex-wrap justify-between gap-2">
             {ranges.map((range, index) => (
               <Button
                 key={range.value}
                 onClick={() => handleSelect(range.value)}
                 variant="outline"
-                className={`flex-1 min-w-[calc(20%-8px)] ${index === 0 ? 'rounded-l-md' : index === ranges.length - 1 ? 'rounded-r-md' : 'rounded-none'}`}
+                className={`flex-1 min-w-[calc(20%-8px)] ${
+                  index === 0
+                    ? "rounded-l-md"
+                    : index === ranges.length - 1
+                    ? "rounded-r-md"
+                    : "rounded-none"
+                }`}
               >
                 {range.label}
               </Button>
