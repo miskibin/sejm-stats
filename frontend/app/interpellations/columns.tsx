@@ -12,6 +12,15 @@ export const columns: ColumnDefE<Interpellation>[] = [
     ),
   },
   {
+    accessorKey: "to",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Adresat" />
+    ),
+    filterFn: (row, id, value) => {
+      return value.includes(row.getValue(id));
+    },
+  },
+  {
     accessorKey: "member",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Autor" />

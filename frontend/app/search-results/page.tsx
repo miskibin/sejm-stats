@@ -9,15 +9,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
-  FileText,
-  Users,
   Calendar,
   Info,
   ExternalLink,
   BarChart2,
   PieChart,
 } from "lucide-react";
-import { Bar, Pie } from "react-chartjs-2";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -28,7 +25,6 @@ import {
   Legend,
   ArcElement,
 } from "chart.js";
-import useChartDefaults from "@/utils/chartDefaults";
 import {
   CommitteeSitting,
   Interpellation,
@@ -37,7 +33,14 @@ import {
   Act,
   Voting,
 } from "@/lib/types";
-
+import {
+  FileText,
+  Users,
+  Briefcase,
+  FileQuestion,
+  Book,
+  Vote,
+} from "lucide-react";
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -55,27 +58,23 @@ interface SearchResultsData {
   prints: Print[];
   acts: Act[];
   votings: Voting[];
+  [key: string]: any; // Add index signature
 }
 
+const tabConfig = [
+  { key: "committee_sittings", label: "Posiedzenia komisji", Icon: Users },
+  { key: "interpellations", label: "Interpelacje", Icon: FileQuestion },
+  { key: "processes", label: "Procesy", Icon: Briefcase },
+  { key: "prints", label: "Druki", Icon: FileText },
+  { key: "acts", label: "Akty prawne", Icon: Book },
+  { key: "votings", label: "Głosowania", Icon: Vote },
+];
 const SearchResults: React.FC = () => {
   const searchParams = useSearchParams();
-  const query = searchParams?.get("q");
-  const range = searchParams?.get("range");
-  const end_date = new Date().toISOString().split("T")[0];
-  let start_date;
-  if (range === "1m") {
-    start_date = new Date(new Date().setMonth(new Date().getMonth() - 1))
-      .toISOString()
-      .split("T")[0];
-  } else if (range === "3m") {
-    start_date = new Date(new Date().setMonth(new Date().getMonth() - 3))
-      .toISOString()
-      .split("T")[0];
-  }
+  const queryString = searchParams.toString();
+  const query = searchParams.get("q") || "";
   const { data, isLoading, error } = useFetchData<SearchResultsData>(
-    `/search?q=${query}${start_date ? `&start_date=${start_date}` : ""}${
-      end_date ? `&end_date=${end_date}` : ""
-    }`
+    `/search?${queryString}`
   );
 
   if (isLoading) return <SkeletonComponent />;
@@ -92,7 +91,7 @@ const SearchResults: React.FC = () => {
       <Card className="mb-8">
         <CardHeader>
           <CardTitle className="text-3xl">
-            Wyniki wyszukiwania dla hasła:  {query}
+            Wyniki wyszukiwania dla hasła: {query}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -101,15 +100,18 @@ const SearchResults: React.FC = () => {
       </Card>
 
       <Tabs defaultValue="committee_sittings">
-        <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6">
-          <TabsTrigger value="committee_sittings">
-            Posiedzenia komisji ({data.committee_sittings.length})
-          </TabsTrigger>
-          <TabsTrigger value="interpellations">Interpelacje ({data.interpellations.length})</TabsTrigger>
-          <TabsTrigger value="processes">Procesy ({data.processes.length})</TabsTrigger>
-          <TabsTrigger value="prints">Druki ({data.prints.length})</TabsTrigger>
-          <TabsTrigger value="acts">Akty prawne ({data.acts.length})</TabsTrigger>
-          <TabsTrigger value="votings">Głosowania ({data.votings.length})</TabsTrigger>
+        <TabsList className="flex flex-wrap justify-around lg:justify-start gap-2 mb-4">
+          {tabConfig.map(({ key, label, Icon }) => (
+            <TabsTrigger
+              key={key}
+              value={key}
+              className="flex items-center justify-center px-2 py-1 sm:px-4 sm:py-2"
+            >
+              <Icon className="w-5 h-5 sm:mr-2" />
+              <span className="hidden sm:inline">{label}</span>
+              <span className="ml-1">({data[key]?.length ?? 0})</span>
+            </TabsTrigger>
+          ))}
         </TabsList>
 
         <TabsContent value="committee_sittings">
