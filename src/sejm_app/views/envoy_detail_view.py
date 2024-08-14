@@ -10,8 +10,6 @@ from loguru import logger
 
 from sejm_app.models import ClubVote, CommitteeMember, Envoy, VoteOption, Voting
 
-colors = settings.COLORS
-
 
 class EnvoyDetailView(DetailView):
     model = Envoy
@@ -25,9 +23,6 @@ class EnvoyDetailView(DetailView):
         discipline_ratio = self.get_discipline_ratio()
         context["discipline_ratio_labels"] = json.dumps(list(discipline_ratio.keys()))
         context["discipline_ratio_values"] = json.dumps(list(discipline_ratio.values()))
-        context["discipline_ratio_colors"] = json.dumps(
-            [colors.SUCCESS, colors.WARNING, colors.DANGER]
-        )
         context["member_of"] = CommitteeMember.objects.filter(envoy=self.object)
         # max_activity = 100
         # for envoy in Envoy.objects.all():

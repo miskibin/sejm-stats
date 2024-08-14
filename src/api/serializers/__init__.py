@@ -6,3 +6,5 @@ from .detail_serializers import *
 from .EnvoyDetailSerializer import EnvoyDetailSerializer
 from .list_serializers import *
 from .VotingDetailSerializer import VotingDetailSerializer
+
+from .articleSerializer import ArticleSerializer

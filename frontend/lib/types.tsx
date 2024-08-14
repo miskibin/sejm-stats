@@ -183,7 +183,7 @@ export type CommitteeMember = {
   function: string | null;
 };
 
-type CommitteeSitting = {
+export type CommitteeSitting = {
   id: number;
   agenda: string;
   closed: boolean;

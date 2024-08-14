@@ -15,7 +15,6 @@ import {
 
 export default function LoginButton() {
   const { data: session } = useSession();
-
   if (session && session.user) {
     return (
       <DropdownMenu>
@@ -32,8 +31,8 @@ export default function LoginButton() {
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Moje konto</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>Profil</DropdownMenuItem>
-          <DropdownMenuItem>Ustawienia</DropdownMenuItem>
+          <DropdownMenuItem disabled={true}>Profil</DropdownMenuItem>
+          <DropdownMenuItem disabled={true}>Ustawienia</DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={() => signOut()}>Wyloguj</DropdownMenuItem>
         </DropdownMenuContent>

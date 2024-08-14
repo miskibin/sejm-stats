@@ -27,6 +27,7 @@ import {
 import { DataTable } from "@/components/dataTable/dataTable";
 import { useFetchData } from "@/lib/api";
 import { SkeletonComponent } from "@/components/ui/skeleton-page";
+import useChartDefaults from "@/utils/chartDefaults";
 
 ChartJS.register(
   ArcElement,
@@ -38,6 +39,7 @@ ChartJS.register(
 );
 
 const VotingDetail: React.FC = () => {
+  const chardDefaults = useChartDefaults();
   const { id } = useParams<{ id: string }>() || { id: "" };
   const {
     data: voting,
@@ -54,7 +56,7 @@ const VotingDetail: React.FC = () => {
     datasets: [
       {
         data: voting.total_data,
-        backgroundColor: ["#10B981", "#EF4444", "#F59E0B"],
+        backgroundColor: chardDefaults.colors.background,
       },
     ],
   };
@@ -68,7 +70,8 @@ const VotingDetail: React.FC = () => {
           voting.sex_votes.male.no,
           voting.sex_votes.male.abstain,
         ],
-        backgroundColor: "#3B82F6",
+    backgroundColor: chardDefaults.colors.background[0],
+
       },
       {
         label: "Kobiety",
@@ -77,33 +80,11 @@ const VotingDetail: React.FC = () => {
           voting.sex_votes.female.no,
           voting.sex_votes.female.abstain,
         ],
-        backgroundColor: "#EC4899",
+        backgroundColor: chardDefaults.colors.background[1],
       },
     ],
   };
 
-  const genderVotesOptions = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: "top" as const,
-      },
-      title: {
-        display: true,
-        text: "Głosy według płci",
-      },
-    },
-    maintainAspectRatio: false,
-    aspectRatio: 0.7,
-    scales: {
-      x: {
-        stacked: false,
-      },
-      y: {
-        stacked: false,
-      },
-    },
-  };
 
   const clubVotesData = {
     labels: voting.club_votes.map((cv: any) => cv.club.id),
@@ -185,8 +166,9 @@ const VotingDetail: React.FC = () => {
               Głosowanie ze względu na klub parlamentarny
             </CardTitle>
           </CardHeader>
-          <CardContent className="min-h-64">
-            <Bar data={clubVotesData}  options={clubVotesOptions}/>
+          <CardContent className="min-h-96">
+            {/* @ts-ignore */}
+            <Bar data={clubVotesData}  options={chardDefaults} />
           </CardContent>
         </Card>
 
@@ -197,8 +179,9 @@ const VotingDetail: React.FC = () => {
               Wyniki głosowania
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <Pie data={totalVotesData} />
+          <CardContent className="min-h-96">
+            {/* @ts-ignore */}
+            <Pie data={totalVotesData} options={chardDefaults} />
           </CardContent>
         </Card>
         <Card className="md:col-span-3 p-0">
@@ -208,7 +191,7 @@ const VotingDetail: React.FC = () => {
               Głosy posłów
             </CardTitle>
           </CardHeader>
-          <CardContent className=" overflow-x-hidden">
+          <CardContent className="p-0 overflow-x-hidden">
             <DataTable columns={voteColumns} data={voting.votes} filters={[]} rowsPerPage={2} />
           </CardContent>
         </Card>
@@ -219,8 +202,9 @@ const VotingDetail: React.FC = () => {
               Głosy według płci
             </CardTitle>
           </CardHeader>
-          <CardContent className="min-h-64">
-            <Bar data={genderVotesData} options={genderVotesOptions} />
+          <CardContent className="min-h-96">
+                 {/* @ts-ignore */}
+            <Bar data={genderVotesData} options={chardDefaults} />
           </CardContent>
         </Card>
       </div>

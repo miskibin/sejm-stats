@@ -12,6 +12,8 @@ import {
   FileText,
   LineChart,
   MapPin,
+  MessageSquare,
+  Vote,
 } from "lucide-react";
 import { Pie, Bar, Line } from "react-chartjs-2";
 import {
@@ -32,8 +34,9 @@ import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
 import highchartsMap from "highcharts/modules/map";
 import proj4 from "proj4";
-import { DistrictData, districtToRegionMapping } from "./mapping";
-
+import Image from "next/image";
+import { DistrictMap } from "./mapping";
+import useChartDefaults from "@/utils/chartDefaults";
 // Initialize Highcharts modules
 if (typeof window !== "undefined") {
   highchartsMap(Highcharts);
@@ -51,134 +54,14 @@ ChartJS.register(
   LineElement
 );
 
-function mapDistrictDataToHighcharts(
-  districtData: DistrictData[]
-): [string, number][] {
-  const mappedData: Record<string, number> = {};
-
-  districtData.forEach((district) => {
-    const regionCode = districtToRegionMapping[district.districtName];
-    if (regionCode) {
-      mappedData[regionCode] = (mappedData[regionCode] || 0) + district.count;
-    }
-  });
-
-  return Object.entries(mappedData);
-}
-
-const DistrictMap: React.FC<{ districtData: DistrictData[] }> = ({
-  districtData,
-}) => {
-  const chartRef = useRef<HighchartsReact.RefObject>(null);
-
-  useEffect(() => {
-    const fetchTopology = async () => {
-      try {
-        const response = await fetch(
-          "https://code.highcharts.com/mapdata/countries/pl/pl-all.topo.json"
-        );
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const topology = await response.json();
-
-        if (chartRef.current && chartRef.current.chart) {
-          chartRef.current.chart.update({
-            chart: {
-              backgroundColor: undefined, 
-              map: topology,
-            },
-            series: [
-              {
-                type: "map",
-                data: mapDistrictDataToHighcharts(districtData),
-                mapData: topology,
-                name: "Ilość posłów z okręgu",
-                states: {
-                  hover: {
-                    color: "#BADA55",
-                  },
-                },
-                dataLabels: {
-                  enabled: false,
-                  format: "{point.name}",
-                },
-              },
-            ],
-          });
-        }
-      } catch (error) {
-        console.error("Failed to fetch topology:", error);
-      }
-    };
-
-    fetchTopology();
-  }, [districtData]);
-
-  const options: Highcharts.Options = {
-    chart: {
-      map: undefined,
-    },
-    title: {
-      text: undefined,
-    },
-    mapNavigation: {
-      enabled: true,
-      buttonOptions: {
-        verticalAlign: "bottom",
-      },
-    },
-    colorAxis: {
-      min: 0,
-    },
-    series: [
-      {
-        type: "map",
-        name: "Number of MPs",
-        states: {
-          hover: {
-            color: "#BADA55",
-          },
-        },
-        dataLabels: {
-          enabled: true,
-          format: "{point.name}",
-        },
-        allAreas: true,
-        data: [],
-      },
-    ],
-  };
-
-  return (
-    <HighchartsReact
-      highcharts={Highcharts}
-      options={options}
-      constructorType={"mapChart"}
-      ref={chartRef}
-    />
-  );
-};
-
 const ClubDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>() || { id: "" };
   const { data: club, isLoading, error } = useFetchData<any>(`/clubs/${id}/`);
+  const chartDefaults = useChartDefaults();
 
   if (isLoading) return <SkeletonComponent />;
   if (error) return <div>Error: {error.message}</div>;
   if (!club) return null;
-
-  const chartColors = ["#FF6384", "#36A2EB", "#FFCE56", "#4BC0C0", "#9966FF"];
-
-  const commonOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        position: "top" as const,
-      },
-    },
-  };
 
   const ageDistributionData = {
     labels: Object.keys(club.age_distribution),
@@ -186,7 +69,7 @@ const ClubDetail: React.FC = () => {
       {
         label: "Liczba posłów",
         data: Object.values(club.age_distribution),
-        backgroundColor: chartColors,
+        backgroundColor: chartDefaults.colors.background,
       },
     ],
   };
@@ -199,7 +82,7 @@ const ClubDetail: React.FC = () => {
           club.sex_distribution.find((item: any) => !item.isFemale)?.count || 0,
           club.sex_distribution.find((item: any) => item.isFemale)?.count || 0,
         ],
-        backgroundColor: chartColors,
+        backgroundColor: chartDefaults.colors.background,
       },
     ],
   };
@@ -209,7 +92,7 @@ const ClubDetail: React.FC = () => {
     datasets: [
       {
         data: club.education_distribution.map((item: any) => item.count),
-        backgroundColor: chartColors,
+        backgroundColor: chartDefaults.colors.background,
       },
     ],
   };
@@ -222,8 +105,8 @@ const ClubDetail: React.FC = () => {
       {
         label: "Interpelacje",
         data: club.interpellations_per_month.map((item: any) => item.count),
-        borderColor: chartColors[0],
-        backgroundColor: `${chartColors[0]}33`,
+        borderColor: chartDefaults.colors.border[0],
+        backgroundColor: `${chartDefaults.colors.border[0]}`,
         fill: true,
         tension: 0.4,
       },
@@ -240,7 +123,7 @@ const ClubDetail: React.FC = () => {
           club.voting_stats.no,
           club.voting_stats.abstain,
         ],
-        backgroundColor: chartColors.slice(0, 3),
+        backgroundColor: chartDefaults.colors.border.slice(0, 3),
       },
     ],
   };
@@ -256,25 +139,83 @@ const ClubDetail: React.FC = () => {
 
   return (
     <div className="container mx-auto p-4 md:p-8 sm:p-0 sm:px-0 space-y-8">
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-3xl font-bold">{club.name}</CardTitle>
+      <Card className="w-full overflow-hidden bg-gradient-to-br from-white to-gray-100 dark:from-gray-800 dark:to-gray-900 shadow-lg  ">
+        <CardHeader className="p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
+          <div className="flex items-center space-x-4">
+            {club.id && (
+              <div className="border-4 border-white  rounded-md bg-white p-1">
+                <Image
+                  src={`/media/club_logos/${club.id}.jpg`}
+                  alt={club.id}
+                  width={48}
+                  height={48}
+                  onError={(e) => {
+                    e.currentTarget.src = "/no-picture.jpg";
+                  }}
+                />
+              </div>
+            )}
+            <div>
+              <CardTitle className="text-3xl font-bold mb-1 text-gray-900 dark:text-white">
+                {club.id}
+              </CardTitle>
+              <h2 className="text-xl font-semibold leading-tight text-gray-700 dark:text-gray-300">
+                {club.name}
+              </h2>
+            </div>
+          </div>
+          <Badge className="bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200 px-4 py-2 rounded-full text-sm font-medium flex items-center space-x-2">
+            <Users className="w-4 h-4" />
+            <span>Członkowie: {club.membersCount}</span>
+          </Badge>
         </CardHeader>
-        <CardContent className="flex items-center space-x-4">
-          <div>
-            <p>
-              <Mail className="inline mr-2" />
-              {club.email}
-            </p>
-            <p>
-              <Phone className="inline mr-2" />
-              {club.phone || club.fax}
-            </p>
-            <Badge>Liczba członków: {club.membersCount}</Badge>
+        <CardContent className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6 rounded-t-3xl shadow-inner bg-gray-50 dark:bg-gray-800">
+          <div className="space-y-4 text-sm text-gray-600 dark:text-gray-400">
+            <div className="flex items-center space-x-3 p-3 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
+              <Mail className="w-5 h-5 text-blue-500 dark:text-blue-400" />
+              <a href={`mailto:${club.email}`} className="hover:underline">
+                {club.email}
+              </a>
+            </div>
+            <div className="flex items-center space-x-3 p-3 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
+              <Phone className="w-5 h-5 text-green-500 dark:text-green-400" />
+              <a
+                href={`tel:${club.phone || club.fax}`}
+                className="hover:underline"
+              >
+                {club.phone || club.fax}
+              </a>
+            </div>
+          </div>
+          <div className="space-y-4 text-sm">
+            <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 flex items-center space-x-2 mb-3">
+              <FileText className="w-5 h-5 text-indigo-500 dark:text-indigo-400" />
+              <span>Dodatkowe informacje</span>
+            </h3>
+            <div className="grid grid-cols-2 gap-4 text-gray-600 dark:text-gray-400">
+              <div className="p-3 bg-green-50 dark:bg-green-900/30 rounded-lg flex flex-col items-center justify-center">
+                <MessageSquare className="w-6 h-6 text-yellow-500 dark:text-yellow-400 mb-1" />
+                <p className="font-medium">Interpelacje</p>
+                <p className="text-lg font-bold">{club.interpellation_count}</p>
+              </div>
+              <div className="p-3 bg-red-50 dark:bg-red-900/30 rounded-lg flex flex-col items-center justify-center">
+                <FileText className="w-6 h-6 text-red-500 dark:text-red-400 mb-1" />
+                <p className="font-medium">Procesy</p>
+                <p className="text-lg font-bold">{club.process_count}</p>
+              </div>
+            </div>
+            <div className="p-3 bg-purple-50 dark:bg-purple-900/30 text-gray-600 dark:text-gray-300 rounded-lg flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <Vote className="w-5 h-5 text-purple-500 dark:text-purple-400" />
+                <span className="font-medium">Głosy wyborcze:</span>
+              </div>
+              <span className="text-lg font-bold">
+                {formatNumber(club.total_votes_number)}
+              </span>
+            </div>
           </div>
         </CardContent>
       </Card>
-
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         <Card>
           <CardHeader>
@@ -284,17 +225,8 @@ const ClubDetail: React.FC = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="h-[300px]">
-            <Bar
-              data={ageDistributionData}
-              options={{
-                ...commonOptions,
-                scales: {
-                  y: {
-                    beginAtZero: true,
-                  },
-                },
-              }}
-            />
+            {/* @ts-ignore */}
+            <Bar data={ageDistributionData} options={chartDefaults} />
           </CardContent>
         </Card>
 
@@ -306,7 +238,8 @@ const ClubDetail: React.FC = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="h-[300px]">
-            <Pie data={sexDistributionData} options={commonOptions} />
+            {/* @ts-ignore */}
+            <Pie data={sexDistributionData} options={chartDefaults} />
           </CardContent>
         </Card>
 
@@ -318,7 +251,8 @@ const ClubDetail: React.FC = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="h-[300px]">
-            <Pie data={educationDistributionData} options={commonOptions} />
+            {/* @ts-ignore */}
+            <Bar data={educationDistributionData} options={chartDefaults} />
           </CardContent>
         </Card>
 
@@ -330,17 +264,8 @@ const ClubDetail: React.FC = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="h-[300px]">
-            <Line
-              data={interpellationsData}
-              options={{
-                ...commonOptions,
-                scales: {
-                  y: {
-                    beginAtZero: true,
-                  },
-                },
-              }}
-            />
+            {/* @ts-ignore */}
+            <Line data={interpellationsData} options={chartDefaults} />
           </CardContent>
         </Card>
       </div>
@@ -365,36 +290,11 @@ const ClubDetail: React.FC = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="h-[400px]">
-            <Bar
-              data={votingStatsData}
-              options={{
-                ...commonOptions,
-                scales: {
-                  y: {
-                    beginAtZero: true,
-                  },
-                },
-              }}
-            />
+            {/* @ts-ignore */}
+            <Bar data={votingStatsData} options={chartDefaults} />
           </CardContent>
         </Card>
       </div>
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center">
-            <FileText className="w-6 h-6 mr-2" />
-            Dodatkowe informacje
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p>Liczba interpelacji: {club.interpellation_count}</p>
-          <p>Liczba procesów: {club.process_count}</p>
-          <p>
-            Całkowita liczba głosów wyborczych:{" "}
-            {formatNumber(club.total_votes_number)}
-          </p>
-        </CardContent>
-      </Card>
     </div>
   );
 };

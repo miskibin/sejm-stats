@@ -37,6 +37,7 @@ import { Pie } from "react-chartjs-2";
 import { useFetchData } from "@/lib/api";
 import { SkeletonComponent } from "@/components/ui/skeleton-page";
 import LoadableContainer from "@/components/loadableContainer";
+import useChartDefaults from "@/utils/chartDefaults";
 ChartJS.register(ArcElement, Legend);
 
 interface Envoy {
@@ -96,6 +97,7 @@ interface Envoy {
 
 const EnvoyDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>() ?? {};
+  const chartDefaults = useChartDefaults();
   const { data, isLoading, error } = useFetchData<Envoy>(`/envoys/${id}/`);
   if (isLoading) return <SkeletonComponent />;
   if (error) return <LoadableContainer>{error.message}</LoadableContainer>;
@@ -103,39 +105,18 @@ const EnvoyDetail: React.FC = () => {
   const envoy = data;
   if (isLoading)
     return <div className="container mx-auto p-4">Ładowanie...</div>;
+  
   if (error) return <div className="container mx-auto p-4">{error}</div>;
   const disciplineChartData = {
     labels: envoy.discipline_ratio.labels,
     datasets: [
       {
         data: envoy.discipline_ratio.values,
-        backgroundColor: ["#10B981", "#EF4444", "#F59E0B"],
+        backgroundColor: chartDefaults.colors.background,
       },
     ],
   };
 
-  const chartOptions = {
-    responsive: true,
-    plugins: {
-      legend: {
-        position: "bottom" as const,
-      },
-      tooltip: {
-        callbacks: {
-          label: function (context: any) {
-            let label = context.label || "";
-            if (label) {
-              label += ": ";
-            }
-            if (context.parsed !== null) {
-              label += context.parsed;
-            }
-            return label;
-          },
-        },
-      },
-    },
-  };
   const activityTooltipContent =
     "Aktywność względem innych posłów. Obliczana jest na podstawie liczby głosowań, interpelacji i projektów ustaw.";
   return (
@@ -268,12 +249,14 @@ const EnvoyDetail: React.FC = () => {
             </CardContent>
           </Card>
 
-          <Card className="mt-6">
+          <Card className="mt-6 h-96">
             <CardHeader>
               <h3 className="text-xl font-bold">Dyscyplina głosowania</h3>
             </CardHeader>
-            <CardContent>
-              <Pie data={disciplineChartData} options={chartOptions} />
+
+            <CardContent className="h-fit">
+              {/* @ts-ignore */}
+              <Pie data={disciplineChartData} options={chartDefaults} />
             </CardContent>
           </Card>
         </div>

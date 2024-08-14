@@ -3,6 +3,7 @@ import {
   QueryKey,
   UseQueryOptions,
   QueryClient,
+  useMutation,
 } from "@tanstack/react-query";
 
 export const queryClient = new QueryClient({
@@ -15,9 +16,12 @@ export const queryClient = new QueryClient({
 });
 
 async function fetchData<T>(endpoint: string): Promise<T> {
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${endpoint}`, {
-    next: { revalidate: 1 * 60 * 60 }, // 24 hours
-  });
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}${endpoint}`,
+    {
+      next: { revalidate: 1 * 60 * 60 }, // 24 hours
+    }
+  );
   if (!response.ok) throw new Error("Błąd podczas pobierania danych");
   return response.json();
 }
@@ -29,8 +33,8 @@ export function useFetchData<T>(
   return useQuery<T, Error>({
     queryKey: [endpoint],
     queryFn: () => fetchData<T>(endpoint),
-    staleTime: 1 * 60 * 60 * 1000, 
-    gcTime: 7 * 1 * 60 * 60 * 1000, 
+    staleTime: 1 * 60 * 60 * 1000,
+    gcTime: 7 * 1 * 60 * 60 * 1000,
     ...options,
   });
 }
@@ -60,4 +64,32 @@ export async function fetchEnvoys(page: number = 1) {
   }
 
   return res.json();
+}
+export async function sendArticleToApi(articleData: {
+  title: string;
+  content: any;
+  image: string | null;
+}) {
+  console.log("Sending article to API", articleData);
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/article-create`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      // Add any necessary authentication headers here
+    },
+    body: JSON.stringify(articleData),
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to save article');
+  }
+
+  return response.json();
+}
+
+// Hook for using the sendArticleToApi function with react-query
+export function useSendArticle() {
+  return useMutation({
+    mutationFn: sendArticleToApi,
+  });
 }

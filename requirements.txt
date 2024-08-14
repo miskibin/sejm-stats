@@ -1,4 +1,5 @@
 uvicorn==0.30.1
+djangorestframework-simplejwt
 gunicorn==22.0.0
 pytest==8.2.2
 django==5.0

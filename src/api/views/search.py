@@ -1,113 +1,173 @@
-from collections import Counter
-from functools import reduce
-from operator import or_
-
-from django.contrib.postgres.search import SearchQuery, SearchVector
-from django.db.models import Count, Q
-from django.db.models.functions import TruncMonth
-from loguru import logger
-from rest_framework import viewsets
+from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
+from django.db.models import F, Q
+from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework import status
+from datetime import datetime
+from django.utils import timezone
+from django.db import connection
+from loguru import logger
 
-from api.serializers import *
+from api.serializers.detail_serializers import InterpellationSerializer
+from api.serializers.list_serializers import (
+    ActListSerializer,
+    PrintListSerializer,
+    ProcessListSerializer,
+    VotingListSerializer,
+)
+from api.serializers.CommitteeDetailSerialzer import CommitteeSittingSerializer
+from sejm_app.models import (
+    CommitteeSitting,
+    Interpellation,
+    Process,
+    PrintModel,
+    Voting,
+)
 from eli_app.models import Act
-from sejm_app.models import CommitteeSitting, Envoy, Interpellation, PrintModel, Process
 
 
-class SearchViewSet(viewsets.ViewSet):
-    MAX_RESULTS = 100
-    VECTOR_CONFIG = "pl_ispell"
+class OptimizedSearchView(APIView):
+    def get(self, request):
+        query = request.GET.get("q")
+        start_date = request.GET.get("start_date")
+        end_date = request.GET.get("end_date")
 
-    def get_search_vector(self, fields):
-        return SearchVector(*fields, config=self.VECTOR_CONFIG)
-
-    def get_search_query(self, keywords):
-        return reduce(
-            or_,
-            [
-                SearchQuery(keyword.strip(), config=self.VECTOR_CONFIG)
-                for keyword in keywords
-            ],
+        logger.info(
+            f"Received search request: query='{query}', start_date='{start_date}', end_date='{end_date}'"
         )
 
-    def get_queryset(self, model, search_vector):
-        return model.objects.annotate(search=search_vector).filter(
-            search=self.combined_search_query
-        )
-
-    def perform_search(self, model, serializer, search_vector, order_by=None):
-        queryset = self.get_queryset(model, search_vector)
-        if order_by:
-            queryset = queryset.order_by(order_by)
-        return serializer(queryset[: self.MAX_RESULTS], many=True).data
-
-    def get_top_items(self, items, field):
-        if isinstance(items[0][field], dict):
-            counts = Counter(item[field]["name"] for item in items)
-        else:
-            counts = Counter(item[field] for item in items)
-        return {item: count for item, count in counts.most_common(3)}
-
-    def get_items_per_month(self, queryset, date_field):
-        items_per_month = (
-            queryset.annotate(month=TruncMonth(date_field))
-            .values("month")
-            .annotate(count=Count("pk"))
-            .order_by("month")
-        )
-        return {
-            item["month"].strftime("%Y-%m"): item["count"] for item in items_per_month
-        }
-
-    def list(self, request):
-        query = request.GET.get("q", "").strip()
         if not query:
-            return Response({"error": "Empty search query"}, status=400)
-
-        logger.debug(f"Query: {query}")
-        keywords = query.split(",")
+            logger.warning("Empty search query received")
+            return Response(
+                {"error": "Query parameter 'q' is required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         try:
-            self.combined_search_query = self.get_search_query(keywords)
-        except Exception as e:
-            logger.error(f"Error constructing search query: {e}")
-            return Response({"error": "Invalid search query"}, status=400)
+            start_date = (
+                datetime.strptime(start_date, "%Y-%m-%d").date() if start_date else None
+            )
+            end_date = (
+                datetime.strptime(end_date, "%Y-%m-%d").date() if end_date else None
+            )
+        except ValueError as e:
+            logger.error(f"Invalid date format: {e}")
+            return Response(
+                {"error": "Invalid date format. Use YYYY-MM-DD."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
-        vectors = {
-            "title": self.get_search_vector(["title"]),
-            "keywords": self.get_search_vector(["keywords"]),
-            "person": self.get_search_vector(["firstName", "secondName", "lastName"]),
-            "agenda": self.get_search_vector(["agenda"]),
-        }
+        search_query = SearchQuery(query, config="pl_ispell")
 
-        committee_sittings = self.perform_search(
-            CommitteeSitting, CommitteeSittingSerializer, vectors["agenda"]
+        search_configs = [
+            (
+                "committee_sittings",
+                CommitteeSitting,
+                CommitteeSittingSerializer,
+                SearchVector("agenda", "committee__name", config="pl_ispell"),
+                "date",
+            ),
+            (
+                "interpellations",
+                Interpellation,
+                InterpellationSerializer,
+                SearchVector(
+                    "title",
+                    "fromMember__firstName",
+                    "fromMember__lastName",
+                    config="pl_ispell",
+                ),
+                "receiptDate",
+            ),
+            (
+                "processes",
+                Process,
+                ProcessListSerializer,
+                SearchVector("title", "description", config="pl_ispell"),
+                "processStartDate",
+            ),
+            (
+                "prints",
+                PrintModel,
+                PrintListSerializer,
+                SearchVector("title", config="pl_ispell"),
+                "deliveryDate",
+            ),
+            (
+                "acts",
+                Act,
+                ActListSerializer,
+                SearchVector("title", "keywords__name", config="pl_ispell"),
+                "announcementDate",
+            ),
+            (
+                "votings",
+                Voting,
+                VotingListSerializer,
+                SearchVector("title", "description", "topic", config="pl_ispell"),
+                "date",
+            ),
+        ]
+
+        results = {}
+        with connection.execute_wrapper(self._query_debugger):
+            for key, model, serializer, vector, date_field in search_configs:
+                queryset = self.search_model(
+                    model, vector, search_query, start_date, end_date, date_field
+                )
+                results[key] = serializer(queryset, many=True).data
+
+        logger.info(
+            f"Search completed. Results count: {sum(len(v) for v in results.values())}"
         )
-        top_committees = self.get_top_items(committee_sittings, "committee")
-
-        interpellations = self.perform_search(
-            Interpellation, InterpellationSerializer, vectors["title"], "-lastModified"
-        )
-        top_interpellations = self.get_top_items(interpellations, "fromMember")
-
-        prints_queryset = self.get_queryset(PrintModel, vectors["title"])
-        prints_per_month = self.get_items_per_month(prints_queryset, "deliveryDate")
-        prints = PrintModelSerializer(prints_queryset, many=True).data
-
-        acts_queryset = self.get_queryset(Act, vectors["title"])
-        acts_per_month = self.get_items_per_month(acts_queryset, "announcementDate")
-        acts = ActSerializer(acts_queryset, many=True).data
-
-        results = {
-            "committee_sittings": committee_sittings,
-            "top_committees": top_committees,
-            "interpellations": interpellations,
-            "top_interpellations": top_interpellations,
-            "prints": prints,
-            "prints_per_month": prints_per_month,
-            "acts": acts,
-            "acts_per_month": acts_per_month,
-        }
-
-        logger.debug(f"Got results.")
         return Response(results)
+
+    def search_model(
+        self, model, search_vector, search_query, start_date, end_date, date_field
+    ):
+        queryset = model.objects.annotate(
+            search=search_vector, rank=SearchRank(search_vector, search_query)
+        ).filter(search=search_query)
+
+        if start_date:
+            queryset = queryset.filter(**{f"{date_field}__gte": start_date})
+        if end_date:
+            queryset = queryset.filter(**{f"{date_field}__lte": end_date})
+
+        return queryset.order_by("-rank")[:10]  # Limit to top 10 results per model
+
+    def _query_debugger(self, execute, sql, params, many, context):
+        logger.debug(f"Executing SQL: {sql}")
+        start = timezone.now()
+        result = execute(sql, params, many, context)
+        duration = timezone.now() - start
+        logger.debug(f"Query duration: {duration.total_seconds():.3f} seconds")
+        return result
+
+    @staticmethod
+    def optimize_database():
+        with connection.cursor() as cursor:
+            logger.info("Optimizing database indexes...")
+            cursor.execute(
+                "CREATE INDEX IF NOT EXISTS committee_sitting_search_idx ON sejm_app_committeesitting USING GIN (to_tsvector('pl_ispell', agenda || ' ' || committee_id))"
+            )
+            cursor.execute(
+                "CREATE INDEX IF NOT EXISTS interpellation_search_idx ON sejm_app_interpellation USING GIN (to_tsvector('pl_ispell', title || ' ' || \"fromMember_id\"))"
+            )
+            cursor.execute(
+                "CREATE INDEX IF NOT EXISTS process_search_idx ON sejm_app_process USING GIN (to_tsvector('pl_ispell', title || ' ' || description))"
+            )
+            cursor.execute(
+                "CREATE INDEX IF NOT EXISTS print_search_idx ON sejm_app_printmodel USING GIN (to_tsvector('pl_ispell', title))"
+            )
+            cursor.execute(
+                "CREATE INDEX IF NOT EXISTS act_search_idx ON eli_app_act USING GIN (to_tsvector('pl_ispell', title))"
+            )
+            cursor.execute(
+                "CREATE INDEX IF NOT EXISTS voting_search_idx ON sejm_app_voting USING GIN (to_tsvector('pl_ispell', title || ' ' || description))"
+            )
+            logger.info("Database optimization completed")
+
+
+# Run this method once to create the necessary indexes
+# OptimizedSearchView.optimize_database()
