@@ -69,6 +69,7 @@ class ProcessListSerializer(serializers.ModelSerializer):
 class InterpellationListSerializer(serializers.ModelSerializer):
     member = serializers.SerializerMethodField()
     to = serializers.SerializerMethodField()
+
     def get_member(self, obj):
         return str(obj.fromMember)
 

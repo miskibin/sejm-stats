@@ -106,7 +106,7 @@ class EnvoyDetailSerializer(serializers.ModelSerializer):
         return EnvoyVotingSerializer(votings, many=True, context={"envoy": obj}).data
 
     def get_discipline_ratio(self, obj):
-        votes = obj.votes.all()[:100]  # Limit to last 100 votes for performance
+        votes = obj.votes.all()  # Limit to last 100 votes for performance
         voting_dict = defaultdict(int)
 
         for vote in votes:

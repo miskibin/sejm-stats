@@ -8,6 +8,7 @@ from django.utils import timezone
 from django.db import connection
 from loguru import logger
 
+from api.serializers.CommitteeDetailSerialzer import CommitteeSittingSerializer
 from api.serializers.detail_serializers import InterpellationSerializer
 from api.serializers.list_serializers import (
     ActListSerializer,
