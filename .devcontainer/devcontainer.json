@@ -12,7 +12,7 @@
         "redis"
     ],
     "postCreateCommand": "pip install -r /code/requirements.txt && pip install djlint isort black mypy pylint",
-    "postStartCommand": "isort . && black . && djlint . --indent=2 --ignore='H013,H006,H021,D018,T003' --reformat",
+    "postStartCommand": "black . && djlint . --indent=2 --ignore='H013,H006,H021,D018,T003' --reformat",
     "forwardPorts": [
         8000
     ],
