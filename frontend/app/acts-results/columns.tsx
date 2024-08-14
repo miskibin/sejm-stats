@@ -6,12 +6,6 @@ import { ColumnDef } from "@tanstack/react-table";
 
 export const columns: ColumnDefE<Act>[] = [
   {
-    accessorKey: "ELI",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="ELI" />
-    ),
-  },
-  {
     accessorKey: "title",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Tytuł" />

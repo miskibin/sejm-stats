@@ -23,6 +23,7 @@ export interface Club {
 export interface Interpellation {
   id: number;
   title: string;
+  to: string;
   member: number;
   bodyLink: string;
   sentDate: string;
