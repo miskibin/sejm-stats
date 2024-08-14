@@ -1,6 +1,7 @@
 from community_app.serializers import ArticleSerializer
 
 from .acts import ActsMetaViewSet, ActViewSet
+from .article import ArticleCreateView
 from .clubs import ClubViewSet
 from .committees import CommitteeViewSet
 from .create_article import ArticleContextViewSet
@@ -11,6 +12,5 @@ from .interpellations import InterpellationViewSet
 from .processes import ProcessesMetaViewSet, ProcessViewSet
 from .search import OptimizedSearchView
 from .votings import VotingsMetaViewSet, VotingViewSet
-from .article import ArticleCreateView
 
 OptimizedSearchView.optimize_database()

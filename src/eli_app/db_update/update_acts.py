@@ -8,8 +8,7 @@ from django.utils import timezone
 from loguru import logger
 
 from eli_app.libs.api_endpoints import EliAPI
-from eli_app.models import (Act, ActStatus, DocumentType, Institution, Keyword,
-                            Publisher)
+from eli_app.models import Act, ActStatus, DocumentType, Institution, Keyword, Publisher
 from sejm_app.db_updater import DbUpdaterTask
 from sejm_app.utils import parse_all_dates
 

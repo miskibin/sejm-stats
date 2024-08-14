@@ -1,13 +1,15 @@
-from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
-from django.db.models import F, Q
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
 from datetime import datetime
-from django.utils import timezone
-from django.db import connection
-from loguru import logger
 
+from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
+from django.db import connection
+from django.db.models import F, Q
+from django.utils import timezone
+from loguru import logger
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.views import APIView
+
+from api.serializers.CommitteeDetailSerialzer import CommitteeSittingSerializer
 from api.serializers.detail_serializers import InterpellationSerializer
 from api.serializers.list_serializers import (
     ActListSerializer,
@@ -15,15 +17,14 @@ from api.serializers.list_serializers import (
     ProcessListSerializer,
     VotingListSerializer,
 )
-from api.serializers.CommitteeDetailSerialzer import CommitteeSittingSerializer
+from eli_app.models import Act
 from sejm_app.models import (
     CommitteeSitting,
     Interpellation,
-    Process,
     PrintModel,
+    Process,
     Voting,
 )
-from eli_app.models import Act
 
 
 class OptimizedSearchView(APIView):

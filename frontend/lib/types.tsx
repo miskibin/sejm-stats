@@ -2,6 +2,60 @@ import { ColumnDef } from "@tanstack/react-table";
 export type ColumnDefE<T> = ColumnDef<T> & {
   accessorKey?: keyof T;
 };
+export interface EnvoyDetail {
+  id: number;
+  firstName: string;
+  secondName: string;
+  lastName: string;
+  email: string;
+  active: boolean;
+  districtName: string;
+  districtNum: number;
+  voivodeship: string;
+  club: string;
+  birthDate: string;
+  birthLocation: string;
+  profession: string;
+  educationLevel: string;
+  numberOfVotes: number;
+  biography: string;
+  biography_source: string;
+  title: string;
+  full_name: string;
+  photo: string;
+  club_photo: string;
+  latest_votings: Array<{
+    id: number;
+    title: string;
+    date: string;
+    envoy_vote: string;
+  }>;
+  discipline_ratio: {
+    labels: string[];
+    values: number[];
+    colors: string[];
+  };
+  committee_memberships: Array<{
+    committee_name: string;
+    committee_code: string;
+    function: string;
+  }>;
+  processes: Array<{
+    id: string;
+    number: number;
+    documentDate: string;
+    title: string;
+    createdBy: string;
+    length_tag: string;
+  }>;
+  interpellations: Array<{
+    id: number;
+    title: string;
+    lastModified: string;
+    bodyLink: string | null;
+  }>;
+  activity_percentage: number;
+}
 
 export interface APIResponse<T> {
   count: number;

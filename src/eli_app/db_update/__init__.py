@@ -1,7 +1,11 @@
 from .update_acts import ActUpdaterTask
-from .update_helpers import (ActStatusUpdaterTask, InstitutionUpdaterTask,
-                             KeywordUpdaterTask, PublisherUpdaterTask,
-                             ReferenceUpdaterTask)
+from .update_helpers import (
+    ActStatusUpdaterTask,
+    InstitutionUpdaterTask,
+    KeywordUpdaterTask,
+    PublisherUpdaterTask,
+    ReferenceUpdaterTask,
+)
 
 tasks = (
     ActStatusUpdaterTask(),

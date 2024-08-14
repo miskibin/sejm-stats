@@ -50,6 +50,7 @@
     "react-day-picker": "^8.10.1",
     "react-dom": "^18",
     "react-icons": "^5.2.1",
+    "recharts": "^2.12.7",
     "slate": "^0.103.0",
     "slate-history": "^0.100.0",
     "slate-react": "^0.107.1",

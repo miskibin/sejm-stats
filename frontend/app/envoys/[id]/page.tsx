@@ -3,7 +3,14 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardFooter,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -27,95 +34,54 @@ import {
   Building,
   Info,
 } from "lucide-react";
-import {
-  Chart as ChartJS,
-  ArcElement,
-  Tooltip as ChartTooltip,
-  Legend,
-} from "chart.js";
-import { Pie } from "react-chartjs-2";
+import { PieChart, Pie, Label, Legend } from "recharts";
 import { useFetchData } from "@/lib/api";
 import { SkeletonComponent } from "@/components/ui/skeleton-page";
 import LoadableContainer from "@/components/loadableContainer";
-import useChartDefaults from "@/utils/chartDefaults";
-ChartJS.register(ArcElement, Legend);
+import {
+  ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
+import { EnvoyDetail } from "@/lib/types";
 
-interface Envoy {
-  id: number;
-  firstName: string;
-  secondName: string;
-  lastName: string;
-  email: string;
-  active: boolean;
-  districtName: string;
-  districtNum: number;
-  voivodeship: string;
-  club: string;
-  birthDate: string;
-  birthLocation: string;
-  profession: string;
-  educationLevel: string;
-  numberOfVotes: number;
-  biography: string;
-  biography_source: string;
-  title: string;
-  full_name: string;
-  photo: string;
-  club_photo: string;
-  latest_votings: Array<{
-    id: number;
-    title: string;
-    date: string;
-    envoy_vote: string;
-  }>;
-  discipline_ratio: {
-    labels: string[];
-    values: number[];
-    colors: string[];
-  };
-  committee_memberships: Array<{
-    committee_name: string;
-    committee_code: string;
-    function: string;
-  }>;
-  processes: Array<{
-    id: string;
-    number: number;
-    documentDate: string;
-    title: string;
-    createdBy: string;
-    length_tag: string;
-  }>;
-  interpellations: Array<{
-    id: number;
-    title: string;
-    lastModified: string;
-    bodyLink: string | null;
-  }>;
-  activity_percentage: number;
-}
-
-const EnvoyDetail: React.FC = () => {
+const EnvoyDetailPage: React.FC = () => {
   const { id } = useParams<{ id: string }>() ?? {};
-  const chartDefaults = useChartDefaults();
-  const { data, isLoading, error } = useFetchData<Envoy>(`/envoys/${id}/`);
+  const { data, isLoading, error } = useFetchData<EnvoyDetail>(
+    `/envoys/${id}/`
+  );
   if (isLoading) return <SkeletonComponent />;
   if (error) return <LoadableContainer>{error.message}</LoadableContainer>;
   if (!data) return null;
   const envoy = data;
   if (isLoading)
     return <div className="container mx-auto p-4">Ładowanie...</div>;
-  
+
   if (error) return <div className="container mx-auto p-4">{error}</div>;
-  const disciplineChartData = {
-    labels: envoy.discipline_ratio.labels,
-    datasets: [
-      {
-        data: envoy.discipline_ratio.values,
-        backgroundColor: chartDefaults.colors.background,
-      },
-    ],
+
+  const disciplineChartData = envoy.discipline_ratio.labels.map(
+    (label, index) => ({
+      label,
+      value: envoy.discipline_ratio.values[index],
+      fill: `hsl(var(--chart-${index + 1}))`,
+    })
+  );
+  const chartConfig: ChartConfig = {
+    value: { label: "Głosy" },
+    ...envoy.discipline_ratio.labels.reduce((acc, label, index) => {
+      acc[label] = {
+        label,
+        color: `hsl(var(--chart-1))`,
+      };
+      return acc;
+    }, {} as Record<string, { label: string; color: string }>),
   };
+
+  const totalVotes = disciplineChartData.reduce(
+    (sum, item) => sum + item.value,
+    0
+  );
 
   const activityTooltipContent =
     "Aktywność względem innych posłów. Obliczana jest na podstawie liczby głosowań, interpelacji i projektów ustaw.";
@@ -249,14 +215,58 @@ const EnvoyDetail: React.FC = () => {
             </CardContent>
           </Card>
 
-          <Card className="mt-6 h-96">
+          <Card className="mt-6">
             <CardHeader>
-              <h3 className="text-xl font-bold">Dyscyplina głosowania</h3>
+              <CardTitle>Dyscyplina głosowania</CardTitle>
+              <CardDescription>Względem klubu {envoy.club}</CardDescription>
             </CardHeader>
-
-            <CardContent className="h-fit">
-              {/* @ts-ignore */}
-              <Pie data={disciplineChartData} options={chartDefaults} />
+            <CardContent className="pb-6 px-0">
+              <ChartContainer
+                config={chartConfig}
+                className="mx-auto aspect-square max-h-[260px]"
+              >
+                <PieChart>
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <Pie
+                    data={disciplineChartData}
+                    dataKey="value"
+                    nameKey="label"
+                    innerRadius={50}
+                    outerRadius={110}
+                  >
+                    <Label
+                      content={({ viewBox }) => {
+                        if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                          return (
+                            <text
+                              x={viewBox.cx}
+                              y={viewBox.cy}
+                              textAnchor="middle"
+                              dominantBaseline="middle"
+                            >
+                              <tspan
+                                x={viewBox.cx}
+                                y={viewBox.cy}
+                                className="fill-foreground text-3xl font-bold"
+                              >
+                                {totalVotes}
+                              </tspan>
+                              <tspan
+                                x={viewBox.cx}
+                                y={(viewBox.cy || 0) + 24}
+                                className="fill-muted-foreground"
+                              >
+                                Głosów
+                              </tspan>
+                            </text>
+                          );
+                        }
+                      }}
+                    />
+                  </Pie>
+                  <Legend layout="horizontal"/>
+                </PieChart>
+              </ChartContainer>
             </CardContent>
           </Card>
         </div>
@@ -421,4 +431,4 @@ const EnvoyDetail: React.FC = () => {
     </div>
   );
 };
-export default EnvoyDetail;
+export default EnvoyDetailPage;

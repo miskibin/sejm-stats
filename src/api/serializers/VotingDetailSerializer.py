@@ -1,14 +1,25 @@
 from django.db import models
-from django.db.models import (Case, Count, F, IntegerField, OuterRef, Prefetch,
-                              Q, Subquery, Value, When)
+from django.db.models import (
+    Case,
+    Count,
+    F,
+    IntegerField,
+    OuterRef,
+    Prefetch,
+    Q,
+    Subquery,
+    Value,
+    When,
+)
 from django.db.models.functions import Concat
 from rest_framework import serializers
 
-from api.serializers.list_serializers import (PrintListSerializer,
-                                              ProcessListSerializer,
-                                              VotingListSerializer)
-from sejm_app.models import (Club, ClubVote, Envoy, Process, Vote, VoteOption,
-                             Voting)
+from api.serializers.list_serializers import (
+    PrintListSerializer,
+    ProcessListSerializer,
+    VotingListSerializer,
+)
+from sejm_app.models import Club, ClubVote, Envoy, Process, Vote, VoteOption, Voting
 
 
 class ClubListSerializer(serializers.ModelSerializer):
