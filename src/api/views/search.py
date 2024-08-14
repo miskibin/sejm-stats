@@ -3,7 +3,7 @@ from django.db.models import F, Q
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.utils import timezone
 from django.db import connection
 from loguru import logger
@@ -29,12 +29,9 @@ from eli_app.models import Act
 class OptimizedSearchView(APIView):
     def get(self, request):
         query = request.GET.get("q")
-        start_date = request.GET.get("start_date")
-        end_date = request.GET.get("end_date")
+        range_param = request.GET.get("range")
 
-        logger.info(
-            f"Received search request: query='{query}', start_date='{start_date}', end_date='{end_date}'"
-        )
+        logger.info(f"Received search request: query='{query}', range='{range_param}'")
 
         if not query:
             logger.warning("Empty search query received")
@@ -43,19 +40,21 @@ class OptimizedSearchView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        try:
-            start_date = (
-                datetime.strptime(start_date, "%Y-%m-%d").date() if start_date else None
-            )
-            end_date = (
-                datetime.strptime(end_date, "%Y-%m-%d").date() if end_date else None
-            )
-        except ValueError as e:
-            logger.error(f"Invalid date format: {e}")
-            return Response(
-                {"error": "Invalid date format. Use YYYY-MM-DD."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
+        # Calculate start_date based on range parameter
+        end_date = timezone.now().date()
+        if range_param == "1m":
+            start_date = end_date - timedelta(days=30)
+        elif range_param == "3m":
+            start_date = end_date - timedelta(days=90)
+        elif range_param == "6m":
+            start_date = end_date - timedelta(days=180)
+        elif range_param == "12m":
+            start_date = end_date - timedelta(days=365)
+        elif range_param == "all":
+            start_date = None
+        else:
+            start_date = None
+            end_date = None
 
         search_query = SearchQuery(query, config="pl_ispell")
 
@@ -112,10 +111,13 @@ class OptimizedSearchView(APIView):
         results = {}
         with connection.execute_wrapper(self._query_debugger):
             for key, model, serializer, vector, date_field in search_configs:
-                queryset = self.search_model(
-                    model, vector, search_query, start_date, end_date, date_field
-                )
-                results[key] = serializer(queryset, many=True).data
+                if request.GET.get(key, "false").lower() == "true":
+                    queryset = self.search_model(
+                        model, vector, search_query, start_date, end_date, date_field
+                    )
+                    results[key] = serializer(queryset, many=True).data
+                else:
+                    results[key] = []
 
         logger.info(
             f"Search completed. Results count: {sum(len(v) for v in results.values())}"
@@ -134,7 +136,7 @@ class OptimizedSearchView(APIView):
         if end_date:
             queryset = queryset.filter(**{f"{date_field}__lte": end_date})
 
-        return queryset.order_by("-rank")[:10]  # Limit to top 10 results per model
+        return queryset.order_by("-rank")[:50]  # Limit to top 10 results per model
 
     def _query_debugger(self, execute, sql, params, many, context):
         logger.debug(f"Executing SQL: {sql}")

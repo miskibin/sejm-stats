@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 import { FaSearch, FaArrowRight } from "react-icons/fa";
 import StatCard from "./statCard";
 import VotingCard from "./votingCard";
@@ -21,20 +21,34 @@ const Home: React.FC<HomeProps> = ({ latestVotings, allClubs, cards }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const router = useRouter();
 
-  const handleSearch = () => {
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
     if (searchQuery.trim()) {
       setIsModalOpen(true);
     }
   };
 
-  const handleDateRangeSelect = (range: string) => {
+  const handleDateRangeSelect = (
+    range: string,
+    options: Record<string, boolean>
+  ) => {
     setIsModalOpen(false);
-    router.push(`/search-results?q=${encodeURIComponent(searchQuery)}&range=${range}`);
+    const searchParams = new URLSearchParams({
+      q: searchQuery,
+      range: range,
+      ...Object.entries(options).reduce((acc, [key, value]) => {
+        if (value) acc[key] = "true";
+        return acc;
+      }, {} as Record<string, string>),
+    });
+    router.push(`/search-results?${searchParams.toString()}`);
   };
 
   return (
     <div className="container min-w-full px-0 mx-auto">
-      <div className={`relative overflow-hidden ${styles.bgBanner} border-b border-gray-200 py-16 lg:px-12 sm:px-1`}>
+      <div
+        className={`relative overflow-hidden ${styles.bgBanner} border-b border-gray-200 py-16 lg:px-12 sm:px-1`}
+      >
         <div className="mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <h1 className="text-6xl font-light text-gray-700 dark:text-gray-100 mb-4">
             Parlament Pod Lupą
@@ -42,23 +56,23 @@ const Home: React.FC<HomeProps> = ({ latestVotings, allClubs, cards }) => {
           <p className="text-xl text-gray-500 dark:text-gray-400 mb-8">
             <strong>Kompleksowy przegląd aktywności sejmowej</strong>
           </p>
-          <div className="max-w-md mb-8">
+          <form onSubmit={handleSearch} className="max-w-md mb-8">
             <div className="flex">
               <input
                 type="search"
-                className="form-input flex-grow rounded-l-lg p-2"
+                className="form-input flex-grow border-2 rounded-l-lg p-2"
                 placeholder="Wpisz jakie kolwiek słowo"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
-              <button 
+              <button
+                type="submit"
                 className="bg-blue-500 text-white px-4 py-2 rounded-r-lg"
-                onClick={handleSearch}
               >
                 <FaSearch />
               </button>
             </div>
-          </div>
+          </form>
           <div className="flex space-x-4">
             <Link
               href="/envoys"
@@ -74,7 +88,6 @@ const Home: React.FC<HomeProps> = ({ latestVotings, allClubs, cards }) => {
             </Link>
           </div>
         </div>
-        
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12 px-4 max-w-7xl mx-auto">
@@ -88,9 +101,7 @@ const Home: React.FC<HomeProps> = ({ latestVotings, allClubs, cards }) => {
         </div>
 
         <div>
-          <h2 className="text-4xl  mb-4">
-            Ostatnie Głosowania
-          </h2>
+          <h2 className="text-4xl  mb-4">Ostatnie Głosowania</h2>
           <div className="space-y-4">
             {latestVotings.map((voting) => (
               <VotingCard key={voting.id} voting={voting} />
@@ -122,9 +133,9 @@ const Home: React.FC<HomeProps> = ({ latestVotings, allClubs, cards }) => {
           ))} */}
         </div>
       </div>
-      <DateRangeModal 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
+      <DateRangeModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
         onSelect={handleDateRangeSelect}
       />
     </div>
