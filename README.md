@@ -1,7 +1,8 @@
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/cba40f6626de4790a9d2a6ca5a16d02f)](https://app.codacy.com/gh/miskibin/sejm-stats/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 
+
 <p align="center">
-  <a href="https://sejm-stats.pl/"><img src="src/sejm_app/static/img/logo.png" alt="Sejm Stats logo" width="200"/></a>
+  <a href="https://sejm-stats.pl/"><img src="frontend/public/logo.png" alt="Sejm Stats logo" width="200"/></a>
 </p>
 
 <p align="center">
