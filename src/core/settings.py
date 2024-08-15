@@ -18,10 +18,16 @@ from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+from celery.schedules import crontab
 
 # Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
-
+# See https://docs.djangoproject.com/en/4.2/howto/deployment/checCELERY_BEAT_SCHEDULE = {
+CELERY_BEAT_SCHEDULE = {
+    "update_tasks": {
+        "task": "sejm_app.tasks.run_update_tasks",
+        "schedule": crontab(hour=0, minute=0),  # Adjust the schedule as needed
+    },
+}
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = config("SECRET_KEY")
 
@@ -72,6 +78,7 @@ INSTALLED_APPS = [
     "crispy_bootstrap5",
     "ckeditor",
     "rolepermissions",
+    "django_celery_beat",
     "api.apps.ApiConfig",
     "sejm_app.apps.SejmAppConfig",
     "community_app.apps.ArticlesAppConfig",
