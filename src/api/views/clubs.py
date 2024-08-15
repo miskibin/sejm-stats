@@ -18,12 +18,15 @@ class ClubViewSet(ReadOnlyModelViewSet):
             return ClubListSerializer
         return ClubDetailSerializer
 
+    from sejm_app.models import Envoy
+
     def get_queryset(self):
         queryset = super().get_queryset()
         if self.action == "retrieve":
             club_id = self.kwargs.get(self.lookup_field)
             if club_id == "niez":
                 self.kwargs[self.lookup_field] = "niez."
+
             process_subquery = Exists(
                 Envoy.objects.filter(processes=OuterRef("pk"), club=OuterRef("pk"))
             )
@@ -32,7 +35,7 @@ class ClubViewSet(ReadOnlyModelViewSet):
                 Prefetch(
                     "envoys",
                     queryset=Envoy.objects.only(
-                        "id", "firstName", "lastName", "districtName"
+                        "id", "firstName", "lastName", "districtName", "processes"
                     ),
                 ),
                 "votes",
@@ -40,9 +43,10 @@ class ClubViewSet(ReadOnlyModelViewSet):
                 interpellation_count=Count("envoys__interpellations", distinct=True),
                 process_count=Count(
                     "envoys__processes",
-                    filter=Q(envoys__processes__isnull=False),
+                    # filter=Q(envoys__processes__isnull=False),
                     distinct=True,
                 ),
+                has_process=process_subquery,
             )
         return queryset
 
