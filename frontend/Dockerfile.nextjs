@@ -4,6 +4,7 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install sharp
 RUN npm ci
+RUN npm install sharp
 COPY . .
 RUN npm run build
 
