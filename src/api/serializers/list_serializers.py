@@ -19,19 +19,12 @@ class VotingListSerializer(serializers.ModelSerializer):
         model = Voting
         fields = [
             "id",
-            "yes",
-            "no",
-            "abstain",
             "category",
-            "term",
             "sitting",
-            "sittingDay",
-            "votingNumber",
             "date",
             "title",
             "description",
             "topic",
-            "prints",
             "kind",
             "success",
         ]
@@ -56,7 +49,15 @@ class ProcessListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Process
-        fields = ["id", "number","createdBy", "documentDate", "title", "createdBy", "length_tag"]
+        fields = [
+            "id",
+            "number",
+            "createdBy",
+            "documentDate",
+            "title",
+            "createdBy",
+            "length_tag",
+        ]
 
     def get_documentDate(self, obj):
         return (

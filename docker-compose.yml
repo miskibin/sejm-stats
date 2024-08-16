@@ -14,7 +14,18 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: [ "gunicorn", "core.asgi:application", "-k", "uvicorn.workers.UvicornWorker", "-b", "0.0.0.0:8000", "--timeout", "40", "--capture-output" ]
+    command:
+      [
+        "gunicorn",
+        "core.asgi:application",
+        "-k",
+        "uvicorn.workers.UvicornWorker",
+        "-b",
+        "0.0.0.0:8000",
+        "--timeout",
+        "40",
+        "--capture-output",
+      ]
     volumes:
       - ./src:/code/src
       - ./src/manage.py:/code/manage.py
@@ -57,7 +68,18 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.celery
-    command: [ "celery", "-A", "core", "worker", " --beat", "--scheduler", "django", "-l", "INFO" ]
+    command:
+      [
+        "celery",
+        "-A",
+        "core",
+        "worker",
+        "--beat",
+        "--scheduler",
+        "django",
+        "-l",
+        "INFO",
+      ]
     volumes:
       - ./src:/code/src
       - ./src/manage.py:/code/manage.py

@@ -38,7 +38,7 @@ class ClubVoteSerializer(serializers.ModelSerializer):
 
 class VoteSerializer(serializers.ModelSerializer):
     MP = serializers.StringRelatedField()
-    vote = serializers.CharField(source="get_vote_display")
+    vote = serializers.CharField(source="vote_label")
 
     class Meta:
         model = Vote

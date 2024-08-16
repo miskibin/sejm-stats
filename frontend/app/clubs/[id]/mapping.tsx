@@ -98,7 +98,7 @@ export const DistrictMap: React.FC<{ districtData: DistrictData[] }> = ({
                 },
                 dataLabels: {
                   enabled: false,
-                  format: "{point.name}",
+                  format: "{point.properties.alt-name}",
                 },
               },
             ],
@@ -128,10 +128,10 @@ export const DistrictMap: React.FC<{ districtData: DistrictData[] }> = ({
     colorAxis: {
       min: 0,
     },
-    series: [
+       series: [
       {
         type: "map",
-        name: "Number of MPs",
+        name: "Ilość posłów z okręgu",
         states: {
           hover: {
             color: "#BADA55",
@@ -139,10 +139,15 @@ export const DistrictMap: React.FC<{ districtData: DistrictData[] }> = ({
         },
         dataLabels: {
           enabled: true,
-          format: "{point.name}",
+          format: "{point.properties.alt-name}",
         },
         allAreas: true,
         data: [],
+        tooltip: {
+          pointFormatter: function () {
+            return this.properties["alt-name"];
+          },
+        },
       },
     ],
   };

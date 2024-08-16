@@ -1,12 +1,13 @@
-from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
-from django.db.models import F, Q
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
 from datetime import datetime, timedelta
-from django.utils import timezone
+
+from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 from django.db import connection
+from django.db.models import F, Q
+from django.utils import timezone
 from loguru import logger
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from api.serializers.CommitteeDetailSerialzer import CommitteeSittingSerializer
 from api.serializers.detail_serializers import InterpellationSerializer

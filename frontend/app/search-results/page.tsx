@@ -58,7 +58,7 @@ interface SearchResultsData {
   prints: Print[];
   acts: Act[];
   votings: Voting[];
-  [key: string]: any; // Add index signature
+  [key: string]: any;
 }
 
 const tabConfig = [
@@ -71,8 +71,8 @@ const tabConfig = [
 ];
 const SearchResults: React.FC = () => {
   const searchParams = useSearchParams();
-  const queryString = searchParams.toString();
-  const query = searchParams.get("q") || "";
+  const queryString = searchParams?.toString();
+  const query = searchParams?.get("q") || "";
   const { data, isLoading, error } = useFetchData<SearchResultsData>(
     `/search?${queryString}`
   );
