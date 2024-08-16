@@ -2,6 +2,7 @@
 import HighchartsReact from "highcharts-react-official";
 import { useEffect, useRef } from "react";
 import Highcharts from "highcharts";
+import { mapData } from "./map.json";
 export interface DistrictData {
   districtName: string;
   count: number;
@@ -98,7 +99,7 @@ export const DistrictMap: React.FC<{ districtData: DistrictData[] }> = ({
                 },
                 dataLabels: {
                   enabled: false,
-                  format: "{point.name}",
+                  format: "{point.properties.alt-name}",
                 },
               },
             ],
@@ -128,10 +129,10 @@ export const DistrictMap: React.FC<{ districtData: DistrictData[] }> = ({
     colorAxis: {
       min: 0,
     },
-    series: [
+       series: [
       {
         type: "map",
-        name: "Number of MPs",
+        name: "Ilość posłów z okręgu",
         states: {
           hover: {
             color: "#BADA55",
@@ -139,10 +140,15 @@ export const DistrictMap: React.FC<{ districtData: DistrictData[] }> = ({
         },
         dataLabels: {
           enabled: true,
-          format: "{point.name}",
+          format: "{point.properties.alt-name}",
         },
         allAreas: true,
         data: [],
+        tooltip: {
+          pointFormatter: function () {
+            return this.properties["alt-name"];
+          },
+        },
       },
     ],
   };

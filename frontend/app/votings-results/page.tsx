@@ -20,9 +20,7 @@ async function VotingResultsTable() {
 
   const filters = [
     { columnKey: "category", title: "Kategoria" },
-    { columnKey: "kind", title: "Rodzaj głosowania" },
     { columnKey: "date", title: "Data głosowania" },
-    { columnKey: "success", title: "Status" },
   ];
 
   return (

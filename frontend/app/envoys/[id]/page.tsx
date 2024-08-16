@@ -133,24 +133,22 @@ const EnvoyDetailPage: React.FC = () => {
                     <MapPin className="mr-2 h-4 w-4" />
                     Okręg
                   </span>
-                  <Link
-                    href={`/districts/${envoy.districtNum}`}
+                  <p
                     className="text-muted-foreground hover:underline"
                   >
                     {envoy.districtName} (nr {envoy.districtNum})
-                  </Link>
+                  </p>
                 </li>
                 <li className="flex justify-between items-center">
                   <span className="flex items-center">
                     <Building className="mr-2 h-4 w-4" />
                     Województwo
                   </span>
-                  <Link
-                    href={`/voivodeships/${envoy.voivodeship}`}
+                  <p
                     className="text-muted-foreground hover:underline"
                   >
                     {envoy.voivodeship}
-                  </Link>
+                  </p>
                 </li>
                 <li className="flex justify-between items-center">
                   <span className="flex items-center">

@@ -30,38 +30,15 @@ export const columns: ColumnDefE<any>[] = [
       return value.includes(row.getValue(id));
     },
   },
-  {
-    accessorKey: "yes",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Za" />
-    ),
-    cell: ({ row }) => {
-      const yes = row.original.yes;
-      return `${yes}`;
-    },
-  },
-  {
-    accessorKey: "no",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Przeciw" />
-    ),
-    cell: ({ row }) => {
-      const no = row.original.no;
-      return `${no}`;
-    },
-  },
-  {
-    accessorKey: "success",
-    header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Status" />
-    ),
-    cell: ({ row }) => {
-      return row.original.success ? "Przyjęto" : "Odrzucono";
-    },
-    filterFn: (row, id, value) => {
-      return value.includes(row.getValue(id));
-    },
-  },
+  // {
+  //   accessorKey: "success",
+  //   header: ({ column }) => (
+  //     <DataTableColumnHeader column={column} title="Sukces" />
+  //   ),
+  //   filterFn: (row, id, value) => {
+  //     return value.includes(row.getValue(id));
+  //   },
+  // },
 ];
 
 export const useColumnsWithClickHandler = () => {

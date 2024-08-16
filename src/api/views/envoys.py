@@ -1,8 +1,8 @@
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from rest_framework import serializers
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.viewsets import ReadOnlyModelViewSet
-from django.utils.decorators import method_decorator
-from django.views.decorators.cache import cache_page
 
 from api.pagination import ApiViewPagination
 from api.serializers import EnvoyDetailSerializer
