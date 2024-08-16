@@ -2,7 +2,6 @@
 import HighchartsReact from "highcharts-react-official";
 import { useEffect, useRef } from "react";
 import Highcharts from "highcharts";
-import { mapData } from "./map.json";
 export interface DistrictData {
   districtName: string;
   count: number;
