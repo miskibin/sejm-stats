@@ -28,7 +28,7 @@ const Notification = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 50 }}
           >
-            <Alert className="w-96 bg-red-100 dark:bg-red-900 shadow-lg border border-red-300 dark:border-red-700">
+            <Alert className="w-80 bg-red-100 dark:bg-red-900 shadow-lg border border-red-300 dark:border-red-700">
               <div className="flex justify-between items-start">
                 <div className="flex items-center">
                   <ExternalLink className="h-4 w-4 mr-2 text-red-500 dark:text-red-400" />
@@ -60,7 +60,7 @@ const Notification = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 50 }}
           >
-            <Alert className="w-96 bg-blue-100 dark:bg-blue-900 shadow-lg border border-blue-300 dark:border-blue-700">
+            <Alert className="w-80 bg-blue-100 dark:bg-blue-900 shadow-lg border border-blue-300 dark:border-blue-700">
               <div className="flex justify-between items-start">
                 <AlertTitle className="font-semibold text-blue-700 dark:text-blue-300">Ostatnia aktualizacja</AlertTitle>
                 <button onClick={() => setShowUpdate(false)} className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">
