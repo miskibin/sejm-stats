@@ -232,7 +232,7 @@ export default function EnvoysPage() {
             </Badge>
           )}
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3  gap-6">
           {filteredEnvoys.map((envoy, index) => (
             <div
               key={`${envoy.firstName}-${envoy.lastName}-${envoy.photo}`}

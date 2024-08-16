@@ -3,11 +3,11 @@
 import { Club } from "@/lib/types";
 import Image from "next/image";
 import Link from "next/link";
+import { useState } from "react";
 
 interface ClubsListProps {
   clubs: Club[];
 }
-
 const ClubsList: React.FC<ClubsListProps> = ({ clubs }) => {
   return (
     <ul className="space-y-2">
@@ -26,7 +26,7 @@ const ClubsList: React.FC<ClubsListProps> = ({ clubs }) => {
             >
               <span className="bg-white rounded p-1 mr-4">
                 {club.photo_url && (
-                  <Image
+                  <ImageWithFallback
                     src={`/media/club_logos/${club.id}.jpg`}
                     alt={club.id}
                     width={40}
@@ -43,6 +43,20 @@ const ClubsList: React.FC<ClubsListProps> = ({ clubs }) => {
           </li>
         ))}
     </ul>
+  );
+};
+
+const ImageWithFallback: React.FC<React.ComponentProps<typeof Image>> = (
+  props
+) => {
+  const [imgSrc, setImgSrc] = useState(props.src);
+
+  return (
+    <Image
+      {...props}
+      src={imgSrc}
+      onError={() => setImgSrc("/no-picture.jpg")}
+    />
   );
 };
 

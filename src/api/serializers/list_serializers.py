@@ -51,12 +51,12 @@ class VotingListSerializer(serializers.ModelSerializer):
 
 
 class ProcessListSerializer(serializers.ModelSerializer):
-    createdBy = serializers.CharField(source="get_createdBy_display")
+    # createdBy = serializers.CharField(source="get_createdBy_display")
     documentDate = serializers.SerializerMethodField()
 
     class Meta:
         model = Process
-        fields = ["id", "number", "documentDate", "title", "createdBy", "length_tag"]
+        fields = ["id", "number","createdBy", "documentDate", "title", "createdBy", "length_tag"]
 
     def get_documentDate(self, obj):
         return (

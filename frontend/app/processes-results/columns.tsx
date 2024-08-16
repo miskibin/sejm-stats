@@ -17,6 +17,8 @@ export const columns: ColumnDefE<any>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Złożono przez" />
     ),
+    cell: ({ row }) => row.original.createdBy || "Nieznany",
+
     filterFn: (row, id, value) => {
       return value.includes(row.getValue(id));
     },

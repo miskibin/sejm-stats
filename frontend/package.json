@@ -38,6 +38,7 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.0.0",
     "date-fns": "^3.6.0",
+    "framer-motion": "^11.3.28",
     "highcharts": "^11.4.6",
     "highcharts-react-official": "^3.2.1",
     "image-extensions": "^1.1.0",

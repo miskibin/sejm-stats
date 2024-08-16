@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
+import { useState } from "react";
 
 interface EnvoyCardProps {
   firstName: string;
@@ -22,7 +23,8 @@ const EnvoyCard: React.FC<EnvoyCardProps> = ({
   id,
 }) => {
   const router = useRouter();
-
+  const [imgSrc, setImgSrc] = useState(photo);
+  const [clubImgSrc, setClubImgSrc] = useState(clubPhoto);
   const handleClick = () => {
     router.push(`/envoys/${id}`);
   };
@@ -36,10 +38,11 @@ const EnvoyCard: React.FC<EnvoyCardProps> = ({
         <div className="flex flex-row">
           <div className="w-1/3 relative">
             <Image
-              src={photo ? `${photo}` : '/placeholder.jpg'}
+              src={imgSrc}
               alt={`${firstName} ${lastName}`}
               width={120}
               height={160}
+              onError={() => setImgSrc("/placeholder.jpg")}
               className="object-cover h-full w-full bg-gray-100"
             />
           </div>
@@ -47,11 +50,12 @@ const EnvoyCard: React.FC<EnvoyCardProps> = ({
             <div className="flex items-center mb-2">
               <h3 className="font-semibold text-lg mr-2">{`${firstName} ${lastName}`}</h3>
               <Image
-                src={`${clubPhoto}`}
+                src={clubImgSrc}
                 alt="Club logo"
                 width={40}
                 height={40}
                 className="rounded-sm border-gray-200 p-1 bg-gray-100"
+                onError={() => setClubImgSrc("/no-picture.jpg")}
               />
             </div>
             <p className="text-sm text-gray-600 mb-1">{educationLevel}</p>

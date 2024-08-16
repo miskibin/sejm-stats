@@ -9,6 +9,7 @@ import VotingCard from "./votingCard";
 import styles from "@/app/home.module.css";
 import NewsCard from "./newsCard";
 import DateRangeModal from "./dateRangeModal";
+import Notification from "./ui/notification";
 
 export interface HomeProps {
   latestVotings: any[];
@@ -138,6 +139,7 @@ const Home: React.FC<HomeProps> = ({ latestVotings, allClubs, cards }) => {
         onClose={() => setIsModalOpen(false)}
         onSelect={handleDateRangeSelect}
       />
+      <Notification />
     </div>
   );
 };

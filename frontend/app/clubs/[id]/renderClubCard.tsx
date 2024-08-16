@@ -1,9 +1,21 @@
-"use client "
+"use client ";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge, FileText, Mail, MessageSquare, Phone, Users, Vote } from "lucide-react";
+import {
+  Badge,
+  FileText,
+  Mail,
+  MessageSquare,
+  Phone,
+  Users,
+  Vote,
+} from "lucide-react";
 import Image from "next/image";
-export function renderClubCard(club: any, formatNumber: (num: number) => string) {
-    return <Card className="w-full overflow-hidden bg-gradient-to-br from-white to-gray-100 dark:from-gray-800 dark:to-gray-900 shadow-lg">
+export function renderClubCard(
+  club: any,
+  formatNumber: (num: number) => string
+) {
+  return (
+    <Card className="w-full overflow-hidden bg-gradient-to-br from-white to-gray-100 dark:from-gray-800 dark:to-gray-900 shadow-lg">
       <CardHeader className="p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-4 sm:space-y-0">
         <div className="flex items-center space-x-4">
           {club.id && (
@@ -13,9 +25,7 @@ export function renderClubCard(club: any, formatNumber: (num: number) => string)
                 alt={club.id}
                 width={48}
                 height={48}
-                onError={(e) => {
-                  e.currentTarget.src = "/no-picture.jpg";
-                } } />
+              />
             </div>
           )}
           <div>
@@ -78,7 +88,6 @@ export function renderClubCard(club: any, formatNumber: (num: number) => string)
           </div>
         </div>
       </CardContent>
-    </Card>;
-  }
-  
-  
+    </Card>
+  );
+}
