@@ -1,6 +1,6 @@
 "use client";
 
-import { DataTableColumnHeader } from "@/components/columns";
+import { DataTableColumnHeader } from "@/components/dataTable/columns";
 import { ColumnDefE } from "@/lib/types";
 import { ColumnDef } from "@tanstack/react-table";
 import { useRouter } from "next/navigation";

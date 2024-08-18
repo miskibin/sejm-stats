@@ -24,7 +24,7 @@ export function MultiSelect({ options, selected, onChange, placeholder }: MultiS
     <div className="w-full p-2 sm:p-4">
       <div className="flex flex-wrap gap-1 sm:gap-2 mb-2 sm:mb-4">
         {selected.length === 0 ? (
-          <span className="text-gray-500 text-sm sm:text-base">Nic nie wybrano</span>
+          <span className="text-gray-500 text-sm sm:text-base">wybrano wszystkie.</span>
         ) : (
           selected.map((item) => (
             <Badge

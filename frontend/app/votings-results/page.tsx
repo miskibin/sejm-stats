@@ -5,29 +5,48 @@ import { columns, useColumnsWithClickHandler } from "./columns";
 import { useFetchData } from "@/lib/api";
 import { APIResponse, Voting } from "@/lib/types";
 import { SkeletonComponent } from "@/components/ui/skeleton-page";
-import { Suspense } from "react";
+import { useMemo } from "react";
 
-async function VotingResultsTable() {
+function VotingResultsTable() {
   const searchParams = useSearchParams();
-  const columns = useColumnsWithClickHandler();
+  const columnsWithClickHandler = useColumnsWithClickHandler();
   const { data, isLoading, error } = useFetchData<APIResponse<Voting>>(
     `/votings/?${searchParams?.toString()}`
   );
 
-  if (isLoading) return <SkeletonComponent />;
-  if (error) return <>{error.message}</>;
-  if (!data) return null;
+  const filters = useMemo(
+    () => [
+      { columnKey: "category", title: "Kategoria" },
+      { columnKey: "sitting", title: "Posiedzenie" },
+    ],
+    []
+  );
 
-  const filters = [
-    { columnKey: "category", title: "Kategoria" },
-    { columnKey: "date", title: "Data głosowania" },
-  ];
+  const processedData = useMemo(() => {
+    if (!data) return [];
+    return data.results.map((result) => ({
+      ...result,
+      title: (
+        <>
+          {result.title}
+          <p className="font-semibold">
+            {result.description ? result.description : result.topic}
+          </p>
+        </>
+      ),
+    }));
+  }, [data]);
+
+  if (isLoading) return <SkeletonComponent />;
+  if (error) return <div>Error: {error.message}</div>;
+  if (!data) return null;
 
   return (
     <DataTable
-      columns={columns}
-      data={data.results}
+      columns={columnsWithClickHandler}
+      data={processedData}
       filters={filters}
+      defaultVisibleColumns={["title", "date" ]}
     />
   );
 }
@@ -35,9 +54,7 @@ async function VotingResultsTable() {
 export default function VotingResultsPage() {
   return (
     <div className="mx-1">
-      <Suspense fallback={<SkeletonComponent />}>
-        <VotingResultsTable />
-      </Suspense>
+      <VotingResultsTable />
     </div>
   );
 }

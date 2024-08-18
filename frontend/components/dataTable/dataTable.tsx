@@ -40,22 +40,39 @@ interface DataTableProps<TData, TValue> {
     title: string;
   }[];
   rowsPerPage?: number;
+  defaultVisibleColumns?: string[]; // New prop for default visible columns
 }
-
 export function DataTable<TData, TValue>({
   columns,
   data,
   filters = [],
   rowsPerPage = 10,
+  defaultVisibleColumns, // Add this new prop
 }: DataTableProps<TData, TValue>) {
   const [rowSelection, setRowSelection] = useState({});
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>(
+    () => {
+      if (defaultVisibleColumns) {
+        const visibility: VisibilityState = {};
+        columns.forEach((column) => {
+          if ("accessorKey" in column) {
+            visibility[column.accessorKey as string] =
+              defaultVisibleColumns.includes(column.accessorKey as string);
+          }
+        });
+        return visibility;
+      }
+      return {};
+    }
+  );
+
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
   const [filterOptions, setFilterOptions] = useState<
     Record<string, { label: string; value: string }[]>
   >({});
+
   useEffect(() => {
     const options: Record<string, { label: string; value: string }[]> = {};
     filters.forEach((filter) => {
@@ -113,7 +130,10 @@ export function DataTable<TData, TValue>({
                 options={filterOptions[filter.columnKey] || []}
               />
             ))}
-            <DataTableViewOptions table={table} />
+            <DataTableViewOptions
+              table={table}
+              defaultVisibleColumns={defaultVisibleColumns}
+            />
           </div>
         </CardContent>
       </Card>
@@ -148,7 +168,11 @@ export function DataTable<TData, TValue>({
                     <TableRow
                       key={row.id}
                       data-state={row.getIsSelected() && "selected"}
-                      className={index % 2 === 0 ? "bg-gray-50 dark:bg-gray-700" : "bg-white dark:bg-gray-800"}
+                      className={
+                        index % 2 === 0
+                          ? "bg-gray-50 dark:bg-gray-700"
+                          : "bg-white dark:bg-gray-800"
+                      }
                     >
                       {row.getVisibleCells().map((cell) => (
                         <TableCell key={cell.id}>
@@ -178,7 +202,7 @@ export function DataTable<TData, TValue>({
 
       <Card className="shadow-md">
         <CardContent className="py-3 ">
-          <DataTablePagination table={table}  rowsPerPage={rowsPerPage}/>
+          <DataTablePagination table={table} rowsPerPage={rowsPerPage} />
         </CardContent>
       </Card>
     </div>

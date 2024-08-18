@@ -31,6 +31,7 @@ export default function ActsResultsPage() {
             columns={getColumnsWithClickHandler()}
             data={data.results}
             filters={filters}
+            defaultVisibleColumns={["title", "announcementDate"]}
           />
     </div>
   );
