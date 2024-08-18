@@ -37,7 +37,6 @@ class PatronsUpdaterTask(DbUpdaterTask):
         }
         logger.debug(f"Headers: {headers}")
         response = requests.get(url, headers=headers).json()
-        # remove all patrons
         self.MODEL.objects.filter(
             role__in=[TeamMember.Role.SUPPORTER, TeamMember.Role.SUPPORTER_SMALL]
         ).delete()
