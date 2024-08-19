@@ -105,7 +105,7 @@ export const FilterComponent: React.FC<FilterComponentProps> = ({
           placeholder="Wyszukaj posła..."
           value={search}
           onChange={onSearchChange}
-          className="pl-10 w-72"
+          className="pl-10 max-w-96"
         />
         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
       </div>
