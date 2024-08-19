@@ -25,7 +25,7 @@ from celery.schedules import crontab
 CELERY_BEAT_SCHEDULE = {
     "update_tasks": {
         "task": "sejm_app.tasks.run_update_tasks",
-        "schedule": crontab(hour=0, minute=0),  # Adjust the schedule as needed
+        "schedule": crontab(hour="*/12"),  # Run every 12 hours
     },
 }
 # SECURITY WARNING: keep the secret key used in production secret!
