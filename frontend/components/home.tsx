@@ -82,10 +82,10 @@ const Home: React.FC<HomeProps> = ({ latestVotings, allClubs, cards }) => {
               Przegląd posłów
             </Link>
             <Link
-              href="/faq"
+              href="/stats"
               className="bg-white text-blue-500 border border-blue-500 px-6 py-2 rounded hover:bg-blue-50 transition"
             >
-              O zespole
+              Statystyki
             </Link>
           </div>
         </div>
