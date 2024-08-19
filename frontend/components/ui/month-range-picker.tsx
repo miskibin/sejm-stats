@@ -123,8 +123,8 @@ export function MonthRangePicker({
       <div className="border-t p-4 flex items-center justify-center text-sm text-gray-600">
         <Calendar className="h-4 w-4 mr-2" />
           <span>
-            {format(date.from, "LLL yyyy", { locale: pl })}
-            {date.to && ` - ${format(date.to, "LLL yyyy", { locale: pl })}`}
+            {format(date?.from || new Date(), "LLL yyyy", { locale: pl })}
+            {date?.to && ` - ${format(date.to, "LLL yyyy", { locale: pl })}`}
           </span>
       </div>
     </>
