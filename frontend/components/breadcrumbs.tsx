@@ -8,6 +8,7 @@ const urlToPolishName: { [key: string]: string } = {
   envoys: "Posłowie",
   clubs: "Kluby parlamentarne",
   votings: "Głosowania",
+  stats: "Statystyki",
   processes: "Procesy legislacyjne",
   committees: "Komisje sejmowe",
   interpellations: "Interpelacje",

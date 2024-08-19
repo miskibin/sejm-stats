@@ -127,7 +127,6 @@ const TotalStatsDashboard: React.FC = () => {
   
     return (
       <div className="container mx-auto py-4 px-1 md:px-4 grid grid-cols-1 md:grid-cols-2 gap-8 ">
-        <div className="w-full">
           <ReusableChart
             data={ageData}
             title="Rozkład wieku w klubach"
@@ -138,8 +137,6 @@ const TotalStatsDashboard: React.FC = () => {
             visibleKeys={visibleAgeClubs}
             toggleKey={toggleKey(setVisibleAgeClubs)}
           />
-        </div>
-        <div className="w-full">
           <ReusableChart
             data={sexData}
             title="Rozkład płci w klubach"
@@ -153,8 +150,6 @@ const TotalStatsDashboard: React.FC = () => {
             toggleKey={toggleKey(setVisibleSexKeys)}
             customLabels={{ Male: "Mężczyźni", Female: "Kobiety" }}
           />
-        </div>
-        <div className="w-full">
           <ReusableChart
             data={interpellationsData}
             title="Statystyki interpelacji"
@@ -168,8 +163,18 @@ const TotalStatsDashboard: React.FC = () => {
             toggleKey={toggleKey(setVisibleInterpellationKeys)}
             customLabels={{ with_reply: "Z odpowiedzią", with_no_reply: "Bez odpowiedzi" }}
           />
-        </div>
-        <div className="w-full">
+            <ReusableChart
+            data={topRecipientsData}
+            title="Najczęstci adresaci interpelacji"
+            type="bar"
+            dataKeys={["count"]}
+            xAxisDataKey="recipient"
+            colors={COLORS}
+            visibleKeys={["count"]}
+            layout="vertical"
+            toggleKey={() => {}}
+            customLabels={{ count: "Liczba interpelacji" }}
+          />
           <ReusableChart
             data={committeeMembershipData}
             title="Członkostwo w komisjach"
@@ -182,8 +187,6 @@ const TotalStatsDashboard: React.FC = () => {
             stacked={true}
             toggleKey={toggleKey(setVisibleCommitteeKeys)}
           />
-        </div>
-        <div className="w-full">
           <ReusableChart
             data={topCommitteesData}
             title="Najaktywniejsze komisje"
@@ -196,21 +199,7 @@ const TotalStatsDashboard: React.FC = () => {
             toggleKey={() => {}}
             customLabels={{ sitting_count: "Liczba posiedzeń" }}
           />
-        </div>
-        <div className="w-full">
-          <ReusableChart
-            data={topRecipientsData}
-            title="Główni odbiorcy interpelacji"
-            type="bar"
-            dataKeys={["count"]}
-            xAxisDataKey="recipient"
-            colors={COLORS}
-            visibleKeys={["count"]}
-            layout="vertical"
-            toggleKey={() => {}}
-            customLabels={{ count: "Liczba interpelacji" }}
-          />
-        </div>
+        
       </div>
     );
   };
