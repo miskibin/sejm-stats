@@ -63,7 +63,7 @@ class Process(models.Model):
         choices=CreatedByEnum.choices,
         null=True,
         blank=True,
-        default=None,
+        default="Brak danych",
     )
     pagesCount = models.SmallIntegerField(
         default=0, help_text="Number of pages in the document", blank=True

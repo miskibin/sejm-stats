@@ -72,7 +72,7 @@ const ClubsChart: React.FC<ClubsChartProps> = ({ clubs }) => {
             innerSize: '20%',
             marker: {
               symbol: 'circle',
-              radius: 8
+              radius: 6
             }
           }
         },

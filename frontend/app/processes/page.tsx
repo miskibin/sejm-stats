@@ -9,7 +9,8 @@ import { Badge } from "@/components/ui/badge";
 import ConfirmButton from "@/components/ui/confirm";
 import { DatePickerWithRange } from "@/components/ui/date-picker-with-range";
 import { DateRange } from "react-day-picker";
-import { format } from "date-fns";
+import { endOfMonth, format, startOfMonth, subMonths } from "date-fns";
+import MonthRangePicker from "@/components/ui/month-range-picker";
 
 interface MetaItem {
   name: string;
@@ -45,7 +46,10 @@ export default function ProcessStepperDemo() {
   const [selectedDocumentTypes, setSelectedDocumentTypes] = useState<string[]>([]);
   const [selectedLengthTags, setSelectedLengthTags] = useState<string[]>([]);
   const [selectedClubs, setSelectedClubs] = useState<string[]>([]);
-  const [dateRange, setDateRange] = useState<DateRange | undefined>();
+  const [dateRange, setDateRange] = useState<DateRange | undefined>({
+    from: startOfMonth(subMonths(new Date(), 2)),
+    to: endOfMonth(new Date()),
+  });
   const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
     async function fetchData() {
@@ -126,7 +130,7 @@ export default function ProcessStepperDemo() {
           </Step>
           <Step label="Zakres dat">
             <div className="my-4">
-              <DatePickerWithRange
+              <MonthRangePicker
                 className="w-full"
                 date={dateRange}
                 setDate={setDateRange}

@@ -35,11 +35,9 @@ class VotingListSerializer(serializers.ModelSerializer):
     def get_kind(self, obj):
         return obj.get_kind_display()
 
-    def get_date(self, obj):
+    def get_date(self, obj:Voting):
         if obj.date:
-            return date_format(
-                timezone.localtime(obj.date), format="d E Y, H:i", use_l10n=True
-            )
+            return date_format(timezone.localtime(obj.date), format="Y-m-d")
         return None
 
 
@@ -61,7 +59,7 @@ class ProcessListSerializer(serializers.ModelSerializer):
 
     def get_documentDate(self, obj):
         return (
-            date_format(obj.documentDate, format="d E Y", use_l10n=True)
+            date_format(obj.documentDate, format="Y-m-d")
             if obj.documentDate
             else None
         )

@@ -29,6 +29,7 @@ export default function CommitteesPage() {
             columns={columnsWithClickHandler}
             data={data.results}
             filters={filters}
+            defaultVisibleColumns={["name", "compositionDate"]}
           />
     </div>
   );

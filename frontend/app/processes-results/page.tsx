@@ -30,6 +30,7 @@ export default function ProcessesResultsPage() {
       columns={columnsWithClickHandler}
       data={processes.results}
       filters={filters}
+      defaultVisibleColumns={["title","documentDate"]}
     />
   );
 }

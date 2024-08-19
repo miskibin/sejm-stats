@@ -28,7 +28,7 @@ const Footer = () => {
         <div>
           {!hasCompletedAllSteps && (
             <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
               onClick={prevStep}
               disabled={isDisabledStep}
@@ -41,7 +41,7 @@ const Footer = () => {
         </div>
         <div className="flex gap-3">
           {!isLastStep && !hasCompletedAllSteps && (
-            <Button variant="secondary" size="sm" onClick={goToSummary}>
+            <Button variant="ghost" size="sm" onClick={goToSummary}>
               <ListChecks className="w-4 h-4" />
               <span className=" ml-2">Pomiń wszystkie</span>
             </Button>
@@ -57,5 +57,4 @@ const Footer = () => {
     </div>
   );
 };
-
 export default Footer;
