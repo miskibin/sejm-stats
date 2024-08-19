@@ -19,6 +19,7 @@ import {
   FaDiscord,
   FaGithub,
   FaAddressBook,
+  FaChartBar,
 } from "react-icons/fa";
 import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
@@ -75,6 +76,12 @@ const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
       label: "Dziennik ustaw",
       icon: <FaBook className="w-5 h-5" />,
     },
+    {
+      href: "/stats",
+      label: "Statystyki",
+      icon: <FaChartBar className="w-5 h-5" />,
+    },
+
     {
       href: "https://github.com/miskibin/sejm-stats/issues/new/choose",
       label: "Zgłoś błąd",
