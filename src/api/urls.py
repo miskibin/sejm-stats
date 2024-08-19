@@ -23,10 +23,12 @@ router.register(r"home", views.HomeViewSet, basename="home")
 router.register(
     r"article-context", views.ArticleContextViewSet, basename="article-context"
 )
+
 app_name = "api"
 
 urlpatterns = [
     path("", include(router.urls)),
     path("article-create", views.ArticleCreateView.as_view(), name="article-create"),
     path("search", OptimizedSearchView.as_view(), name="search"),
+    path("total-stats", views.TotalStatsView.as_view(), name="total-stats"),
 ]

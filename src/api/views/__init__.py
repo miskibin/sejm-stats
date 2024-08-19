@@ -12,5 +12,5 @@ from .interpellations import InterpellationViewSet
 from .processes import ProcessesMetaViewSet, ProcessViewSet
 from .search import OptimizedSearchView
 from .votings import VotingsMetaViewSet, VotingViewSet
-
+from .total_stats_view import TotalStatsView
 OptimizedSearchView.optimize_database()
