@@ -1,15 +1,23 @@
-"use client"
+"use client";
 import React, { useState, useEffect } from "react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ExternalLink, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const Notification = () => {
-  const [showPatronite, setShowPatronite] = useState(true);
-  const [showUpdate, setShowUpdate] = useState(true);
+  const [showPatronite, setShowPatronite] = useState(false);
+  const [showUpdate, setShowUpdate] = useState(false);
   const today = new Date().toISOString().split("T")[0];
 
   useEffect(() => {
+    const hasShownNotifications = localStorage.getItem("hasShownNotifications");
+
+    if (!hasShownNotifications) {
+      setShowPatronite(true);
+      setShowUpdate(true);
+      localStorage.setItem("hasShownNotifications", "true");
+    }
+
     const patroniteTimer = setTimeout(() => setShowPatronite(false), 10000);
     const updateTimer = setTimeout(() => setShowUpdate(false), 15000);
 
@@ -32,9 +40,14 @@ const Notification = () => {
               <div className="flex justify-between items-start">
                 <div className="flex items-center">
                   <ExternalLink className="h-4 w-4 mr-2 text-red-500 dark:text-red-400" />
-                  <AlertTitle className="font-semibold text-red-700 dark:text-red-300">Wesprzyj projekt</AlertTitle>
+                  <AlertTitle className="font-semibold text-red-700 dark:text-red-300">
+                    Wesprzyj projekt
+                  </AlertTitle>
                 </div>
-                <button onClick={() => setShowPatronite(false)} className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300">
+                <button
+                  onClick={() => setShowPatronite(false)}
+                  className="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                >
                   <X className="h-4 w-4" />
                 </button>
               </div>
@@ -62,8 +75,13 @@ const Notification = () => {
           >
             <Alert className="w-80 bg-blue-100 dark:bg-blue-900 shadow-lg border border-blue-300 dark:border-blue-700">
               <div className="flex justify-between items-start">
-                <AlertTitle className="font-semibold text-blue-700 dark:text-blue-300">Ostatnia aktualizacja</AlertTitle>
-                <button onClick={() => setShowUpdate(false)} className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">
+                <AlertTitle className="font-semibold text-blue-700 dark:text-blue-300">
+                  Ostatnia aktualizacja
+                </AlertTitle>
+                <button
+                  onClick={() => setShowUpdate(false)}
+                  className="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                >
                   <X className="h-4 w-4" />
                 </button>
               </div>

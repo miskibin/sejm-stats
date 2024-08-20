@@ -2,7 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { FaCheck, FaTimes, FaExclamationCircle } from "react-icons/fa";
 import { truncateWords } from "@/utils/text";
-import { Card } from "./ui/card";
+import { Card } from "../ui/card";
 interface VotingCardProps {
   voting: {
     id: number;
@@ -18,7 +18,7 @@ const VotingCard: React.FC<VotingCardProps> = ({ voting }) => {
       href={`/votings/${voting.id}`}
       className="block "
     >
-      <Card className="flex items-center p-4 hover:shadow-md transition-shadow">
+      <Card className="flex items-center p-4 hover:shadow-md transition-shadow dark:hover:bg-gray-700">
         <div className="flex-shrink-0 mr-4">
           {voting.success ? (
             <FaCheck className="text-green-500 text-2xl" />
