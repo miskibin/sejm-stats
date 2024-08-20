@@ -13,5 +13,3 @@ from .processes import ProcessesMetaViewSet, ProcessViewSet
 from .search import OptimizedSearchView
 from .total_stats_view import TotalStatsView
 from .votings import VotingsMetaViewSet, VotingViewSet
-
-OptimizedSearchView.optimize_database()
