@@ -54,6 +54,7 @@ const TotalStatsDashboard: React.FC = () => {
     topCommitteesData,
     topRecipientsData,
     projectsData,
+    totalProjects,
     projectsPerEnvoyData,
     clubs,
   } = useMemo(() => {
@@ -66,6 +67,7 @@ const TotalStatsDashboard: React.FC = () => {
         topCommitteesData: [],
         topRecipientsData: [],
         projectsData: [],
+        totalProjects: 0,
         projectsPerEnvoyData: [],
         clubs: [],
       };
@@ -139,10 +141,14 @@ const TotalStatsDashboard: React.FC = () => {
     const projectsData = clubs
       .map((club) => ({
         name: club,
-        count: data.process_stats[club]?.process_count || 0,
+        value: data.process_stats[club]?.process_count || 0,
       }))
-      .sort((a, b) => b.count - a.count);
+      .sort((a, b) => b.value - a.value);
 
+    const totalProjects = projectsData.reduce(
+      (sum, item) => sum + item.value,
+      0
+    );
     const projectsPerEnvoyData = clubs
       .map((club) => ({
         name: club,
@@ -160,6 +166,7 @@ const TotalStatsDashboard: React.FC = () => {
       topCommitteesData,
       topRecipientsData,
       projectsData,
+      totalProjects,
       projectsPerEnvoyData,
       clubs,
     };
@@ -187,6 +194,7 @@ const TotalStatsDashboard: React.FC = () => {
   if (isLoading) return <SkeletonComponent />;
   if (error) return <div>Error: {error.message}</div>;
   if (!data) return null;
+  console.log(totalProjects, projectsData);
   return (
     <div className="container mx-auto py-4 px-1 md:px-4 grid grid-cols-1 md:grid-cols-2 gap-8 ">
       <ReusableChart
@@ -223,7 +231,10 @@ const TotalStatsDashboard: React.FC = () => {
         layout="vertical"
         stacked={true}
         toggleKey={toggleKey(setVisibleInterpellationKeys)}
-        customLabels={{ with_reply: "Z odpowiedzią", with_no_reply: "Bez odpowiedzi" }}
+        customLabels={{
+          with_reply: "Z odpowiedzią",
+          with_no_reply: "Bez odpowiedzi",
+        }}
       />
       <ReusableChart
         data={topRecipientsData}
@@ -261,17 +272,21 @@ const TotalStatsDashboard: React.FC = () => {
         toggleKey={() => {}}
         customLabels={{ sitting_count: "Liczba posiedzeń" }}
       />
+
       <ReusableChart
         data={projectsData}
         title="Liczba projektów zgłoszona przez posłów z partii"
-        type="bar"
-        dataKeys={["count"]}
+        type="donut"
+        dataKeys={["value"]}
         xAxisDataKey="name"
         colors={COLORS}
-        visibleKeys={["count"]}
-        layout="vertical"
+        visibleKeys={["value"]}
         toggleKey={() => {}}
-        customLabels={{ count: "Liczba projektów" }}
+        customLabels={{ value: "Liczba projektów" }}
+        centerText={{
+          primaryText: totalProjects,
+          secondaryText: "Wszystkich projektów",
+        }}
       />
       <ReusableChart
         data={projectsPerEnvoyData}
@@ -288,6 +303,5 @@ const TotalStatsDashboard: React.FC = () => {
     </div>
   );
 };
-
 
 export default TotalStatsDashboard;
