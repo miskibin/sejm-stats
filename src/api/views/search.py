@@ -31,7 +31,7 @@ class OptimizedSearchView(APIView):
     def get(self, request):
         query = request.GET.get("q")
         range_param = request.GET.get("range")
-
+        self.optimize_database()
         logger.info(f"Received search request: query='{query}', range='{range_param}'")
 
         if not query:
