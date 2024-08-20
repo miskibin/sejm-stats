@@ -21,7 +21,6 @@ const Sidebar: React.FC<SidebarProps> = ({ menuItems, isOpen, onClose }) => {
 
   return (
     <>
-      {/* Overlay */}
       <div
         className={`fixed inset-0 bg-black bg-opacity-50 z-20 transition-opacity duration-300 ease-in-out md:hidden ${
           isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
@@ -29,37 +28,44 @@ const Sidebar: React.FC<SidebarProps> = ({ menuItems, isOpen, onClose }) => {
         onClick={onClose}
       />
 
-      {/* Sidebar */}
       <div
         className={`
-          fixed inset-y-0 left-0 z-30 w-64 bg-gray-800 dark:bg-gray-700 text-gray-100 dark:text-gray-100 p-4
+          fixed inset-y-0 left-0 z-30 w-64 bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 p-4
           transform transition-transform duration-300 ease-in-out
           ${isOpen ? "translate-x-0" : "-translate-x-full"}
           md:translate-x-0 md:static
         `}
       >
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-8">
           <Link href="/" className="flex items-center space-x-2">
-            <Image src="/logo.png" alt="Logo" width={32} height={32} />
-            <span className="text-2xl font-extrabold">Sejm-Stats</span>
+            <Image
+              src="/logo.png"
+              alt="Logo"
+              width={32}
+              height={32}
+              className="rounded-full"
+            />
+            <span className="text-xl font-semibold text-gray-900 dark:text-white">
+              Sejm-Stats
+            </span>
           </Link>
           <button
             onClick={onClose}
-            className="md:hidden text-gray-300 dark:text-gray-100  hover:text-white dark:hover:text-gray-200"
+            className="md:hidden text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
             aria-label="Close sidebar"
           >
-            <FaTimes size={24} />
+            <FaTimes size={20} />
           </button>
         </div>
-        <nav className="space-y-2">
+        <nav className="space-y-1">
           {menuItems.map((item, index) => (
             <Link
               key={index}
               href={item.href}
-              className={`flex items-center space-x-2 py-2.5 px-4 rounded transition duration-200 ${
+              className={`flex items-center space-x-3 py-2 px-3 rounded-md transition duration-150 ${
                 pathname === item.href
-                  ? "bg-blue-500 text-white dark:bg-blue-500 dark:text-gray-100"
-                  : "text-gray-300  hover:bg-gray-700 dark:hover:bg-gray-600 hover:text-white dark:hover:text-gray-900"
+                  ? "bg-blue-500 text-white"
+                  : "text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white"
               }`}
               onClick={() => {
                 if (window.innerWidth < 768) {
@@ -68,7 +74,7 @@ const Sidebar: React.FC<SidebarProps> = ({ menuItems, isOpen, onClose }) => {
               }}
             >
               {item.icon}
-              <span>{item.label}</span>
+              <span className="text-sm">{item.label}</span>
             </Link>
           ))}
         </nav>
