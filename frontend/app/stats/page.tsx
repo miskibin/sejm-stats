@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import React, { useState, useMemo, useEffect } from "react";
 import { useFetchData } from "@/lib/api";
 import { SkeletonComponent } from "@/components/ui/skeleton-page";
@@ -19,6 +19,7 @@ interface TotalStatsData {
   };
   top_committees: { name: string; sitting_count: number }[];
   top_interpellation_recipients: { recipient: string[]; count: number }[];
+  process_stats: { [key: string]: { process_count: number } };
 }
 
 const COLORS = [
@@ -31,11 +32,19 @@ const COLORS = [
 ];
 
 const TotalStatsDashboard: React.FC = () => {
-  const { data, isLoading, error } = useFetchData<TotalStatsData>("/total-stats");
+  const { data, isLoading, error } =
+    useFetchData<TotalStatsData>("/total-stats");
   const [visibleAgeClubs, setVisibleAgeClubs] = useState<string[]>([]);
-  const [visibleSexKeys, setVisibleSexKeys] = useState<string[]>(["Male", "Female"]);
-  const [visibleInterpellationKeys, setVisibleInterpellationKeys] = useState<string[]>(["with_reply", "with_no_reply"]);
-  const [visibleCommitteeKeys, setVisibleCommitteeKeys] = useState<string[]>([]);
+  const [visibleSexKeys, setVisibleSexKeys] = useState<string[]>([
+    "Male",
+    "Female",
+  ]);
+  const [visibleInterpellationKeys, setVisibleInterpellationKeys] = useState<
+    string[]
+  >(["with_reply", "with_no_reply"]);
+  const [visibleCommitteeKeys, setVisibleCommitteeKeys] = useState<string[]>(
+    []
+  );
 
   const {
     ageData,
@@ -44,16 +53,27 @@ const TotalStatsDashboard: React.FC = () => {
     committeeMembershipData,
     topCommitteesData,
     topRecipientsData,
+    projectsData,
+    projectsPerEnvoyData,
     clubs,
   } = useMemo(() => {
-    if (!data) return {
-      ageData: [], sexData: [], interpellationsData: [], committeeMembershipData: [],
-      topCommitteesData: [], topRecipientsData: [], clubs: []
-    };
+    if (!data)
+      return {
+        ageData: [],
+        sexData: [],
+        interpellationsData: [],
+        committeeMembershipData: [],
+        topCommitteesData: [],
+        topRecipientsData: [],
+        projectsData: [],
+        projectsPerEnvoyData: [],
+        clubs: [],
+      };
 
     const clubs = Object.keys(data.club_stats).filter(
       (club) => club !== "total" && data.club_stats[club].envoy_count >= 8
     );
+
     const ageRanges = Array.from({ length: 11 }, (_, i) => i * 5 + 25);
     const ageData = ageRanges.map((startAge) => {
       const endAge = startAge + 4;
@@ -78,130 +98,196 @@ const TotalStatsDashboard: React.FC = () => {
       Male: data.sex_distribution[club].Male,
       Female: data.sex_distribution[club].Female,
     }));
-    const interpellationsData = clubs.map((club) => ({
+    const interpellationsData = clubs
+      .map((club) => ({
         name: club,
         with_reply: data.interpellations_stats[club].with_reply,
         with_no_reply: data.interpellations_stats[club].with_no_reply,
-      })).sort((a, b) => (b.with_reply + b.with_no_reply) - (a.with_reply + a.with_no_reply));
-  
-      const committeeMembershipData = clubs.map((club) => ({
+      }))
+      .sort(
+        (a, b) =>
+          b.with_reply + b.with_no_reply - (a.with_reply + a.with_no_reply)
+      );
+
+    const committeeMembershipData = clubs
+      .map((club) => ({
         name: club,
         członek: data.committee_stats[club].functions["null"] || 0,
-        "zastępca przewodniczącego": 
-          (data.committee_stats[club].functions["zastępca przewodniczącego"] || 0) +
-          (data.committee_stats[club].functions["zastępczyni przewodniczącej"] || 0) +
-          (data.committee_stats[club].functions["zastępca przewodniczącej"] || 0),
-        przewodniczący: 
+        "zastępca przewodniczącego":
+          (data.committee_stats[club].functions["zastępca przewodniczącego"] ||
+            0) +
+          (data.committee_stats[club].functions[
+            "zastępczyni przewodniczącej"
+          ] || 0) +
+          (data.committee_stats[club].functions["zastępca przewodniczącej"] ||
+            0),
+        przewodniczący:
           (data.committee_stats[club].functions["przewodniczący"] || 0) +
           (data.committee_stats[club].functions["przewodnicząca"] || 0),
-      })).sort((a, b) => 
-        (b.członek + b["zastępca przewodniczącego"] + b.przewodniczący) - 
-        (a.członek + a["zastępca przewodniczącego"] + a.przewodniczący)
+      }))
+      .sort(
+        (a, b) =>
+          b.członek +
+          b["zastępca przewodniczącego"] +
+          b.przewodniczący -
+          (a.członek + a["zastępca przewodniczącego"] + a.przewodniczący)
       );
-  
-      const topCommitteesData = data.top_committees.slice(0, 10);
-      const topRecipientsData = data.top_interpellation_recipients.slice(0, 10);
-  
-      return {
-        ageData, sexData, interpellationsData, committeeMembershipData,
-        topCommitteesData, topRecipientsData, clubs
-      };
-    }, [data]);
-  
-    useEffect(() => {
-      if (clubs.length > 0) {
-        setVisibleAgeClubs(clubs);
-        setVisibleCommitteeKeys(["członek", "zastępca przewodniczącego", "przewodniczący"]);
-      }
-    }, [clubs]);
-  
-    const toggleKey = (setFunction: React.Dispatch<React.SetStateAction<string[]>>) => (key: string) => {
+
+    const topCommitteesData = data.top_committees.slice(0, 10);
+    const topRecipientsData = data.top_interpellation_recipients.slice(0, 10);
+
+    const projectsData = clubs
+      .map((club) => ({
+        name: club,
+        count: data.process_stats[club]?.process_count || 0,
+      }))
+      .sort((a, b) => b.count - a.count);
+
+    const projectsPerEnvoyData = clubs
+      .map((club) => ({
+        name: club,
+        count:
+          (data.process_stats[club]?.process_count || 0) /
+          data.club_stats[club].envoy_count,
+      }))
+      .sort((a, b) => b.count - a.count);
+
+    return {
+      ageData,
+      sexData,
+      interpellationsData,
+      committeeMembershipData,
+      topCommitteesData,
+      topRecipientsData,
+      projectsData,
+      projectsPerEnvoyData,
+      clubs,
+    };
+  }, [data]);
+
+  useEffect(() => {
+    if (clubs.length > 0) {
+      setVisibleAgeClubs(clubs);
+      setVisibleCommitteeKeys([
+        "członek",
+        "zastępca przewodniczącego",
+        "przewodniczący",
+      ]);
+    }
+  }, [clubs]);
+
+  const toggleKey =
+    (setFunction: React.Dispatch<React.SetStateAction<string[]>>) =>
+    (key: string) => {
       setFunction((prev) =>
         prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]
       );
     };
-  
-    if (isLoading) return <SkeletonComponent />;
-    if (error) return <div>Error: {error.message}</div>;
-    if (!data) return null;
-  
-    return (
-      <div className="container mx-auto py-4 px-1 md:px-4 grid grid-cols-1 md:grid-cols-2 gap-8 ">
-          <ReusableChart
-            data={ageData}
-            title="Rozkład wieku w klubach"
-            type="line"
-            dataKeys={clubs}
-            xAxisDataKey="ageRange"
-            colors={COLORS}
-            visibleKeys={visibleAgeClubs}
-            toggleKey={toggleKey(setVisibleAgeClubs)}
-          />
-          <ReusableChart
-            data={sexData}
-            title="Rozkład płci w klubach"
-            type="bar"
-            dataKeys={["Male", "Female"]}
-            xAxisDataKey="name"
-            colors={COLORS}
-            visibleKeys={visibleSexKeys}
-            layout="vertical"
-            stacked={true}
-            toggleKey={toggleKey(setVisibleSexKeys)}
-            customLabels={{ Male: "Mężczyźni", Female: "Kobiety" }}
-          />
-          <ReusableChart
-            data={interpellationsData}
-            title="Statystyki interpelacji"
-            type="bar"
-            dataKeys={["with_reply", "with_no_reply"]}
-            xAxisDataKey="name"
-            colors={COLORS}
-            visibleKeys={visibleInterpellationKeys}
-            layout="vertical"
-            stacked={true}
-            toggleKey={toggleKey(setVisibleInterpellationKeys)}
-            customLabels={{ with_reply: "Z odpowiedzią", with_no_reply: "Bez odpowiedzi" }}
-          />
-            <ReusableChart
-            data={topRecipientsData}
-            title="Najczęstci adresaci interpelacji"
-            type="bar"
-            dataKeys={["count"]}
-            xAxisDataKey="recipient"
-            colors={COLORS}
-            visibleKeys={["count"]}
-            layout="vertical"
-            toggleKey={() => {}}
-            customLabels={{ count: "Liczba interpelacji" }}
-          />
-          <ReusableChart
-            data={committeeMembershipData}
-            title="Członkostwo w komisjach"
-            type="bar"
-            dataKeys={["członek", "zastępca przewodniczącego", "przewodniczący"]}
-            xAxisDataKey="name"
-            colors={COLORS}
-            visibleKeys={visibleCommitteeKeys}
-            layout="vertical"
-            stacked={true}
-            toggleKey={toggleKey(setVisibleCommitteeKeys)}
-          />
-          <ReusableChart
-            data={topCommitteesData}
-            title="Najaktywniejsze komisje"
-            type="bar"
-            dataKeys={["sitting_count"]}
-            xAxisDataKey="name"
-            colors={COLORS}
-            visibleKeys={["sitting_count"]}
-            layout="vertical"
-            toggleKey={() => {}}
-            customLabels={{ sitting_count: "Liczba posiedzeń" }}
-          />
-        
-      </div>
-    );
-  };
-  
-  export default TotalStatsDashboard;
+
+  if (isLoading) return <SkeletonComponent />;
+  if (error) return <div>Error: {error.message}</div>;
+  if (!data) return null;
+  return (
+    <div className="container mx-auto py-4 px-1 md:px-4 grid grid-cols-1 md:grid-cols-2 gap-8 ">
+      <ReusableChart
+        data={ageData}
+        title="Rozkład wieku w klubach"
+        type="line"
+        dataKeys={clubs}
+        xAxisDataKey="ageRange"
+        colors={COLORS}
+        visibleKeys={visibleAgeClubs}
+        toggleKey={toggleKey(setVisibleAgeClubs)}
+      />
+      <ReusableChart
+        data={sexData}
+        title="Rozkład płci w klubach"
+        type="bar"
+        dataKeys={["Male", "Female"]}
+        xAxisDataKey="name"
+        colors={COLORS}
+        visibleKeys={visibleSexKeys}
+        layout="vertical"
+        stacked={true}
+        toggleKey={toggleKey(setVisibleSexKeys)}
+        customLabels={{ Male: "Mężczyźni", Female: "Kobiety" }}
+      />
+      <ReusableChart
+        data={interpellationsData}
+        title="Statystyki interpelacji"
+        type="bar"
+        dataKeys={["with_reply", "with_no_reply"]}
+        xAxisDataKey="name"
+        colors={COLORS}
+        visibleKeys={visibleInterpellationKeys}
+        layout="vertical"
+        stacked={true}
+        toggleKey={toggleKey(setVisibleInterpellationKeys)}
+        customLabels={{ with_reply: "Z odpowiedzią", with_no_reply: "Bez odpowiedzi" }}
+      />
+      <ReusableChart
+        data={topRecipientsData}
+        title="Najczęstci adresaci interpelacji"
+        type="bar"
+        dataKeys={["count"]}
+        xAxisDataKey="recipient"
+        colors={COLORS}
+        visibleKeys={["count"]}
+        layout="vertical"
+        toggleKey={() => {}}
+        customLabels={{ count: "Liczba interpelacji" }}
+      />
+      <ReusableChart
+        data={committeeMembershipData}
+        title="Członkostwo w komisjach"
+        type="bar"
+        dataKeys={["członek", "zastępca przewodniczącego", "przewodniczący"]}
+        xAxisDataKey="name"
+        colors={COLORS}
+        visibleKeys={visibleCommitteeKeys}
+        layout="vertical"
+        stacked={true}
+        toggleKey={toggleKey(setVisibleCommitteeKeys)}
+      />
+      <ReusableChart
+        data={topCommitteesData}
+        title="Najaktywniejsze komisje"
+        type="bar"
+        dataKeys={["sitting_count"]}
+        xAxisDataKey="name"
+        colors={COLORS}
+        visibleKeys={["sitting_count"]}
+        layout="vertical"
+        toggleKey={() => {}}
+        customLabels={{ sitting_count: "Liczba posiedzeń" }}
+      />
+      <ReusableChart
+        data={projectsData}
+        title="Liczba projektów zgłoszona przez posłów z partii"
+        type="bar"
+        dataKeys={["count"]}
+        xAxisDataKey="name"
+        colors={COLORS}
+        visibleKeys={["count"]}
+        layout="vertical"
+        toggleKey={() => {}}
+        customLabels={{ count: "Liczba projektów" }}
+      />
+      <ReusableChart
+        data={projectsPerEnvoyData}
+        title="Liczba projektów przypadających na jednego posła"
+        type="bar"
+        dataKeys={["count"]}
+        xAxisDataKey="name"
+        colors={COLORS}
+        visibleKeys={["count"]}
+        layout="vertical"
+        toggleKey={() => {}}
+        customLabels={{ count: "Projekty na posła" }}
+      />
+    </div>
+  );
+};
+
+
+export default TotalStatsDashboard;
