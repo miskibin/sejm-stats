@@ -11,10 +11,9 @@ from sejm_app.models import Club, Committee, Process, Voting
 class HomeViewSet(ViewSet):
     @method_decorator(cache_page(60 * 15))  # Cache for 15 minutes
     def list(self, request):
-        latest_votings = Voting.objects.order_by("-date")[:5].values(
-            "id", "title", "success", "category"
+        latest_votings = Voting.objects.order_by("-date")[:4].values(
+            "id", "title", "success", "category", "topic"
         )
-        all_clubs = Club.objects.count()
 
         cards = [
             {
@@ -47,7 +46,6 @@ class HomeViewSet(ViewSet):
 
         data = {
             "latest_votings": latest_votings,
-            "all_clubs": all_clubs,
             "cards": cards,
         }
 

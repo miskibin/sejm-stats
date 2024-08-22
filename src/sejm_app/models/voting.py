@@ -96,7 +96,7 @@ class Voting(models.Model):
     def summary(self):
         if self.category == "WHOLE_PROJECT":
             prints = self.prints.all()
-            return f"Całość projektu: {self.prints.first().title}"
+            return f"Całość projektu: {prints.first().title}"
         else:
             title = re.sub(r"^\s*Pkt\.\s*\d+\s*", "", self.title)
             return title

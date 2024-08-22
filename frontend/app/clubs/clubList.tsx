@@ -1,13 +1,11 @@
-"use client";
-
-import { Club } from "@/lib/types";
-import Image from "next/image";
+import React from "react";
 import Link from "next/link";
-import { useState } from "react";
+import { Club } from "@/lib/types";
 
 interface ClubsListProps {
   clubs: Club[];
 }
+
 const ClubsList: React.FC<ClubsListProps> = ({ clubs }) => {
   return (
     <ul className="space-y-2">
@@ -17,46 +15,32 @@ const ClubsList: React.FC<ClubsListProps> = ({ clubs }) => {
           <li key={club.id}>
             <Link
               href={`/clubs/${club.id.replace(/\./g, "")}`}
-              className={`flex items-center p-2 rounded border transition-all duration-300 hover:shadow-md`}
-              style={{
-                background: `linear-gradient(90deg, rgba(120,120,120,0.2) ${
-                  (club.membersCount / 460) * 100
-                }%, transparent ${(club.membersCount / 460) * 100}%)`,
-              }}
+              className="flex items-center p-2 px-4 rounded-lg transition-all duration-300 hover:bg-gray-100 dark:hover:bg-gray-700"
             >
-              <span className="bg-white rounded p-1 mr-4">
-                {club.photo_url && (
-                  <ImageWithFallback
+              <div className="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded-full mr-4 flex items-center justify-center overflow-hidden">
+                {club.photo_url ? (
+                  <img
                     src={`/media/club_logos/${club.id}.jpg`}
                     alt={club.id}
-                    width={40}
-                    height={40}
-                    className="object-contain"
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.currentTarget.src = "/no-picture.jpg";
+                    }}
                   />
+                ) : (
+                  <span className="text-xl font-bold">{club.id.charAt(0)}</span>
                 )}
-              </span>
-              <div>
-                <h5 className="font-bold">{club.id}</h5>
-                <p className="text-sm">{club.name}</p>
+              </div>
+              <div className="flex-grow">
+                <h3 className="font-semibold">{club.id}</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  {club.membersCount} mandatów
+                </p>
               </div>
             </Link>
           </li>
         ))}
     </ul>
-  );
-};
-
-const ImageWithFallback: React.FC<React.ComponentProps<typeof Image>> = (
-  props
-) => {
-  const [imgSrc, setImgSrc] = useState(props.src);
-
-  return (
-    <Image
-      {...props}
-      src={imgSrc}
-      onError={() => setImgSrc("/no-picture.jpg")}
-    />
   );
 };
 
