@@ -8,7 +8,7 @@ crispy-bootstrap5==2024.2
 fontawesomefree==6.5.1
 loguru==0.7.2
 requests==2.32.3
-Pillow==10.3.0
+Pillow==10.4.0
 bs4==0.0.2
 django-meta==2.4.2
 django-select2==8.1.2
