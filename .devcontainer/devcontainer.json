@@ -1,64 +1,56 @@
 {
-    "name": "transparlament",
-    "workspaceFolder": "/code/src",
-    "dockerComposeFile": [
-        "../docker-compose-dev.yml"
-    ],
-    "service": "web",
-    "shutdownAction": "stopCompose",
-    "runServices": [
-        "db",
-        "web",
-        "redis"
-    ],
-    "postCreateCommand": "pip install -r /code/requirements.txt && pip install djlint isort black mypy pylint",
-    "postStartCommand": "black . && djlint . --indent=2 --ignore='H013,H006,H021,D018,T003' --reformat",
-    "forwardPorts": [
-        8000
-    ],
-    "customizations": {
-        "vscode": {
-            "extensions": [
-                "ms-python.python",
-                "ms-azuretools.vscode-docker",
-                "monosans.djlint",
-                "ms-python.black-formatter",
-                "streetsidesoftware.code-spell-checker",
-                "mcright.auto-save",
-                "ChakrounAnas.turbo-console-log",
-                "ms-python.vscode-pylance",
-                "eamodio.gitlens",
-                "github.copilot",
-                "esbenp.prettier-vscode"
-            ],
-            "settings": {
-                "terminal.integrated.defaultProfile.linux": "bash",
-                "python.defaultInterpreterPath": "/usr/local/bin/python",
-                "python.linting.enabled": true,
-                "python.linting.pylintEnabled": true,
-                "python.linting.mypyEnabled": true,
-                "python.formatting.provider": "black",
-                "editor.formatOnSave": true,
-                "[python]": {
-                    "editor.defaultFormatter": "ms-python.black-formatter"
-                },
-                "[javascript]": {
-                    "editor.defaultFormatter": "esbenp.prettier-vscode"
-                },
-                "[typescript]": {
-                    "editor.defaultFormatter": "esbenp.prettier-vscode"
-                },
-                "[json]": {
-                    "editor.defaultFormatter": "esbenp.prettier-vscode"
-                }
-            }
-        }
-    },
-    "features": {
-        "ghcr.io/devcontainers/features/node:1": {
-            "version": "lts"
+  "name": "transparlament",
+  "workspaceFolder": "/code/src",
+  "dockerComposeFile": ["../docker-compose-dev.yml"],
+  "service": "web",
+  "shutdownAction": "stopCompose",
+  "runServices": ["db", "web", "redis"],
+  "postCreateCommand": "pip install -r /code/requirements.txt && pip install djlint isort black mypy pylint",
+  "postStartCommand": "black .",
+  "forwardPorts": [8000],
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-azuretools.vscode-docker",
+        "monosans.djlint",
+        "ms-python.black-formatter",
+        "streetsidesoftware.code-spell-checker",
+        "mcright.auto-save",
+        "ChakrounAnas.turbo-console-log",
+        "ms-python.vscode-pylance",
+        "eamodio.gitlens",
+        "github.copilot",
+        "esbenp.prettier-vscode"
+      ],
+      "settings": {
+        "terminal.integrated.defaultProfile.linux": "bash",
+        "python.defaultInterpreterPath": "/usr/local/bin/python",
+        "python.linting.enabled": true,
+        "python.linting.pylintEnabled": true,
+        "python.linting.mypyEnabled": true,
+        "python.formatting.provider": "black",
+        "editor.formatOnSave": true,
+        "[python]": {
+          "editor.defaultFormatter": "ms-python.black-formatter"
         },
-        "ghcr.io/devcontainers/features/git:1": {},
-        "ghcr.io/devcontainers/features/github-cli:1": {}
+        "[javascript]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[typescript]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        },
+        "[json]": {
+          "editor.defaultFormatter": "esbenp.prettier-vscode"
+        }
+      }
     }
+  },
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "lts"
+    },
+    "ghcr.io/devcontainers/features/git:1": {},
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  }
 }

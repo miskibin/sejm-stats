@@ -4,7 +4,7 @@
 import { useState } from "react";
 import useSWR from "swr";
 import { fetchEnvoys } from "@/lib/api";
-import { EnvoyCard } from "./envoyCard";
+import EnvoyCard from "@/app/envoys/envoyCard";
 
 interface EnvoyListProps {
   initialData: any;
@@ -33,7 +33,7 @@ export const EnvoyList: React.FC<EnvoyListProps> = ({ initialData }) => {
           lastName={envoy.lastName}
           photo={envoy.photo}
           clubPhoto={envoy.club_photo}
-          active={envoy.active}
+          educationLevel={envoy.educationLevel}
           numberOfVotes={envoy.numberOfVotes}
         />
       ))}
