@@ -27,8 +27,8 @@ class EnvoyUpdaterTask(DbUpdaterTask):
         if envoy.photo:
             return
         dir = self.MODEL._meta.get_field("photo").upload_to
-        if (Path(dir) / str(envoy.id)).exists():
-            photo_file = ContentFile((Path(dir) / str(envoy.id)).read_bytes())
+        if (Path(dir) / f"{str(envoy.id)}.jpg").exists():
+            photo_file = ContentFile((Path(dir) / f"{envoy.id}.jpg").read_bytes())
             envoy.photo.save(f"{envoy.id}.jpg", photo_file)
             envoy.save()
             return
