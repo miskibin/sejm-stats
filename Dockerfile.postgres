@@ -1,5 +1,5 @@
 # Use the official PostgreSQL image as a base
-FROM postgres:latest-alpine
+FROM postgres:16-alpine
 
 # Set the working directory
 WORKDIR /tmp

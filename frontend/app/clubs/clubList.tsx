@@ -1,6 +1,10 @@
-import React from "react";
-import Link from "next/link";
+"use client";
+
 import { Club } from "@/lib/types";
+import Image from "next/image";
+import Link from "next/link";
+import { useState } from "react";
+import { motion } from "framer-motion";
 
 interface ClubsListProps {
   clubs: Club[];
@@ -8,39 +12,52 @@ interface ClubsListProps {
 
 const ClubsList: React.FC<ClubsListProps> = ({ clubs }) => {
   return (
-    <ul className="space-y-2">
+    <ul className="space-y-4">
       {clubs
         .sort((a: Club, b: Club) => b.membersCount - a.membersCount)
-        .map((club: Club) => (
-          <li key={club.id}>
+        .map((club: Club, index: number) => (
+          <motion.li
+            key={club.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: index * 0.1 }}
+          >
             <Link
               href={`/clubs/${club.id.replace(/\./g, "")}`}
-              className="flex items-center p-2 px-4 rounded-lg transition-all duration-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+              className="flex items-center p-4 rounded-lg border border-gray-200 transition-all duration-300 hover:shadow-lg hover:border-blue-300"
             >
-              <div className="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded-full mr-4 flex items-center justify-center overflow-hidden">
-                {club.photo_url ? (
-                  <img
-                    src={`/media/club_logos/${club.id}.jpg`}
-                    alt={club.id}
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      e.currentTarget.src = "/no-picture.jpg";
-                    }}
-                  />
-                ) : (
-                  <span className="text-xl font-bold">{club.id.charAt(0)}</span>
-                )}
+              <div className="relative w-16 h-16 mr-4 overflow-hidden rounded-full border-2 border-gray-200">
+                <ImageWithFallback
+                  src={`/media/club_logos/${club.id}.jpg`}
+                  alt={club.id}
+                  layout="fill"
+                  objectFit="cover"
+                />
               </div>
               <div className="flex-grow">
-                <h3 className="font-semibold">{club.id}</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  {club.membersCount} mandatów
-                </p>
+                <h5 className="text-xl font-semibold mb-1">{club.id}</h5>
+                <p className="text-sm text-gray-600">{club.name}</p>
+              </div>
+              <div className="text-right">
+                <span className="text-2xl font-bold text-blue-500">{club.membersCount}</span>
+                <p className="text-sm text-gray-500">mandatów</p>
               </div>
             </Link>
-          </li>
+          </motion.li>
         ))}
     </ul>
+  );
+};
+
+const ImageWithFallback: React.FC<React.ComponentProps<typeof Image>> = (props) => {
+  const [imgSrc, setImgSrc] = useState(props.src);
+
+  return (
+    <Image
+      {...props}
+      src={imgSrc}
+      onError={() => setImgSrc("/no-picture.jpg")}
+    />
   );
 };
 
