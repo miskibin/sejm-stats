@@ -1,5 +1,4 @@
-from django.db.models import (Case, CharField, Count, F, Prefetch, Q, Value,
-                              When)
+from django.db.models import Case, CharField, Count, F, Prefetch, Q, Value, When
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.utils.formats import date_format

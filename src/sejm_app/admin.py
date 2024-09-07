@@ -1,9 +1,21 @@
 from django.contrib import admin
 
-from sejm_app.models import (FAQ, AdditionalPrint, Club, ClubVote,
-                             CommitteeSitting, Envoy, Interpellation,
-                             PrintModel, Process, Reply, Scandal, Stage, Vote,
-                             Voting)
+from sejm_app.models import (
+    FAQ,
+    AdditionalPrint,
+    Club,
+    ClubVote,
+    CommitteeSitting,
+    Envoy,
+    Interpellation,
+    PrintModel,
+    Process,
+    Reply,
+    Scandal,
+    Stage,
+    Vote,
+    Voting,
+)
 from sejm_app.models.committee import Committee, CommitteeMember
 from sejm_app.models.vote import ListVote
 from sejm_app.models.voting import VotingOption

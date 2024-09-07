@@ -1,6 +1,5 @@
 from .club import Club
-from .committee import (Committee, CommitteeMember, CommitteeSitting,
-                        CommitteeType)
+from .committee import Committee, CommitteeMember, CommitteeSitting, CommitteeType
 from .envoy import Envoy
 from .faq import FAQ
 from .interpellation import Interpellation, Reply

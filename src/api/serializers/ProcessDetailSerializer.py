@@ -2,10 +2,12 @@ from django.db.models import BooleanField, Case, Q, When
 from django.utils.formats import date_format
 from rest_framework import serializers
 
-from api.serializers.list_serializers import (ClubListSerializer,
-                                              EnvoyListSerializer,
-                                              PrintListSerializer,
-                                              VotingListSerializer)
+from api.serializers.list_serializers import (
+    ClubListSerializer,
+    EnvoyListSerializer,
+    PrintListSerializer,
+    VotingListSerializer,
+)
 from sejm_app.models import PrintModel, Process
 from sejm_app.models.stage import Stage
 
