@@ -1,13 +1,8 @@
 from django.db.models import Prefetch
 from rest_framework import serializers
 
-from sejm_app.models import (
-    Committee,
-    CommitteeMember,
-    CommitteeSitting,
-    Envoy,
-    PrintModel,
-)
+from sejm_app.models import (Committee, CommitteeMember, CommitteeSitting,
+                             Envoy, PrintModel)
 
 from .list_serializers import PrintListSerializer
 

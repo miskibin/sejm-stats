@@ -7,11 +7,9 @@ from rest_framework.viewsets import ReadOnlyModelViewSet
 
 from api.pagination import ApiViewPagination
 from api.serializers import EnvoyDetailSerializer
-from api.serializers.list_serializers import (
-    EnvoyListSerializer,
-    FAQSerializer,
-    TeamMemberSerializer,
-)
+from api.serializers.list_serializers import (EnvoyListSerializer,
+                                              FAQSerializer,
+                                              TeamMemberSerializer)
 from community_app.models import TeamMember
 from sejm_app.models.envoy import Envoy
 from sejm_app.models.faq import FAQ

@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 
-from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
+from django.contrib.postgres.search import (SearchQuery, SearchRank,
+                                            SearchVector)
 from django.db import connection
 from django.db.models import F, Q
 from django.utils import timezone
@@ -11,20 +12,13 @@ from rest_framework.views import APIView
 
 from api.serializers.CommitteeDetailSerialzer import CommitteeSittingSerializer
 from api.serializers.detail_serializers import InterpellationSerializer
-from api.serializers.list_serializers import (
-    ActListSerializer,
-    PrintListSerializer,
-    ProcessListSerializer,
-    VotingListSerializer,
-)
+from api.serializers.list_serializers import (ActListSerializer,
+                                              PrintListSerializer,
+                                              ProcessListSerializer,
+                                              VotingListSerializer)
 from eli_app.models import Act
-from sejm_app.models import (
-    CommitteeSitting,
-    Interpellation,
-    PrintModel,
-    Process,
-    Voting,
-)
+from sejm_app.models import (CommitteeSitting, Interpellation, PrintModel,
+                             Process, Voting)
 
 
 class OptimizedSearchView(APIView):

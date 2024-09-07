@@ -1,8 +1,8 @@
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from loguru import logger
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from django.utils.decorators import method_decorator
-from django.views.decorators.cache import cache_page
 
 from api.serializers import TotalStatsSerializer
 

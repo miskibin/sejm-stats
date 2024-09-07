@@ -1,12 +1,8 @@
 import PyPDF2
 import requests
 from loguru import logger
-from transformers import (
-    AutoModelForSeq2SeqLM,
-    AutoTokenizer,
-    SummarizationPipeline,
-    pipeline,
-)
+from transformers import (AutoModelForSeq2SeqLM, AutoTokenizer,
+                          SummarizationPipeline, pipeline)
 
 model_name = "allenai/led-large-16384-arxiv"
 tokenizer = AutoTokenizer.from_pretrained(model_name)

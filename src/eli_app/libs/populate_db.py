@@ -8,15 +8,8 @@ from django.utils import timezone
 from loguru import logger
 
 from eli_app.libs.api_endpoints import EliAPI
-from eli_app.models import (
-    Act,
-    ActStatus,
-    DocumentType,
-    Institution,
-    Keyword,
-    Publisher,
-    Reference,
-)
+from eli_app.models import (Act, ActStatus, DocumentType, Institution, Keyword,
+                            Publisher, Reference)
 
 
 def populate(function: Callable, model: models.Model):
