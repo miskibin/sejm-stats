@@ -64,7 +64,7 @@ export const HomeHeader: React.FC = ({
               <input
                 type="search"
                 className="w-full px-4 py-2 rounded-l-lg "
-                placeholder="Wpisz jakie kolwiek słowo"
+                placeholder="Wpisz jakiekolwiek słowo"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
