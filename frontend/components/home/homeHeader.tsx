@@ -7,9 +7,7 @@ import DateRangeModal from "../dateRangeModal";
 import { motion } from "framer-motion";
 import styles from "@/app/home.module.css";
 
-
-export const HomeHeader: React.FC = ({
-}) => {
+export const HomeHeader: React.FC = ({}) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const router = useRouter();
@@ -49,7 +47,7 @@ export const HomeHeader: React.FC = ({
             transition={{ duration: 0.5 }}
             className="text-5xl font-bold mb-4"
           >
-            Parlament Pod Lupą
+            Parlament Pod Lupą <FaVoteYea />
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: -30 }}
@@ -98,8 +96,6 @@ export const HomeHeader: React.FC = ({
         onClose={() => setIsModalOpen(false)}
         onSelect={handleDateRangeSelect}
       />
-
     </>
   );
 };
-
