@@ -31,7 +31,7 @@ To get started with development:
 
 1. Clone the repository:
    ```
-   git clone https://github.com/michalskibinski109/sejm-stats.git
+   git clone https://github.com/miskibin/sejm-stats
    cd sejm-stats
    ```
 
