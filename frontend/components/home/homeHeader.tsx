@@ -7,9 +7,7 @@ import DateRangeModal from "../dateRangeModal";
 import { motion } from "framer-motion";
 import styles from "@/app/home.module.css";
 
-
-export const HomeHeader: React.FC = ({
-}) => {
+export const HomeHeader: React.FC = ({}) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const router = useRouter();
@@ -98,8 +96,6 @@ export const HomeHeader: React.FC = ({
         onClose={() => setIsModalOpen(false)}
         onSelect={handleDateRangeSelect}
       />
-
     </>
   );
 };
-

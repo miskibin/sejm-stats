@@ -238,7 +238,7 @@ const TotalStatsDashboard: React.FC = () => {
       />
       <ReusableChart
         data={topRecipientsData}
-        title="Najczęstci adresaci interpelacji"
+        title="Najczęstsi adresaci interpelacji"
         type="bar"
         dataKeys={["count"]}
         xAxisDataKey="recipient"
