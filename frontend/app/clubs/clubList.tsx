@@ -17,9 +17,9 @@ const ClubsList: React.FC<ClubsListProps> = ({ clubs }) => {
           <li key={club.id}>
             <Link
               href={`/clubs/${club.id.replace(/\./g, "")}`}
-              className="flex items-center p-3 rounded-lg bg-gray-800 hover:bg-gray-700 transition-all duration-300"
+              className="flex items-center p-3 rounded-lg dark:bg-gray-800 bg-white dark:hover:bg-gray-700 transition-all duration-300"
             >
-              <div className="relative w-10 h-10 mr-3 overflow-hidden rounded-md bg-white p-1">
+              <div className="relative w-10 h-10 mr-3 overflow-hidden rounded-md dark:bg-white bg-gray-100 p-1">
                 <Image
                   src={`/media/club_logos/${club.id}.jpg`}
                   alt={club.id}
@@ -31,7 +31,9 @@ const ClubsList: React.FC<ClubsListProps> = ({ clubs }) => {
                 <h5 className="text-lg font-semibold">{club.id}</h5>
               </div>
               <div className="text-right">
-                <span className="text-xl font-bold text-blue-400">{club.membersCount}</span>
+                <span className="text-xl font-bold text-blue-400">
+                  {club.membersCount}
+                </span>
                 <p className="text-xs text-gray-400">mandatów</p>
               </div>
             </Link>

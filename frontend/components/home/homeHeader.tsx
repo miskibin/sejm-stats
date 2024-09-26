@@ -47,7 +47,7 @@ export const HomeHeader: React.FC = ({}) => {
             transition={{ duration: 0.5 }}
             className="text-5xl font-bold mb-4"
           >
-            Parlament Pod Lupą <FaVoteYea />
+            Parlament Pod Lupą
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: -30 }}

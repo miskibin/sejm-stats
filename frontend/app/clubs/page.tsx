@@ -15,8 +15,10 @@ export default function ClubsPage() {
   if (!data) return null;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 bg-gray-900 text-white">
-      <h1 className="text-4xl font-bold text-center mb-8">Kluby Parlamentarne</h1>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8  ">
+      <h1 className="text-4xl font-bold text-center mb-8">
+        Kluby Parlamentarne
+      </h1>
       <div className="flex flex-col lg:flex-row gap-8">
         <div className="w-full lg:w-1/2">
           <h2 className="text-2xl font-semibold mb-4">Lista Klubów</h2>
