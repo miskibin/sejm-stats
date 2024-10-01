@@ -17,7 +17,7 @@ psycopg==3.1.19
 psycopg-binary==3.1.19
 wikipedia==1.4.0
 python-decouple==3.8
-pytesseract==0.3.10
+pytesseract==0.3.13
 pdfminer.six==20231228
 pdf2image==1.17.0
 PyPDF2==3.0.1
