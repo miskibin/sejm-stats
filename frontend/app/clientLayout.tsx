@@ -162,7 +162,7 @@ const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
                     </button>
                   </Navbar>
 
-                  <main className="min-h-[85vh]  dark:bg-gray-900  bg-neutral-100">
+                  <main className="min-h-[calc(100vh-65px-57px)]   dark:bg-gray-900  bg-neutral-100">
                     <Breadcrumbs />
                     {children}
                   </main>

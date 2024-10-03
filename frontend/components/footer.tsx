@@ -14,7 +14,7 @@ type FooterProps = {
 
 const Footer: React.FC<FooterProps> = ({ links }) => {
   return (
-    <footer className="bg-white dark:bg-gray-800 border-t-1 rounded-t py-4 text-neutral-700 dark:text-neutral-100">
+    <footer className="bg-white dark:bg-gray-700 border-t-1 rounded-t py-4 text-neutral-700 dark:text-neutral-100">
       <div className="max-w-9xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row justify-between items-center">
           <div className="flex items-center mb-4 md:mb-0">
