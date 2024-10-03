@@ -88,8 +88,9 @@ class Voting(models.Model):
     def _check_if_success(self) -> bool:
         if self.no + self.yes + self.abstain < 230:
             logger.warning(
-                f"Voting {self.id} has less than 230 votes, cannot determine if passed"
+                f"Voting {self.id} has less than 230 votes, no Kworum was reached"
             )
+            return False
         return self.yes > self.no
 
     @cached_property
