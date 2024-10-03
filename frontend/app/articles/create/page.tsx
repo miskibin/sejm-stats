@@ -1,9 +1,15 @@
 "use client";
 import { useSession, signIn } from "next-auth/react";
-import CreateArticle from "@/components/editor/createArticle";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
+import RichTextEditor from "@/components/editor/text-editor";
 
 function App() {
   const { data: session, status } = useSession();
@@ -16,7 +22,7 @@ function App() {
     );
   }
 
-  if (!session) {
+  if (!session && false) {
     return (
       <div className="flex justify-center items-center h-[80vh]">
         <Card className="w-[350px]">
@@ -37,7 +43,12 @@ function App() {
   }
 
   return (
-          <CreateArticle />
+    <div className="flex justify-center items-center h-[80vh]">
+    <Card className="min-w-[60vw]">
+      <RichTextEditor />
+
+    </Card>
+    </div>
   );
 }
 
