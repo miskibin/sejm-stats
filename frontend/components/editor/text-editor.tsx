@@ -9,6 +9,7 @@ import {
   Slate,
   useSelected,
   useFocused,
+  ReactEditor,
 } from "slate-react";
 import {
   Editor,
@@ -16,6 +17,8 @@ import {
   createEditor,
   Descendant,
   Element as SlateElement,
+  BaseEditor,
+  Range,
 } from "slate";
 import { withHistory } from "slate-history";
 
@@ -38,7 +41,31 @@ import {
 } from "lucide-react";
 import { initialValue } from "./initial-value";
 
-const HOTKEYS = {
+// Define custom types
+type CustomElement = {
+  type: string;
+  children: CustomText[];
+  align?: string;
+  url?: string;
+};
+type CustomText = {
+  text: string;
+  bold?: boolean;
+  italic?: boolean;
+  code?: boolean;
+  underline?: boolean;
+};
+type CustomEditor = BaseEditor & ReactEditor;
+
+declare module "slate" {
+  interface CustomTypes {
+    Editor: CustomEditor;
+    Element: CustomElement;
+    Text: CustomText;
+  }
+}
+
+const HOTKEYS: { [key: string]: string } = {
   "mod+b": "bold",
   "mod+i": "italic",
   "mod+u": "underline",
@@ -48,16 +75,34 @@ const HOTKEYS = {
 const LIST_TYPES = ["numbered-list", "bulleted-list"];
 const TEXT_ALIGN_TYPES = ["left", "center", "right", "justify"];
 
-const RichTextEditor = () => {
-  const renderElement = useCallback((props: any) => <Element {...props} />, []);
-  const renderLeaf = useCallback((props: React.JSX.IntrinsicAttributes & { attributes: any; children: any; leaf: any; }) => <Leaf {...props} />, []);
+const RichTextEditor: React.FC = () => {
+  const renderElement = useCallback(
+    (
+      props: JSX.IntrinsicAttributes & {
+        attributes: any;
+        children: any;
+        element: CustomElement;
+      }
+    ) => <Element {...props} />,
+    []
+  );
+  const renderLeaf = useCallback(
+    (
+      props: JSX.IntrinsicAttributes & {
+        attributes: any;
+        children: any;
+        leaf: CustomText;
+      }
+    ) => <Leaf {...props} />,
+    []
+  );
   const editor = useMemo(
     () => withImages(withHistory(withReact(createEditor()))),
     []
   );
 
   return (
-    <Slate editor={editor} initialValue={initialValue}>
+    <Slate editor={editor} initialValue={initialValue as Descendant[]}>
       <div className="mb-4 rounded-md border p-2 flex flex-wrap gap-1">
         <MarkButton format="bold" icon={<Bold className="h-4 w-4" />} />
         <MarkButton format="italic" icon={<Italic className="h-4 w-4" />} />
@@ -99,7 +144,7 @@ const RichTextEditor = () => {
         placeholder="Enter some rich text…"
         spellCheck
         autoFocus
-        onKeyDown={(event) => {
+        onKeyDown={(event: React.KeyboardEvent<HTMLDivElement>) => {
           for (const hotkey in HOTKEYS) {
             if (isHotkey(hotkey, event as any)) {
               event.preventDefault();
@@ -113,14 +158,14 @@ const RichTextEditor = () => {
   );
 };
 
-const withImages = (editor) => {
+const withImages = (editor: CustomEditor) => {
   const { insertData, isVoid } = editor;
 
-  editor.isVoid = (element) => {
+  editor.isVoid = (element: CustomElement) => {
     return element.type === "image" ? true : isVoid(element);
   };
 
-  editor.insertData = (data) => {
+  editor.insertData = (data: DataTransfer) => {
     const text = data.getData("text/plain");
     const { files } = data;
 
@@ -131,7 +176,7 @@ const withImages = (editor) => {
 
         if (mime === "image") {
           reader.addEventListener("load", () => {
-            const url = reader.result;
+            const url = reader.result as string;
             insertImage(editor, url);
           });
 
@@ -148,13 +193,13 @@ const withImages = (editor) => {
   return editor;
 };
 
-const insertImage = (editor, url) => {
+const insertImage = (editor: CustomEditor, url: string) => {
   const text = { text: "" };
-  const image: ImageElement = { type: "image", url, children: [text] };
+  const image: CustomElement = { type: "image", url, children: [text] };
   Transforms.insertNodes(editor, image);
 };
 
-const toggleBlock = (editor, format) => {
+const toggleBlock = (editor: CustomEditor, format: string) => {
   const isActive = isBlockActive(
     editor,
     format,
@@ -170,7 +215,8 @@ const toggleBlock = (editor, format) => {
       !TEXT_ALIGN_TYPES.includes(format),
     split: true,
   });
-  let newProperties: Partial<SlateElement>;
+
+  let newProperties: Partial<CustomElement>;
   if (TEXT_ALIGN_TYPES.includes(format)) {
     newProperties = {
       align: isActive ? undefined : format,
@@ -180,7 +226,7 @@ const toggleBlock = (editor, format) => {
       type: isActive ? "paragraph" : isList ? "list-item" : format,
     };
   }
-  Transforms.setNodes<SlateElement>(editor, newProperties);
+  Transforms.setNodes<CustomElement>(editor, newProperties);
 
   if (!isActive && isList) {
     const block = { type: format, children: [] };
@@ -188,7 +234,7 @@ const toggleBlock = (editor, format) => {
   }
 };
 
-const toggleMark = (editor, format) => {
+const toggleMark = (editor: CustomEditor, format: string) => {
   const isActive = isMarkActive(editor, format);
 
   if (isActive) {
@@ -198,7 +244,11 @@ const toggleMark = (editor, format) => {
   }
 };
 
-const isBlockActive = (editor, format, blockType = "type") => {
+const isBlockActive = (
+  editor: CustomEditor,
+  format: string,
+  blockType = "type"
+) => {
   const { selection } = editor;
   if (!selection) return false;
 
@@ -208,21 +258,23 @@ const isBlockActive = (editor, format, blockType = "type") => {
       match: (n) =>
         !Editor.isEditor(n) &&
         SlateElement.isElement(n) &&
-        n[blockType] === format,
+        n[blockType as keyof typeof n] === format,
     })
   );
 
   return !!match;
 };
 
-const isMarkActive = (editor, format) => {
+const isMarkActive = (editor: CustomEditor, format: string) => {
   const marks = Editor.marks(editor);
-  return marks ? marks[format] === true : false;
+  return marks ? marks[format as keyof typeof marks] === true : false;
 };
 
-const Element = (props) => {
-  const { attributes, children, element } = props;
-
+const Element: React.FC<{
+  attributes: any;
+  children: React.ReactNode;
+  element: CustomElement;
+}> = ({ attributes, children, element }) => {
   const style = { textAlign: element.align };
   switch (element.type) {
     case "block-quote":
@@ -266,7 +318,9 @@ const Element = (props) => {
         </ol>
       );
     case "image":
-      return <Image {...props} />;
+      return (
+        <Image attributes={attributes} children={children} element={element} />
+      );
     default:
       return (
         <p style={style} {...attributes}>
@@ -276,7 +330,11 @@ const Element = (props) => {
   }
 };
 
-const Image = ({ attributes, children, element }) => {
+const Image: React.FC<{
+  attributes: any;
+  children: React.ReactNode;
+  element: CustomElement;
+}> = ({ attributes, children, element }) => {
   const editor = useSlate();
   const selected = useSelected();
   const focused = useFocused();
@@ -292,11 +350,10 @@ const Image = ({ attributes, children, element }) => {
         <Button
           variant="destructive"
           size="sm"
-          onClick={() =>
-            Transforms.removeNodes(editor, {
-              at: ReactEditor.findPath(editor, element),
-            })
-          }
+          onClick={() => {
+            const path = ReactEditor.findPath(editor, element);
+            Transforms.removeNodes(editor, { at: path });
+          }}
           className={`absolute top-2 left-2 ${
             selected && focused ? "opacity-100" : "opacity-0"
           } transition-opacity duration-200`}
@@ -309,7 +366,11 @@ const Image = ({ attributes, children, element }) => {
   );
 };
 
-const Leaf = ({ attributes, children, leaf }) => {
+const Leaf: React.FC<{
+  attributes: any;
+  children: React.ReactNode;
+  leaf: CustomText;
+}> = ({ attributes, children, leaf }) => {
   if (leaf.bold) {
     children = <strong>{children}</strong>;
   }
@@ -329,7 +390,10 @@ const Leaf = ({ attributes, children, leaf }) => {
   return <span {...attributes}>{children}</span>;
 };
 
-const BlockButton = ({ format, icon }) => {
+const BlockButton: React.FC<{ format: string; icon: React.ReactNode }> = ({
+  format,
+  icon,
+}) => {
   const editor = useSlate();
   return (
     <Button
@@ -344,7 +408,7 @@ const BlockButton = ({ format, icon }) => {
           ? "text-blue-500"
           : "text-gray-600"
       }`}
-      onMouseDown={(event) => {
+      onMouseDown={(event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
         toggleBlock(editor, format);
       }}
@@ -354,7 +418,10 @@ const BlockButton = ({ format, icon }) => {
   );
 };
 
-const MarkButton = ({ format, icon }) => {
+const MarkButton: React.FC<{ format: string; icon: React.ReactNode }> = ({
+  format,
+  icon,
+}) => {
   const editor = useSlate();
   return (
     <Button
@@ -363,7 +430,7 @@ const MarkButton = ({ format, icon }) => {
       className={`px-2 ${
         isMarkActive(editor, format) ? "text-blue-500" : "text-gray-600"
       }`}
-      onMouseDown={(event) => {
+      onMouseDown={(event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
         toggleMark(editor, format);
       }}
@@ -373,13 +440,13 @@ const MarkButton = ({ format, icon }) => {
   );
 };
 
-const InsertImageButton = () => {
+const InsertImageButton: React.FC = () => {
   const editor = useSlate();
   return (
     <Button
       variant="ghost"
       size="sm"
-      onMouseDown={(event) => {
+      onMouseDown={(event: React.MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
         const url = window.prompt("Enter the URL of the image:");
         if (url && !isImageUrl(url)) {
@@ -394,11 +461,11 @@ const InsertImageButton = () => {
   );
 };
 
-const isImageUrl = (url) => {
+const isImageUrl = (url: string): boolean => {
   if (!url) return false;
   if (!isUrl(url)) return false;
   const ext = new URL(url).pathname.split(".").pop();
-  return imageExtensions.includes(ext);
+  return ext ? imageExtensions.includes(ext) : false;
 };
 
 export default RichTextEditor;
