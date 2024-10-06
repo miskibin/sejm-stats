@@ -70,7 +70,6 @@ const VotingDetail: React.FC = () => {
     yes: cv.yes,
     no: cv.no,
     abstain: cv.abstain,
-    absent: 460 - cv.yes - cv.no - cv.abstain, // Assuming 460 total MPs per club
   }));
 
   const genderVotesData = [
@@ -79,22 +78,13 @@ const VotingDetail: React.FC = () => {
       za: voting.sex_votes.male.yes,
       przeciw: voting.sex_votes.male.no,
       wstrzymal: voting.sex_votes.male.abstain,
-      nieobecnosc:
-        460 -
-        voting.sex_votes.male.yes -
-        voting.sex_votes.male.no -
-        voting.sex_votes.male.abstain,
+    
     },
     {
       gender: "Kobiety",
       za: voting.sex_votes.female.yes,
       przeciw: voting.sex_votes.female.no,
       wstrzymal: voting.sex_votes.female.abstain,
-      nieobecnosc:
-        460 -
-        voting.sex_votes.female.yes -
-        voting.sex_votes.female.no -
-        voting.sex_votes.female.abstain,
     },
   ];
 
