@@ -1,7 +1,8 @@
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import isHotkey from "is-hotkey";
 import imageExtensions from "image-extensions";
 import isUrl from "is-url";
+import axios from "axios";
 import {
   Editable,
   withReact,
@@ -10,6 +11,7 @@ import {
   useSelected,
   useFocused,
   ReactEditor,
+  RenderElementProps,
 } from "slate-react";
 import {
   Editor,
@@ -23,6 +25,7 @@ import {
 import { withHistory } from "slate-history";
 
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
 
 import {
   Bold,
@@ -38,16 +41,21 @@ import {
   Quote,
   Image as ImageIcon,
   X,
+  Save,
 } from "lucide-react";
 import { initialValue } from "./initial-value";
 
 // Define custom types
-type CustomElement = {
-  type: string;
-  children: CustomText[];
-  align?: string;
-  url?: string;
-};
+type CustomElement =
+  | { type: "paragraph"; children: CustomText[]; align?: string }
+  | { type: "heading-one"; children: CustomText[]; align?: string }
+  | { type: "heading-two"; children: CustomText[]; align?: string }
+  | { type: "block-quote"; children: CustomText[]; align?: string }
+  | { type: "numbered-list"; children: CustomElement[]; align?: string }
+  | { type: "bulleted-list"; children: CustomElement[]; align?: string }
+  | { type: "list-item"; children: CustomText[]; align?: string }
+  | { type: "image"; url: string; children: CustomText[]; align?: string };
+
 type CustomText = {
   text: string;
   bold?: boolean;
@@ -55,13 +63,12 @@ type CustomText = {
   code?: boolean;
   underline?: boolean;
 };
+
 type CustomEditor = BaseEditor & ReactEditor;
 
 declare module "slate" {
   interface CustomTypes {
     Editor: CustomEditor;
-    Element: CustomElement;
-    Text: CustomText;
   }
 }
 
@@ -76,16 +83,46 @@ const LIST_TYPES = ["numbered-list", "bulleted-list"];
 const TEXT_ALIGN_TYPES = ["left", "center", "right", "justify"];
 
 const RichTextEditor: React.FC = () => {
+  const [value, setValue] = useState<Descendant[]>(initialValue);
   const renderElement = useCallback(
-    (
-      props: JSX.IntrinsicAttributes & {
-        attributes: any;
-        children: any;
-        element: CustomElement;
-      }
-    ) => <Element {...props} />,
+    (props: RenderElementProps) => <Element {...props} />,
     []
   );
+  const saveContent = async () => {
+    try {
+      // Convert images to base64
+      const contentWithBase64 = await Promise.all(
+        value.map(async (node) => {
+          if (SlateElement.isElement(node) && (node.type as string) === "image") {
+            const response = await fetch((node as any).url);
+            const blob = await response.blob();
+            return new Promise((resolve) => {
+              const reader = new FileReader();
+              reader.onloadend = () =>
+                resolve({
+                  ...node,
+                  url: reader.result,
+                });
+              reader.readAsDataURL(blob);
+            });
+          }
+          return node;
+        })
+      );
+      console.log(contentWithBase64);
+      const response = await axios.post("/api/articles", {
+        content: contentWithBase64,
+      });
+
+      if (response.status === 201) {
+        window.alert("Article saved successfully");
+      }
+    } catch (error) {
+      console.error("Error saving article:", error);
+      window.alert(error);
+    }
+  };
+
   const renderLeaf = useCallback(
     (
       props: JSX.IntrinsicAttributes & {
@@ -102,7 +139,7 @@ const RichTextEditor: React.FC = () => {
   );
 
   return (
-    <Slate editor={editor} initialValue={initialValue as Descendant[]}>
+    <Slate editor={editor} initialValue={initialValue as Descendant[]}  onChange={setValue}>
       <div className="mb-4 rounded-md border p-2 flex flex-wrap gap-1">
         <MarkButton format="bold" icon={<Bold className="h-4 w-4" />} />
         <MarkButton format="italic" icon={<Italic className="h-4 w-4" />} />
@@ -135,7 +172,12 @@ const RichTextEditor: React.FC = () => {
           format="justify"
           icon={<AlignJustify className="h-4 w-4" />}
         />
+        
         <InsertImageButton />
+        <Button onClick={saveContent} className="ml-auto">
+          <Save className="h-4 w-4 mr-2" />
+          Save
+        </Button>
       </div>
       <Editable
         className="min-h-[200px] rounded-md border p-4"
@@ -161,9 +203,10 @@ const RichTextEditor: React.FC = () => {
 const withImages = (editor: CustomEditor) => {
   const { insertData, isVoid } = editor;
 
-  editor.isVoid = (element: CustomElement) => {
-    return element.type === "image" ? true : isVoid(element);
-  };
+  editor.isVoid = (element) =>
+    (element as CustomElement).type === "image"
+      ? true
+      : isVoid(element as SlateElement);
 
   editor.insertData = (data: DataTransfer) => {
     const text = data.getData("text/plain");
@@ -196,7 +239,7 @@ const withImages = (editor: CustomEditor) => {
 const insertImage = (editor: CustomEditor, url: string) => {
   const text = { text: "" };
   const image: CustomElement = { type: "image", url, children: [text] };
-  Transforms.insertNodes(editor, image);
+  Transforms.insertNodes(editor, image as unknown as Descendant);
 };
 
 const toggleBlock = (editor: CustomEditor, format: string) => {
@@ -216,21 +259,21 @@ const toggleBlock = (editor: CustomEditor, format: string) => {
     split: true,
   });
 
-  let newProperties: Partial<CustomElement>;
+  let newProperties: Partial<SlateElement>;
   if (TEXT_ALIGN_TYPES.includes(format)) {
     newProperties = {
       align: isActive ? undefined : format,
-    };
+    } as Partial<SlateElement>;
   } else {
     newProperties = {
       type: isActive ? "paragraph" : isList ? "list-item" : format,
-    };
+    } as Partial<SlateElement>;
   }
-  Transforms.setNodes<CustomElement>(editor, newProperties);
+  Transforms.setNodes<SlateElement>(editor, newProperties);
 
   if (!isActive && isList) {
-    const block = { type: format, children: [] };
-    Transforms.wrapNodes(editor, block);
+    const block = { type: format, children: [] } as CustomElement;
+    Transforms.wrapNodes(editor, block as unknown as SlateElement);
   }
 };
 
@@ -270,18 +313,18 @@ const isMarkActive = (editor: CustomEditor, format: string) => {
   return marks ? marks[format as keyof typeof marks] === true : false;
 };
 
-const Element: React.FC<{
-  attributes: any;
-  children: React.ReactNode;
-  element: CustomElement;
-}> = ({ attributes, children, element }) => {
-  const style = { textAlign: element.align };
-  switch (element.type) {
+const Element: React.FC<RenderElementProps> = ({
+  attributes,
+  children,
+  element,
+}) => {
+  const style = { textAlign: (element as CustomElement).align };
+  switch (element.type as string) {
     case "block-quote":
       return (
         <blockquote
           className="border-l-4 border-gray-300 pl-4 italic"
-          style={style}
+          style={style as React.CSSProperties}
           {...attributes}
         >
           {children}
@@ -289,51 +332,74 @@ const Element: React.FC<{
       );
     case "bulleted-list":
       return (
-        <ul className="list-disc pl-5" style={style} {...attributes}>
+        <ul
+          className="list-disc pl-5"
+          style={style as React.CSSProperties}
+          {...attributes}
+        >
           {children}
         </ul>
       );
     case "heading-one":
       return (
-        <h1 className="text-3xl font-bold" style={style} {...attributes}>
+        <h1
+          className="text-3xl font-bold"
+          style={style as React.CSSProperties}
+          {...attributes}
+        >
           {children}
         </h1>
       );
     case "heading-two":
       return (
-        <h2 className="text-2xl font-bold" style={style} {...attributes}>
+        <h2
+          className="text-2xl font-bold"
+          style={style as React.CSSProperties}
+          {...attributes}
+        >
           {children}
         </h2>
       );
     case "list-item":
       return (
-        <li style={style} {...attributes}>
+        <li style={style as React.CSSProperties} {...attributes}>
           {children}
         </li>
       );
     case "numbered-list":
       return (
-        <ol className="list-decimal pl-5" style={style} {...attributes}>
+        <ol
+          className="list-decimal pl-5"
+          style={style as React.CSSProperties}
+          {...attributes}
+        >
           {children}
         </ol>
       );
     case "image":
       return (
-        <Image attributes={attributes} children={children} element={element} />
+        <ImageElement
+          attributes={attributes}
+          element={
+            element as unknown as CustomElement & { type: "image"; url: string }
+          }
+        >
+          {children}
+        </ImageElement>
       );
     default:
       return (
-        <p style={style} {...attributes}>
+        <p style={style as React.CSSProperties} {...attributes}>
           {children}
         </p>
       );
   }
 };
 
-const Image: React.FC<{
+const ImageElement: React.FC<{
   attributes: any;
   children: React.ReactNode;
-  element: CustomElement;
+  element: CustomElement & { type: "image"; url: string };
 }> = ({ attributes, children, element }) => {
   const editor = useSlate();
   const selected = useSelected();
@@ -341,8 +407,11 @@ const Image: React.FC<{
   return (
     <div {...attributes}>
       <div contentEditable={false} className="relative">
-        <img
+        <Image
           src={element.url}
+          alt="Inserted image"
+          width={400}
+          height={300}
           className={`block max-w-full max-h-80 ${
             selected && focused ? "ring-2 ring-blue-500" : "ring-0"
           }`}
@@ -351,7 +420,10 @@ const Image: React.FC<{
           variant="destructive"
           size="sm"
           onClick={() => {
-            const path = ReactEditor.findPath(editor, element);
+            const path = ReactEditor.findPath(
+              editor,
+              element as unknown as SlateElement
+            );
             Transforms.removeNodes(editor, { at: path });
           }}
           className={`absolute top-2 left-2 ${
