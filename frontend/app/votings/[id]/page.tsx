@@ -37,6 +37,7 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import { Voting } from "@/lib/types";
 
 const VotingDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>() || { id: "" };
@@ -44,7 +45,7 @@ const VotingDetail: React.FC = () => {
     data: voting,
     isLoading,
     error,
-  } = useFetchData<any>(`/votings/${id}/`);
+  } = useFetchData<Voting>(`/votings/${id}/`);
 
   if (isLoading) return <SkeletonComponent />;
   if (error) return <>{error.message}</>;
@@ -78,7 +79,6 @@ const VotingDetail: React.FC = () => {
       za: voting.sex_votes.male.yes,
       przeciw: voting.sex_votes.male.no,
       wstrzymal: voting.sex_votes.male.abstain,
-    
     },
     {
       gender: "Kobiety",
@@ -272,7 +272,9 @@ const VotingDetail: React.FC = () => {
         </Card>
       </div>
 
-      {(voting.similar_votings.length > 0 || voting.processes.length > 0 || voting.prints.length >0) && (
+      {(voting.similar_votings.length > 0 ||
+        voting.processes.length > 0 ||
+        voting.prints.length > 0) && (
         <div className="">
           {voting.similar_votings.length > 0 && (
             <Card>
@@ -335,7 +337,7 @@ const VotingDetail: React.FC = () => {
                   {voting.prints.map((p: any) => (
                     <li key={p.id}>
                       <Link
-                        href={`/prints/${p.id}`}
+                        href={p.pdf_url}
                         className="text-blue-500 hover:underline"
                       >
                         {p.title}
@@ -345,9 +347,7 @@ const VotingDetail: React.FC = () => {
                 </ul>
               </CardContent>
             </Card>
-          )
-
-          }
+          )}
         </div>
       )}
     </div>

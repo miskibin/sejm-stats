@@ -123,7 +123,6 @@ export interface Print {
   title: string;
   pdf_url: string;
 }
-
 export interface Voting {
   id: number;
   yes: number;
@@ -136,13 +135,54 @@ export interface Voting {
   votingNumber: number;
   date: string;
   title: string;
-  description: string;
+  description: string | null;
   topic: string;
-  prints: string[];
+  prints: VotingPrint[];
+  pdfLink: string | null;
   kind: string;
   success: boolean;
+  summary: string;
+  club_votes: ClubVote[];
+  total_data: number[];
+  total_labels: string[];
+  sex_votes: SexVotes;
+  processes: any[];
+  similar_votings: any[];
+  votes: Vote[];
 }
 
+interface VotingPrint {
+  id: string;
+  title: string;
+  pdf_url: string;
+}
+
+interface ClubVote {
+  club: {
+    id: string;
+  };
+  yes: number;
+  no: number;
+  abstain: number;
+}
+
+interface SexVotes {
+  female: {
+    yes: number;
+    no: number;
+    abstain: number;
+  };
+  male: {
+    yes: number;
+    no: number;
+    abstain: number;
+  };
+}
+
+interface Vote {
+  MP: string;
+  vote: string;
+}
 export interface Stage {
   stageNumber: number;
   date: string | null;
