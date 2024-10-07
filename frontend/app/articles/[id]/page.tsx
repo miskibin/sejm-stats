@@ -28,7 +28,7 @@ const ArticleDetailPage: React.FC = () => {
 
   const { data: latestArticles } = useQuery({
     queryKey: ["latestArticles"],
-    queryFn: fetchLatestArticles,
+    queryFn: fetchLatestArticles
   });
   const articleContent = slateToHtml(Array.isArray(article?.content) ? article.content : []);
   if (isLoading) return <ArticleSkeleton />;
@@ -71,7 +71,7 @@ const ArticleDetailPage: React.FC = () => {
         <aside className="lg:w-1/3">
           <Card>
             <CardHeader>
-              <CardTitle>Latest Articles</CardTitle>
+              <CardTitle>Najnowsze artykuły</CardTitle>
             </CardHeader>
             <CardContent>
               <ul className="space-y-4">

@@ -13,6 +13,7 @@ class ArticleSerializer(serializers.ModelSerializer):
             "image",
             "created_at",
             "updated_at",
+            "tags",
             "author",
         ]
         read_only_fields = ["created_at", "updated_at"]
@@ -21,4 +22,4 @@ class ArticleSerializer(serializers.ModelSerializer):
 class ArticleListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Article
-        fields = ["id", "title", "image", "created_at", "author"]
+        fields = ["id", "title", "image", "created_at", "author", "tags"]

@@ -10,15 +10,16 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from rest_framework import viewsets
 
+
 class ArticleViewSet(viewsets.ModelViewSet):
-    queryset = Article.objects.all()
     pagination_class = ApiViewPagination
     lookup_field = "id"
-
+    queryset = Article.objects.all()
     def get_serializer_class(self):
         if self.action == "list":
             return ArticleListSerializer
         return ArticleSerializer
+
 
     @method_decorator(cache_page(60 * 15))  # Cache for 15 minutes
     def list(self, request, *args, **kwargs):

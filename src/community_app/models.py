@@ -20,9 +20,12 @@ class Article(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     author = models.CharField(max_length=200, default='Admin')
+    tags = models.CharField(max_length=200, null=True, blank=True)
     def __str__(self):
         return self.title
-
+    
+    class Meta:
+        ordering = ['-updated_at']
 
 class TeamMember(models.Model):
     class Role(models.IntegerChoices):
