@@ -69,13 +69,13 @@ export async function sendArticleToApi(articleData: {
   title: string;
   content: any;
   image: string | null;
+  author: string;
 }) {
   console.log("Sending article to API", articleData);
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/article-create`, {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/articles/`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      // Add any necessary authentication headers here
     },
     body: JSON.stringify(articleData),
   });
