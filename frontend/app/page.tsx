@@ -7,17 +7,31 @@ import { useFetchData } from "@/lib/api";
 import LoadableContainer from "@/components/loadableContainer";
 import LoginButton from "@/components/ui/loginButton";
 import { HomeHeader } from "@/components/home/homeHeader";
+import { APIResponse, ArticleListItem } from "@/lib/types";
 
-async function HomeContainer() {
+function HomeContainer() {
   const { data, isLoading, error } = useFetchData<any>(`/home/`);
-  if (isLoading) return <SkeletonComponent />;
-  if (error) return <LoadableContainer>{error.message}</LoadableContainer>;
-  if (!data) return null;
+  const {
+    data: lastArticlesData,
+    isLoading: isLastArticlesLoading,
+    error: lastArticlesError,
+  } = useFetchData<APIResponse<ArticleListItem[]>>(`/articles/`);
+
+  if (isLoading || isLastArticlesLoading) return <SkeletonComponent />;
+  if (error || lastArticlesError)
+    return (
+      <LoadableContainer>
+        {error?.message || lastArticlesError?.message}
+      </LoadableContainer>
+    );
+  if (!data || !lastArticlesData) return null;
+
   return (
     <Home
       latestVotings={data.latest_votings}
       allClubs={data.all_clubs}
       cards={data.cards}
+      lastArticles={lastArticlesData?.results.flat() || []}
     />
   );
 }

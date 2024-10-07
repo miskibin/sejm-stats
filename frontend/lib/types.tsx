@@ -266,3 +266,21 @@ export type CommitteeResponse = {
   members: CommitteeMember[];
   recent_sittings: CommitteeSitting[];
 };
+
+export type ArticleListItem = {
+  id: number;
+  title: string;
+  image: any;
+  created_at: string;
+  updated_at: string;
+  author: string;
+};
+export type Article = {
+  id: number;
+  image: any;
+  title: string;
+  content: string;
+  created_at: string;
+  updated_at: string;
+  author: string;
+};

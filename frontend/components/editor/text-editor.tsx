@@ -44,6 +44,8 @@ import {
   Save,
 } from "lucide-react";
 import { initialValue } from "./initial-value";
+import { sendArticleToApi } from "@/lib/api";
+import { useSession } from "next-auth/react";
 
 // Define custom types
 type CustomElement =
@@ -84,6 +86,7 @@ const TEXT_ALIGN_TYPES = ["left", "center", "right", "justify"];
 
 const RichTextEditor: React.FC = () => {
   const [value, setValue] = useState<Descendant[]>(initialValue);
+  const { data: session, status } = useSession();
   const renderElement = useCallback(
     (props: RenderElementProps) => <Element {...props} />,
     []
@@ -93,7 +96,10 @@ const RichTextEditor: React.FC = () => {
       // Convert images to base64
       const contentWithBase64 = await Promise.all(
         value.map(async (node) => {
-          if (SlateElement.isElement(node) && (node.type as string) === "image") {
+          if (
+            SlateElement.isElement(node) &&
+            (node.type as string) === "image"
+          ) {
             const response = await fetch((node as any).url);
             const blob = await response.blob();
             return new Promise((resolve) => {
@@ -109,14 +115,25 @@ const RichTextEditor: React.FC = () => {
           return node;
         })
       );
-      console.log(contentWithBase64);
-      const response = await axios.post("/api/articles", {
-        content: contentWithBase64,
-      });
 
-      if (response.status === 201) {
-        window.alert("Article saved successfully");
-      }
+      // Find the first image in the content to use as the article image
+      const firstImage = contentWithBase64.find(
+        (node) =>
+          SlateElement.isElement(node) && (node.type as string) === "image"
+      ) as { url: string } | undefined;
+      const title = contentWithBase64.find(
+        (node): node is CustomElement & { children: CustomText[] } =>
+          SlateElement.isElement(node) && (node.type as string) === "heading-one"
+      )?.children[0].text;
+      const articleData = {
+        title: title || "Untitled",
+        content: contentWithBase64,
+        image: firstImage ? firstImage.url : null,
+        author: session?.user?.email || "Anonymous",
+      };
+
+      const response = await sendArticleToApi(articleData);
+      window.alert("Article saved successfully");
     } catch (error) {
       console.error("Error saving article:", error);
       window.alert(error);
@@ -139,7 +156,11 @@ const RichTextEditor: React.FC = () => {
   );
 
   return (
-    <Slate editor={editor} initialValue={initialValue as Descendant[]}  onChange={setValue}>
+    <Slate
+      editor={editor}
+      initialValue={initialValue as Descendant[]}
+      onChange={setValue}
+    >
       <div className="mb-4 rounded-md border p-2 flex flex-wrap gap-1">
         <MarkButton format="bold" icon={<Bold className="h-4 w-4" />} />
         <MarkButton format="italic" icon={<Italic className="h-4 w-4" />} />
@@ -172,11 +193,11 @@ const RichTextEditor: React.FC = () => {
           format="justify"
           icon={<AlignJustify className="h-4 w-4" />}
         />
-        
+
         <InsertImageButton />
         <Button onClick={saveContent} className="ml-auto">
           <Save className="h-4 w-4 mr-2" />
-          Save
+          Zapisz
         </Button>
       </div>
       <Editable

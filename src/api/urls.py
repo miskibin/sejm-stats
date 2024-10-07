@@ -2,6 +2,7 @@ from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
 from api import views
+from api.views.article import ArticleViewSet
 from api.views.home import HomeViewSet
 from api.views.search import OptimizedSearchView
 
@@ -20,15 +21,12 @@ router.register(r"votings-meta", views.VotingsMetaViewSet, basename="voting-meta
 router.register(r"processes", views.ProcessViewSet, basename="processes")
 router.register(r"processes-meta", views.ProcessesMetaViewSet, basename="process-meta")
 router.register(r"home", views.HomeViewSet, basename="home")
-router.register(
-    r"article-context", views.ArticleContextViewSet, basename="article-context"
-)
+router.register(r"articles", ArticleViewSet)
 
 app_name = "api"
 
 urlpatterns = [
     path("", include(router.urls)),
-    path("article-create", views.ArticleCreateView.as_view(), name="article-create"),
     path("search", OptimizedSearchView.as_view(), name="search"),
     path("total-stats", views.TotalStatsView.as_view(), name="total-stats"),
 ]
