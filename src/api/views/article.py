@@ -18,8 +18,6 @@ class ArticleViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action == "list":
             return ArticleListSerializer
-        elif self.action in ["retrieve", "create", "update", "partial_update"]:
-            return ArticleSerializer
         return ArticleSerializer
 
     @method_decorator(cache_page(60 * 15))  # Cache for 15 minutes

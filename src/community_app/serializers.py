@@ -12,7 +12,7 @@ class ArticleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Article
-        fields = ["title", "content", "image"]
+        fields = ["title", "content", "image", "author", "created_at", "updated_at"]
 
     def create(self, validated_data):
         image_data = validated_data.pop("image", None)

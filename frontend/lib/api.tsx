@@ -5,6 +5,8 @@ import {
   QueryClient,
   useMutation,
 } from "@tanstack/react-query";
+import axios from "axios";
+import { Article, ArticleListItem } from "./types";
 
 export const queryClient = new QueryClient({
   defaultOptions: {
@@ -73,23 +75,30 @@ export async function sendArticleToApi(articleData: {
 }) {
   console.log("Sending article to API", articleData);
   const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/articles/`, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(articleData),
   });
 
   if (!response.ok) {
-    throw new Error('Failed to save article');
+    throw new Error("Failed to save article");
   }
 
   return response.json();
 }
 
-// Hook for using the sendArticleToApi function with react-query
-export function useSendArticle() {
-  return useMutation({
-    mutationFn: sendArticleToApi,
-  });
-}
+export const fetchArticle = async (id: string): Promise<Article> => {
+  const response = await axios.get(
+    `${process.env.NEXT_PUBLIC_API_URL}/articles/${id}`
+  );
+  return response.data;
+};
+
+export const fetchLatestArticles = async (): Promise<ArticleListItem[]> => {
+  const response = await axios.get(
+    `${process.env.NEXT_PUBLIC_API_URL}/articles/`
+  );
+  return response.data.results;
+};

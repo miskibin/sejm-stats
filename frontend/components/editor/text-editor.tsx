@@ -197,7 +197,7 @@ const RichTextEditor: React.FC = () => {
         <InsertImageButton />
         <Button onClick={saveContent} className="ml-auto">
           <Save className="h-4 w-4 mr-2" />
-          Save
+          Zapisz
         </Button>
       </div>
       <Editable
