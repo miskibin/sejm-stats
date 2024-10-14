@@ -31,8 +31,11 @@ class OptimizedSearchView(APIView):
     def get(self, request):
         query = request.GET.get("q")
         range_param = request.GET.get("range")
+        limit = int(request.GET.get("limit", 50))
         self.optimize_database()
-        logger.info(f"Received search request: query='{query}', range='{range_param}'")
+        logger.info(
+            f"Received search request: query='{query}', range='{range_param}', limit='{limit}'"
+        )
 
         if not query:
             logger.warning("Empty search query received")
@@ -57,7 +60,14 @@ class OptimizedSearchView(APIView):
             start_date = None
             end_date = None
 
-        search_query = SearchQuery(query, config="pl_ispell")
+        # Split query into multiple phrases
+        search_queries = [
+            SearchQuery(phrase.strip(), config="pl_ispell")
+            for phrase in query.split(",")
+        ]
+        combined_search_query = search_queries[0]
+        for q in search_queries[1:]:
+            combined_search_query |= q
 
         search_configs = [
             (
@@ -110,15 +120,25 @@ class OptimizedSearchView(APIView):
         ]
 
         results = {}
+        active_searches = [
+            key
+            for key, *_ in search_configs
+            if request.GET.get(key, "false").lower() == "true"
+        ]
+
         with connection.execute_wrapper(self._query_debugger):
             for key, model, serializer, vector, date_field in search_configs:
-                if request.GET.get(key, "false").lower() == "true":
+                if key in active_searches:
                     queryset = self.search_model(
-                        model, vector, search_query, start_date, end_date, date_field
+                        model,
+                        vector,
+                        combined_search_query,
+                        start_date,
+                        end_date,
+                        date_field,
+                        limit,
                     )
                     results[key] = serializer(queryset, many=True).data
-                else:
-                    results[key] = []
 
         logger.info(
             f"Search completed. Results count: {sum(len(v) for v in results.values())}"
@@ -126,7 +146,14 @@ class OptimizedSearchView(APIView):
         return Response(results)
 
     def search_model(
-        self, model, search_vector, search_query, start_date, end_date, date_field
+        self,
+        model,
+        search_vector,
+        search_query,
+        start_date,
+        end_date,
+        date_field,
+        limit,
     ):
         queryset = model.objects.annotate(
             search=search_vector, rank=SearchRank(search_vector, search_query)
@@ -137,7 +164,9 @@ class OptimizedSearchView(APIView):
         if end_date:
             queryset = queryset.filter(**{f"{date_field}__lte": end_date})
 
-        return queryset.order_by("-rank")[:50]  # Limit to top 10 results per model
+        return queryset.order_by("-rank")[
+            :limit
+        ]  # Limit to specified number of results per model
 
     def _query_debugger(self, execute, sql, params, many, context):
         logger.debug(f"Executing SQL: {sql}")
