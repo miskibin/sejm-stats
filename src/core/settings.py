@@ -49,6 +49,7 @@ ALLOWED_HOSTS = [
 ]
 CSRF_TRUSTED_ORIGINS = [
     "https://sejm-stats.pl",
+    "https://chat.sejm-stats.pl",
     "https://www.sejm-stats.pl",
     "https://*.wikipedia.org",
     "https://api.sejm.gov.pl",
