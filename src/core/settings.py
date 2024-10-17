@@ -38,6 +38,7 @@ DEBUG_TOOLBAR_CONFIG = {"SHOW_TOOLBAR_CALLBACK": lambda _request: DEBUG}
 
 ALLOWED_HOSTS = [
     "sejm-stats.pl",
+    "chat.sejm-stats.pl",
     "www.sejm-stats.pl",
     "*.wikipedia.org",
     "api.sejm.gov.pl",
@@ -49,6 +50,7 @@ ALLOWED_HOSTS = [
 ]
 CSRF_TRUSTED_ORIGINS = [
     "https://sejm-stats.pl",
+    "https://chat.sejm-stats.pl",
     "https://www.sejm-stats.pl",
     "https://*.wikipedia.org",
     "https://api.sejm.gov.pl",
