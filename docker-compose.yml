@@ -9,11 +9,18 @@ services:
       - postgres_data:/db/data
     env_file:
       - .env
-
+  model_downloader:
+    build:
+      context: .
+      dockerfile: Dockerfile.model_downloader
+    volumes:
+      - model_data:/app/models
   web:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        SERVICE: web
     command:
       [
         "gunicorn",
@@ -34,6 +41,8 @@ services:
     depends_on:
       - db
       - redis
+      - model_downloader
+
     env_file:
       - .env
 
@@ -67,7 +76,9 @@ services:
   celery:
     build:
       context: .
-      dockerfile: Dockerfile.celery
+      dockerfile: Dockerfile
+      args:
+        SERVICE: celery
     command:
       [
         "celery",
@@ -88,13 +99,14 @@ services:
       - db
       - redis
       - web
+      - model_downloader
+
     environment:
       - C_FORCE_ROOT=true
       - CUDA=${CUDA:-false}
     env_file:
       - .env
     mem_limit: 4g
-
   certbot:
     image: certbot/dns-cloudflare
     volumes:
@@ -107,3 +119,4 @@ volumes:
   static_volume:
   media_volume:
   certbot_conf:
+  model_data:

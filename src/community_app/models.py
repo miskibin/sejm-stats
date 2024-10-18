@@ -1,7 +1,6 @@
 import html
 from datetime import datetime
 
-from ckeditor.fields import RichTextField
 from django.conf import settings
 from django.db import models
 from django.template.defaultfilters import safe, slugify
@@ -9,7 +8,6 @@ from django.urls import reverse
 from django.utils.functional import cached_property
 from django.utils.html import strip_tags
 from django.utils.translation import gettext_lazy as _
-from meta.models import ModelMeta
 from rest_framework import serializers
 
 

@@ -5,15 +5,23 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.postgres
+
     volumes:
       - postgres_data:/db/data
     env_file:
       - .env
-
+  model_downloader:
+    build:
+      context: .
+      dockerfile: Dockerfile.model_downloader
+    volumes:
+      - model_data:/app/models
   web:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        SERVICE: web
     command: ["sh", "-c", "tail -f /dev/null"]
     volumes:
       - ./src:/code/src
@@ -22,6 +30,7 @@ services:
       - media_volume:/code/media
     depends_on:
       - db
+      - model_downloader
       - redis
     env_file:
       - .env
@@ -59,3 +68,4 @@ volumes:
   postgres_data:
   static_volume:
   media_volume:
+  model_data:

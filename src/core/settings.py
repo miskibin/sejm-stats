@@ -62,24 +62,16 @@ API_URL_ROOT = "/apiInt"
 # Application definition
 
 INSTALLED_APPS = [
-    "meta",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "fontawesomefree",
-    "django_select2",
-    "drf_redesign",
     "rest_framework",
-    "crispy_forms",
     "corsheaders",
     "django_filters",
     "django_celery_results",
-    "crispy_bootstrap5",
-    "ckeditor",
-    "rolepermissions",
     "django_celery_beat",
     "api.apps.ApiConfig",
     "sejm_app.apps.SejmAppConfig",
@@ -140,7 +132,8 @@ DATABASES = {
         "NAME": config("POSTGRES_DB"),
         "USER": config("POSTGRES_USER"),
         "PASSWORD": config("POSTGRES_PASSWORD"),
-        "HOST": config("DATABASE_HOST"),
+        # "HOST": config("DATABASE_HOST"),
+        "HOST": "db",
         "PORT": config("POSTGRES_PORT"),
     }
 }
@@ -175,32 +168,6 @@ REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 100,
 }
-
-# Meta settings
-META_SITE_PROTOCOL = "https"
-META_SITE_DOMAIN = "sejm-stats.pl"
-META_SITE_TYPE = "website"
-META_SITE_NAME = "Sejm Stats"
-META_INCLUDE_KEYWORDS = [
-    "Sejm",
-    "parlament",
-    "polska",
-    "posłowie",
-    "dane sejmowe",
-    "głosowania",
-    "wydatki parlamentarne",
-    "statystyki sejmowe",
-    "AI",
-    "Artykuły",
-    "Michał Skibiński",
-    "analiza polityczna",
-]
-# META_USE_OG_PROPERTIES = True
-# META_USE_TWITTER_PROPERTIES = True
-# META_USE_SCHEMAORG_PROPERTIES = True
-META_USE_TITLE_TAG = True
-
-META_USE_SITES = False
 
 # Internationalization
 LANGUAGE_CODE = "pl"
