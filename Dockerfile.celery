@@ -32,7 +32,3 @@ COPY --from=base / /
 
 # Set the working directory
 WORKDIR /code
-
-# Use an entrypoint script to choose the appropriate image at runtime
-COPY docker-entrypoint-celery.sh /docker-entrypoint-celery.sh
-RUN chmod +x /docker-entrypoint-celery.sh
