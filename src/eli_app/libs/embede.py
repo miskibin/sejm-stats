@@ -1,3 +1,4 @@
+import os
 from sentence_transformers import SentenceTransformer
 import numpy as np
 from typing import Union, List
@@ -9,8 +10,13 @@ class EmbeddingModel:
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super(EmbeddingModel, cls).__new__(cls)
+            model_path = "/app/models/gte-Qwen2-1.5B-instruct"
+            if not os.path.exists(model_path):
+                raise RuntimeError(
+                    "Model not found. Ensure the model_downloader service has run."
+                )
             cls._instance.model = SentenceTransformer(
-                "Alibaba-NLP/gte-Qwen2-1.5B-instruct", trust_remote_code=True
+                model_path, trust_remote_code=True
             )
             cls._instance.model.max_seq_length = 8192
         return cls._instance
