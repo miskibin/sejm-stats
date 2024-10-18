@@ -1,6 +1,8 @@
 from django.db import models
 from django.utils.functional import cached_property
 
+from sejm_app.models.vector import VectorizedModel
+
 
 # Create your models here.
 class Publisher(models.Model):
@@ -59,7 +61,7 @@ class Reference(models.Model):
         return self.name
 
 
-class Act(models.Model):
+class Act(VectorizedModel):
     ELI = models.CharField(max_length=255, primary_key=True)
     address = models.CharField(max_length=255)
     announcementDate = models.DateField(blank=True, null=True)

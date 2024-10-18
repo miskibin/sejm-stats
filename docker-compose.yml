@@ -90,9 +90,10 @@ services:
       - web
     environment:
       - C_FORCE_ROOT=true
+      - CUDA=${CUDA:-false}
     env_file:
       - .env
-    mem_limit: 2g
+    mem_limit: 4g
 
   certbot:
     image: certbot/dns-cloudflare

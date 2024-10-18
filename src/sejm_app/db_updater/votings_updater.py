@@ -107,7 +107,8 @@ class VotingsUpdaterTask(DbUpdaterTask):
                 )
                 list_vote.save()
             return vote
-        vote.vote = VoteOption[vote_data["vote"].upper()].value
+        if vote_data.get("vote"):
+            vote.vote = VoteOption[vote_data["vote"].upper()].value
         return vote
 
     def _create_voting(self, data: dict):

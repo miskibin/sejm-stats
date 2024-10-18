@@ -25,7 +25,13 @@ services:
       - redis
     env_file:
       - .env
-
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
   redis:
     image: redis:latest
 
@@ -44,6 +50,7 @@ services:
       - web
     environment:
       - C_FORCE_ROOT=true
+      - CUDA=${CUDA:-true}
     env_file:
       - .env
     mem_limit: 2g
