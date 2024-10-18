@@ -108,7 +108,7 @@ class VotingJSONListView(BaseVotingListView):
         rows = [
             [
                 voting.date.strftime("%d %m %Y"),
-                # f'{voting.title}: {"<span class='fw-bold'>" + str(voting.prints.first()) + "</span>" if voting.category == "WHOLE_PROJECT" else voting.topic or voting.description}',
+                f'{voting.title}: {"<span class='fw-bold'>" + str(voting.prints.first()) + "</span>" if voting.category == "WHOLE_PROJECT" else voting.topic or voting.description}',
                 (
                     ICON_STR.format(color="success", icon="check")
                     if voting.success

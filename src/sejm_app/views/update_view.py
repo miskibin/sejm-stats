@@ -11,7 +11,9 @@ class UpdateView(View):
         if request.user and request.user.is_superuser:
             from sejm_app.tasks import community_tasks, eli_tasks, sejm_tasks
 
-            task_result = chain(t.s() for t in eli_tasks).delay()
+            task_result = chain(
+                t.s() for t in sejm_tasks + eli_tasks + community_tasks
+            ).delay()
             return JsonResponse(
                 {"message": "Update initiated. Please check back shortly for results."}
             )
