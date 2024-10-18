@@ -1,6 +1,5 @@
 # Use the official Python image from the Docker Hub
-FROM python:3.12 as base
-
+FROM python:3.12
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
@@ -24,11 +23,3 @@ RUN pip install --upgrade pip && pip install -r requirements.txt
 # Copy application code
 COPY src/ /code/
 
-# Create a new stage for CUDA support
-FROM nvidia/cuda:11.8.0-runtime-ubuntu22.04 as cuda
-
-# Copy everything from the base image
-COPY --from=base / /
-
-# Set the working directory
-WORKDIR /code
