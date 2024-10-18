@@ -1,4 +1,3 @@
-
 from .acts import ActsMetaViewSet, ActViewSet
 from .clubs import ClubViewSet
 from .committees import CommitteeViewSet

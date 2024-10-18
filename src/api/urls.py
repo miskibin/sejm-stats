@@ -1,4 +1,5 @@
 from django.urls import include, path
+from api.views.vector_search import VectorSearchView
 from rest_framework.routers import DefaultRouter
 
 from api import views
@@ -28,5 +29,6 @@ app_name = "api"
 urlpatterns = [
     path("", include(router.urls)),
     path("search", OptimizedSearchView.as_view(), name="search"),
+    path("vector-search/", VectorSearchView.as_view(), name="vector-search"),
     path("total-stats", views.TotalStatsView.as_view(), name="total-stats"),
 ]

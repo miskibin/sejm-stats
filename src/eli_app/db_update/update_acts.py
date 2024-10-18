@@ -1,13 +1,16 @@
 from datetime import datetime
 from functools import partial
 from itertools import product
-from typing import Callable
+from typing import Callable, List
+import re
 
 from django.db import OperationalError
 from django.utils import timezone
 from loguru import logger
+from tqdm import tqdm
 
 from eli_app.libs.api_endpoints import EliAPI
+from eli_app.libs.embede import get_embeddings
 from eli_app.models import Act, ActStatus, DocumentType, Institution, Keyword, Publisher
 from sejm_app.db_updater import DbUpdaterTask
 from sejm_app.utils import parse_all_dates
@@ -21,13 +24,10 @@ class ActUpdaterTask(DbUpdaterTask):
     STARTING_YEAR = 2023
 
     def run(self, *args, **kwargs):
-        years = range(
-            self.STARTING_YEAR, timezone.now().year + 1
-        )  # Replace with your actual range of years
+        years = range(self.STARTING_YEAR, timezone.now().year + 1)
         publishers = Publisher.objects.all()
 
         for year, publisher in product(years, publishers):
-            # Your code here
             try:
                 acts_count = ELI_API.list_acts(publisher.code, year)["count"]
             except TypeError:
@@ -39,6 +39,7 @@ class ActUpdaterTask(DbUpdaterTask):
                 logger.info(f"{publisher.name} already populated")
                 continue
 
+            new_acts = []
             for act_idx in range(max(db_count, 1), acts_count + 1):
                 act = ELI_API.act_details(publisher.code, year, act_idx)
                 act = parse_all_dates(act, date_only=True)
@@ -48,15 +49,11 @@ class ActUpdaterTask(DbUpdaterTask):
                 if Act.objects.filter(ELI=act["ELI"]).exists():
                     continue
 
-                # Create or get the ActStatus and DocumentType
-                act_status, created = ActStatus.objects.get_or_create(
-                    name=act.pop("status")
-                )
-                document_type, created = DocumentType.objects.get_or_create(
+                act_status, _ = ActStatus.objects.get_or_create(name=act.pop("status"))
+                document_type, _ = DocumentType.objects.get_or_create(
                     name=act.pop("type")
                 )
                 act.pop("publisher")
-                # Fetch or create the Institution
                 released_by = None
                 if inst := act.pop("releasedBy"):
                     released_by = Institution.objects.get(name=inst[0])
@@ -64,8 +61,8 @@ class ActUpdaterTask(DbUpdaterTask):
                 keywords = act.pop("keywords")
                 field_names = [f.name for f in Act._meta.get_fields()]
                 filtered_act = {k: v for k, v in act.items() if k in field_names}
-                # act title sometimes is to long
                 filtered_act["title"] = filtered_act["title"][:1024]
+
                 act_instance = Act.objects.create(
                     status=act_status,
                     type=document_type,
@@ -74,6 +71,81 @@ class ActUpdaterTask(DbUpdaterTask):
                     **filtered_act,
                 )
 
-                # Assign keywords to the act_instance
                 keywords_qs = Keyword.objects.filter(name__in=keywords)
                 act_instance.keywords.set(keywords_qs)
+
+                new_acts.append(act_instance)
+
+            # After creating all new acts, check if we need to create embeddings
+            if new_acts:
+                self.create_embeddings_for_acts(new_acts)
+
+        # After processing all years and publishers, check for any remaining acts without embeddings
+        self.create_embeddings_for_acts(Act.objects.filter(embedding__isnull=True))
+
+    def create_embeddings_for_acts(self, acts: List[Act]):
+        acts_without_embedding = [act for act in acts if not act.embedding]
+        if not acts_without_embedding:
+            logger.info("All acts already have embeddings")
+            return
+
+        logger.info(f"Creating embeddings for {len(acts_without_embedding)} acts")
+        titles = [self.clean_title(act.title) for act in acts_without_embedding]
+
+        try:
+            embeddings = get_embeddings(titles)
+            for act, embedding in tqdm(
+                zip(acts_without_embedding, embeddings),
+                total=len(acts_without_embedding),
+            ):
+                act.embedding = embedding
+                act.save(update_fields=["embedding"])
+            logger.success(
+                f"Successfully created embeddings for {len(acts_without_embedding)} acts"
+            )
+        except Exception as e:
+            logger.error(f"Failed to create embeddings: {str(e)}")
+
+    @staticmethod
+    def clean_title(title):
+        # Extract the authority and the rest of the title
+        match = re.match(
+            r"^(?:Rozporządzenie|Obwieszczenie)\s+(.*?)\s+z\s+dnia.*?(?:w sprawie|zmieniające)",
+            title,
+            re.IGNORECASE,
+        )
+        authority = match.group(1) if match else ""
+
+        # Remove the document type, date, and "w sprawie" phrases
+        title = re.sub(r"^.*?(?:z dnia \d+\s+\w+\s+\d{4}\s*r\.\s*)", "", title)
+        title = re.sub(r"(?:zmieniające\s+rozporządzenie\s+)?w\s+sprawie\s+", "", title)
+        title = title.replace(
+            "Rzeczypospolitej Polskiej ogłoszenia jednolitego tekstu ustawy", ""
+        )
+        # Combine authority with cleaned title
+        cleaned_title = f"{authority} {title}".strip()
+
+        # remove this type of things with (ALPHANUMERICBIGCASENOSPACES)
+        # (PLH120079)
+        cleaned_title = re.sub(r"\(\w+\d+\)", "", cleaned_title)
+        # Remove extra whitespace
+        cleaned_title = re.sub(r"\s+", " ", cleaned_title).strip()
+        patterns_to_remove = [
+            r"Ministra",
+            r"Marszałka Sejmu Rzeczypospolitej Polskiej",
+            r"Prezesa Rady Ministrów",
+            r"Rady Ministrów",
+            r"ogłoszenia jednolitego tekstu",
+            r"zmieniające rozporządzenie",
+        ]
+        for pattern in patterns_to_remove:
+            cleaned_title = re.sub(pattern, "", cleaned_title)
+
+        # Convert to lowercase
+        cleaned_title = cleaned_title.lower()
+
+        # Remove special characters and extra whitespace
+        cleaned_title = re.sub(r"[^a-zA-Z0-9\s]", "", cleaned_title)
+        cleaned_title = re.sub(r"\s+", " ", cleaned_title).strip()
+
+        return cleaned_title

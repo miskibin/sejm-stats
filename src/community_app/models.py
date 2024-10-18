@@ -16,10 +16,11 @@ from rest_framework import serializers
 class Article(models.Model):
     title = models.CharField(max_length=200)
     content = models.JSONField()  # Store Slate's content as JSON
-    image = models.ImageField(upload_to='article_images/', null=True, blank=True)
+    image = models.ImageField(upload_to="article_images/", null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    author = models.CharField(max_length=200, default='Admin')
+    author = models.CharField(max_length=200, default="Admin")
+
     def __str__(self):
         return self.title
 
