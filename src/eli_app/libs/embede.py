@@ -13,19 +13,18 @@ class EmbeddingModel:
         if cls._instance is None:
             cls._instance = super(EmbeddingModel, cls).__new__(cls)
 
-            model_path = Path("/app/models/gte-Qwen2-1.5B-instruct")
+            model_path = Path("/app/models/jina-embeddings-v3")
 
             if not os.path.exists(model_path):
                 logger.info(
                     "Model not found. Listing all files in the directory for debugging:"
                 )
-                cls._instance.model = SentenceTransformer(
-                    "Alibaba-NLP/gte-Qwen2-1.5B-instruct", trust_remote_code=True
+                raise FileNotFoundError(
+                    f"Model not found at {model_path}. Please download the model first."
                 )
-            else:
-                cls._instance.model = SentenceTransformer(
-                    model_path, trust_remote_code=True
-                )
+            cls._instance.model = SentenceTransformer(
+                model_path, trust_remote_code=True
+            )
             cls._instance.model.max_seq_length = 4096
         return cls._instance
 

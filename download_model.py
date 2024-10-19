@@ -3,12 +3,10 @@ from pathlib import Path
 
 
 def download_model():
-    model = SentenceTransformer(
-        "Alibaba-NLP/gte-Qwen2-1.5B-instruct", trust_remote_code=True
-    )
+    model = SentenceTransformer("jinaai/jina-embeddings-v3", trust_remote_code=True)
     # create dir if not exists
     Path("/app/models").mkdir(parents=True, exist_ok=True)
-    model.save("/app/models/gte-Qwen2-1.5B-instruct")
+    model.save("jinaai/jina-embeddings-v3")
     print("Model downloaded successfully")
 
 
