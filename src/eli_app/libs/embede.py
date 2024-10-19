@@ -19,12 +19,6 @@ class EmbeddingModel:
                 logger.info(
                     "Model not found. Listing all files in the directory for debugging:"
                 )
-                for root, dirs, files in os.walk("/app/models"):
-                    for name in dirs:
-                        logger.info(f"Directory: {os.path.join(root, name)}")
-                    for name in files:
-                        logger.info(f"File: {os.path.join(root, name)}")
-            if not os.path.exists(model_path):
                 cls._instance.model = SentenceTransformer(
                     "Alibaba-NLP/gte-Qwen2-1.5B-instruct", trust_remote_code=True
                 )
