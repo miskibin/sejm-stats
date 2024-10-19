@@ -24,14 +24,9 @@ class EmbeddingModel:
                         logger.info(f"Directory: {os.path.join(root, name)}")
                     for name in files:
                         logger.info(f"File: {os.path.join(root, name)}")
-            if not os.path.exists(model_path):
-                cls._instance.model = SentenceTransformer(
-                    "Alibaba-NLP/gte-Qwen2-1.5B-instruct", trust_remote_code=True
-                )
-            else:
-                cls._instance.model = SentenceTransformer(
-                    model_path, trust_remote_code=True
-                )
+            cls._instance.model = SentenceTransformer(
+                model_path, trust_remote_code=True
+            )
             cls._instance.model.max_seq_length = 4096
         return cls._instance
 
