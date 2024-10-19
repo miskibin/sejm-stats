@@ -2,6 +2,7 @@ import os
 from sentence_transformers import SentenceTransformer
 import numpy as np
 from typing import Union, List
+from pathlib import Path
 
 
 class EmbeddingModel:
@@ -10,15 +11,25 @@ class EmbeddingModel:
     def __new__(cls):
         if cls._instance is None:
             cls._instance = super(EmbeddingModel, cls).__new__(cls)
-            model_path = "/app/models/gte-Qwen2-1.5B-instruct"
+
+            model_path = Path("/app/models/gte-Qwen2-1.5B-instruct")
+
             if not os.path.exists(model_path):
+                print(
+                    "Model not found. Listing all files in the directory for debugging:"
+                )
+                for root, dirs, files in os.walk("/app/models"):
+                    for name in dirs:
+                        print(f"Directory: {os.path.join(root, name)}")
+                    for name in files:
+                        print(f"File: {os.path.join(root, name)}")
                 raise RuntimeError(
-                    "Model not found. Ensure the model_downloader service has run."
+                    f"Model not found. Ensure the model_downloader service has run."
                 )
             cls._instance.model = SentenceTransformer(
                 model_path, trust_remote_code=True
             )
-            cls._instance.model.max_seq_length = 8192
+            cls._instance.model.max_seq_length = 4096
         return cls._instance
 
     def get_embeddings(self, texts: Union[str, List[str]]) -> np.ndarray:
