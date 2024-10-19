@@ -1,5 +1,5 @@
 # Use the official PostgreSQL image as a base
-FROM postgres:16
+FROM pgvector/pgvector:0.6.2-pg15
 
 # Set the working directory
 WORKDIR /tmp
@@ -15,13 +15,3 @@ RUN cp polish.affix $(pg_config --sharedir)/tsearch_data/ \
 
 # Use the official PostgreSQL image as a base
 # Install necessary packages for building extensions and git
-RUN apt-get update && \
-    apt-get install -y build-essential postgresql-server-dev-16 git && \
-    git clone https://github.com/pgvector/pgvector.git && \
-    cd pgvector && \
-    make && \
-    make install && \
-    cd .. && \
-    apt-get autoremove -y && \
-    apt-get clean
-RUN echo "shared_preload_libraries = 'pgvector'" >> /usr/share/postgresql/postgresql.conf.sample
