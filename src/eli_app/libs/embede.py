@@ -3,6 +3,7 @@ from sentence_transformers import SentenceTransformer
 import numpy as np
 from typing import Union, List
 from pathlib import Path
+from loguru import logger
 
 
 class EmbeddingModel:
@@ -15,20 +16,22 @@ class EmbeddingModel:
             model_path = Path("/app/models/gte-Qwen2-1.5B-instruct")
 
             if not os.path.exists(model_path):
-                print(
+                logger.info(
                     "Model not found. Listing all files in the directory for debugging:"
                 )
                 for root, dirs, files in os.walk("/app/models"):
                     for name in dirs:
-                        print(f"Directory: {os.path.join(root, name)}")
+                        logger.info(f"Directory: {os.path.join(root, name)}")
                     for name in files:
-                        print(f"File: {os.path.join(root, name)}")
-                raise RuntimeError(
-                    f"Model not found. Ensure the model_downloader service has run."
+                        logger.info(f"File: {os.path.join(root, name)}")
+            if not os.path.exists(model_path):
+                cls._instance.model = SentenceTransformer(
+                    "Alibaba-NLP/gte-Qwen2-1.5B-instruct", trust_remote_code=True
                 )
-            cls._instance.model = SentenceTransformer(
-                model_path, trust_remote_code=True
-            )
+            else:
+                cls._instance.model = SentenceTransformer(
+                    model_path, trust_remote_code=True
+                )
             cls._instance.model.max_seq_length = 4096
         return cls._instance
 
