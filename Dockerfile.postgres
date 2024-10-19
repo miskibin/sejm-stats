@@ -1,5 +1,5 @@
 # Use the official PostgreSQL image as a base
-FROM pgvector/pgvector:0.6.2-pg15
+FROM pgvector/pgvector:pg16
 
 # Set the working directory
 WORKDIR /tmp
