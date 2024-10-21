@@ -9,11 +9,18 @@ services:
       - postgres_data:/db/data
     env_file:
       - .env
-
+  model_downloader:
+    build:
+      context: .
+      dockerfile: Dockerfile.model_downloader
+    volumes:
+      - model_data:/app/models
   web:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        SERVICE: web
     command:
       [
         "gunicorn",
@@ -31,9 +38,12 @@ services:
       - ./src/manage.py:/code/manage.py
       - static_volume:/code/static
       - media_volume:/code/media
+      - model_data:/app/models
     depends_on:
       - db
       - redis
+      - model_downloader
+
     env_file:
       - .env
 
@@ -67,7 +77,9 @@ services:
   celery:
     build:
       context: .
-      dockerfile: Dockerfile.celery
+      dockerfile: Dockerfile
+      args:
+        SERVICE: celery
     command:
       [
         "celery",
@@ -84,21 +96,24 @@ services:
       - ./src:/code/src
       - ./src/manage.py:/code/manage.py
       - media_volume:/code/media
+      - model_data:/app/models
     depends_on:
       - db
       - redis
       - web
+      - model_downloader
+
     environment:
       - C_FORCE_ROOT=true
+      - CUDA=${CUDA:-false}
     env_file:
       - .env
-    mem_limit: 2g
-
+    mem_limit: 4g
   certbot:
     image: certbot/dns-cloudflare
     volumes:
       - certbot_conf:/etc/letsencrypt
-      - ./cloudflare.ini:/etc/cloudflare/cloudflare.ini:ro
+      - /home/ubuntu/sejm-stats/cloudflare.ini:/etc/cloudflare/cloudflare.ini # DIFFERENT FOR EVERYONE
     command: certonly --dns-cloudflare --dns-cloudflare-credentials /etc/cloudflare/cloudflare.ini -d sejm-stats.pl --email michalskibinski109@gmail.com --agree-tos --non-interactive --expand --dns-cloudflare-propagation-seconds 60
 
 volumes:
@@ -106,3 +121,4 @@ volumes:
   static_volume:
   media_volume:
   certbot_conf:
+  model_data:

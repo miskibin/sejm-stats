@@ -17,6 +17,7 @@
   <a href="https://discord.com/invite/zH2J3z5Wbf"><strong>💬 Discord</strong></a> ·
   <a href="https://patronite.pl/sejm-stats"><strong>❤️ Patronite</strong></a> ·
   <a href="https://www.youtube.com/@sejm-stats"><strong>🎥 YouTube</strong></a>
+  <a href="https://github.com/miskibin/ollama-ui/"><strong>🌟 AI repository</strong></a>
 </p>
 
 <p align="center">

@@ -22,7 +22,7 @@ function App() {
     );
   }
 
-  if (!session && false) {
+  if (!session) {
     return (
       <div className="flex justify-center items-center h-[80vh]">
         <Card className="w-[350px]">

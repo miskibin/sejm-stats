@@ -5,27 +5,43 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.postgres
+
     volumes:
       - postgres_data:/db/data
     env_file:
       - .env
-
+  model_downloader:
+    build:
+      context: .
+      dockerfile: Dockerfile.model_downloader
+    volumes:
+      - model_data:/app/models
   web:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        SERVICE: web
     command: ["sh", "-c", "tail -f /dev/null"]
     volumes:
       - ./src:/code/src
       - ./src/manage.py:/code/manage.py
+      - model_data:/app/models
       - static_volume:/code/static
       - media_volume:/code/media
     depends_on:
       - db
+      - model_downloader
       - redis
     env_file:
       - .env
-
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
   redis:
     image: redis:latest
 
@@ -38,12 +54,14 @@ services:
       - ./src:/code/src
       - ./src/manage.py:/code/manage.py
       - media_volume:/code/media
+      - model_data:/app/models
     depends_on:
       - db
       - redis
       - web
     environment:
       - C_FORCE_ROOT=true
+      - CUDA=${CUDA:-true}
     env_file:
       - .env
     mem_limit: 2g
@@ -52,3 +70,4 @@ volumes:
   postgres_data:
   static_volume:
   media_volume:
+  model_data:

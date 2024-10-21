@@ -1,25 +1,70 @@
-FROM python:3.12
+# Build stage
+FROM python:3.12 AS builder
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
+
 WORKDIR /code
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends gcc libpq-dev postgresql-client \
-    # Cleaning up unused files
-    && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
+
+# Copy requirements file
+COPY requirements.txt .
+
+# Install build dependencies and Python packages
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    libpq-dev \
+    && pip install --upgrade pip \
+    && pip install --user -r requirements.txt \
+    && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt /code/
-RUN pip install --upgrade pip && pip install -r requirements.txt
-# Now copy the rest of the code, this layer will be rebuilt when the rest of the code changes
+# Final stage
+FROM python:3.12-slim
+
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+ENV TESSDATA_PREFIX /usr/share/tesseract-ocr/5/tessdata
+ENV PATH=/root/.local/bin:$PATH
+
+WORKDIR /code
+
+# Install runtime dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libpq-dev \
+    postgresql-client \
+    poppler-utils \
+    tesseract-ocr \
+    wget \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* \
+    && wget -O /tmp/pol.traineddata https://github.com/tesseract-ocr/tessdata/raw/main/pol.traineddata \
+    && mkdir -p /usr/share/tesseract-ocr/5/tessdata \
+    && mv /tmp/pol.traineddata /usr/share/tesseract-ocr/5/tessdata/
+
+# Copy installed packages from builder stage
+COPY --from=builder /root/.local /root/.local
+
+# Copy application code
 COPY src/ /code/
 COPY docker-entrypoint.sh /code/
 RUN chmod +x /code/docker-entrypoint.sh
-RUN pip install --upgrade pip && pip install -r requirements.txt
+
 EXPOSE 8000
-RUN ls -la /code/
+
 ENTRYPOINT ["/code/docker-entrypoint.sh"]
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "core.wsgi:application"]
-# docker build -t transparlament .
-# docker run --env-file .env -p 8000:8000 transparlament
+
+# Use build argument to determine which service to run
+ARG SERVICE=web
+ENV SERVICE=${SERVICE}
+
+CMD if [ "$SERVICE" = "celery" ]; then \
+    celery -A core worker --beat --scheduler django -l INFO; \
+    else \
+    gunicorn --bind 0.0.0.0:8000 core.wsgi:application; \
+    fi
+
+# Build commands:
+# For web: docker build --build-arg SERVICE=web -t transparlament:web .
+# For celery: docker build --build-arg SERVICE=celery -t transparlament:celery .
