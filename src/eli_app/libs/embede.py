@@ -3,12 +3,15 @@ from pathlib import Path
 from typing import List
 import vertexai
 from vertexai.language_models import TextEmbeddingInput, TextEmbeddingModel
+from loguru import logger
 
 # Set the environment variable for Google Application Credentials
 # Root directory.
-credentials_path = Path(__file__).parent.parent.parent.parent / "sejm-stats-439117-39efc9d2f8b8.json"
+credentials_path = Path(__file__).cwd() / "sejm-stats-439117-39efc9d2f8b8.json"
 os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = str(credentials_path)
-
+logger.info(
+    f"GOOGLE_APPLICATION_CREDENTIALS: {os.environ['GOOGLE_APPLICATION_CREDENTIALS']}"
+)
 # Initialize Vertex AI
 vertexai.init(project="sejm-stats-439117")
 
