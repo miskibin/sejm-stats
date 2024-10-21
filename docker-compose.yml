@@ -9,12 +9,7 @@ services:
       - postgres_data:/db/data
     env_file:
       - .env
-  model_downloader:
-    build:
-      context: .
-      dockerfile: Dockerfile.model_downloader
-    volumes:
-      - model_data:/app/models
+
   web:
     build:
       context: .
@@ -38,11 +33,9 @@ services:
       - ./src/manage.py:/code/manage.py
       - static_volume:/code/static
       - media_volume:/code/media
-      - model_data:/app/models
     depends_on:
       - db
       - redis
-      - model_downloader
 
     env_file:
       - .env
@@ -96,12 +89,10 @@ services:
       - ./src:/code/src
       - ./src/manage.py:/code/manage.py
       - media_volume:/code/media
-      - model_data:/app/models
     depends_on:
       - db
       - redis
       - web
-      - model_downloader
 
     environment:
       - C_FORCE_ROOT=true
@@ -121,4 +112,3 @@ volumes:
   static_volume:
   media_volume:
   certbot_conf:
-  model_data:
