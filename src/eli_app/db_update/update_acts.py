@@ -84,29 +84,49 @@ class ActUpdaterTask(DbUpdaterTask):
             logger.info("All acts already have embeddings")
             return
         logger.info(f"Creating embeddings for {total_acts} acts")
-        for index, act in enumerate(acts_without_embedding, start=1):
-            if act.embedding:
-                logger.warning(f"Act {act.ELI} already has an embedding")
-                continue
-            try:
-                cleaned_title = self.clean_title(act.title)
-                logger.info(
-                    f"Creating embedding for act {index}/{total_acts}: {act.ELI}"
-                )
-                embedding = embed_text([cleaned_title])[0]  
-                act.embedding = embedding
-                act.save(update_fields=["embedding"])
 
-                logger.success(
-                    f"Successfully created embedding for act {index}/{total_acts}: {act.ELI}"
-                )
-            except Exception as e:
-                logger.error(
-                    f"Failed to create embedding for act {index}/{total_acts} ({act.ELI}): {str(e)}"
-                )
-        logger.success(
-            f"Embedding creation process completed. Created embeddings for {total_acts} acts"
-        )
+        try:
+            # Prepare all titles at once
+            cleaned_titles = [
+                self.clean_title(act.title) for act in acts_without_embedding
+            ]
+
+            # Create embeddings for all titles at once
+            logger.info(f"Creating embeddings for {total_acts} acts in batch")
+            embeddings = embed_text(cleaned_titles)
+
+            # Update acts with their embeddings
+            for act, embedding in zip(acts_without_embedding, embeddings):
+                act.embedding = embedding
+
+            # Bulk update all acts
+            Act.objects.bulk_update(acts_without_embedding, ["embedding"])
+
+            logger.success(
+                f"Successfully created embeddings for {total_acts} acts in batch"
+            )
+        except Exception as e:
+            logger.error(f"Failed to create embeddings in batch: {str(e)}")
+
+        # After batch processing, check if any acts still don't have embeddings
+        remaining_acts = Act.objects.filter(embedding__isnull=True)
+        if remaining_acts.exists():
+            logger.warning(
+                f"{remaining_acts.count()} acts still without embeddings. Processing individually."
+            )
+            for act in remaining_acts:
+                try:
+                    cleaned_title = self.clean_title(act.title)
+                    embedding = embed_text([cleaned_title])[0]
+                    act.embedding = embedding
+                    act.save(update_fields=["embedding"])
+                    logger.success(f"Created embedding for act: {act.ELI}")
+                except Exception as e:
+                    logger.error(
+                        f"Failed to create embedding for act {act.ELI}: {str(e)}"
+                    )
+
+        logger.success("Embedding creation process completed")
 
     @staticmethod
     def clean_title(title):
