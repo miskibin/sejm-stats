@@ -38,7 +38,6 @@ END
 # Add the pgvector extension
 psql -h $DATABASE_HOST -p $POSTGRES_PORT -U $POSTGRES_USER -d $POSTGRES_DB -c "CREATE EXTENSION IF NOT EXISTS VECTOR;"
 
-python manage.py makemigrations
 python manage.py migrate
 
 python manage.py collectstatic --noinput

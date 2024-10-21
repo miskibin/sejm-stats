@@ -4,7 +4,7 @@
   "dockerComposeFile": ["../docker-compose-dev.yml"],
   "service": "web",
   "shutdownAction": "stopCompose",
-  "runServices": ["db", "web", "redis", "model_downloader"],
+  "runServices": ["db", "web", "redis"],
   "postCreateCommand": "pip install -r /code/requirements.txt && pip install djlint isort black mypy pylint",
   "postStartCommand": "black .",
   "forwardPorts": [8000],

@@ -10,12 +10,6 @@ services:
       - postgres_data:/db/data
     env_file:
       - .env
-  model_downloader:
-    build:
-      context: .
-      dockerfile: Dockerfile.model_downloader
-    volumes:
-      - model_data:/app/models
   web:
     build:
       context: .
@@ -26,22 +20,13 @@ services:
     volumes:
       - ./src:/code/src
       - ./src/manage.py:/code/manage.py
-      - model_data:/app/models
       - static_volume:/code/static
       - media_volume:/code/media
     depends_on:
       - db
-      - model_downloader
       - redis
     env_file:
       - .env
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [gpu]
   redis:
     image: redis:latest
 
@@ -54,7 +39,6 @@ services:
       - ./src:/code/src
       - ./src/manage.py:/code/manage.py
       - media_volume:/code/media
-      - model_data:/app/models
     depends_on:
       - db
       - redis
@@ -70,4 +54,3 @@ volumes:
   postgres_data:
   static_volume:
   media_volume:
-  model_data:
