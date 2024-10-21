@@ -77,7 +77,7 @@ class ActUpdaterTask(DbUpdaterTask):
         # After processing all years and publishers, check for any remaining acts without embeddings
         self.create_embeddings_for_acts(Act.objects.filter(embedding__isnull=True))
 
-    def create_embeddings_for_acts(self, acts: List[Act]):
+    def create_embeddings_for_acts(self, acts: list[Act]):
         acts_without_embedding = [act for act in acts if not act.embedding]
         total_acts = len(acts_without_embedding)
         if not acts_without_embedding:
