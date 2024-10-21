@@ -1,6 +1,6 @@
 from django.db.models import Q
 from api.serializers.list_serializers import ActListSerializer
-from eli_app.libs.embede import get_embeddings
+from eli_app.libs.embede import embed_text
 from eli_app.models import Act
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -20,7 +20,7 @@ class VectorSearchView(APIView):
             )
 
         # Generate embedding for the query
-        query_embedding = get_embeddings(query)[0]
+        query_embedding = embed_text(query)[0]
 
         # Search for similar Acts
         similar_acts = Act.objects.order_by(
