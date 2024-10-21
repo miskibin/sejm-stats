@@ -48,6 +48,7 @@ COPY --from=builder /root/.local /root/.local
 
 # Copy application code
 COPY src/ /code/
+COPY /sejm-stats-439117-39efc9d2f8b8.json /code/
 COPY docker-entrypoint.sh /code/
 RUN chmod +x /code/docker-entrypoint.sh
 
