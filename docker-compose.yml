@@ -104,7 +104,7 @@ services:
     image: certbot/dns-cloudflare
     volumes:
       - certbot_conf:/etc/letsencrypt
-      - /home/ubuntu/sejm-stats/cloudflare.ini:/etc/cloudflare/cloudflare.ini # DIFFERENT FOR EVERYONE
+      - /home/root/sejm-stats/cloudflare.ini:/etc/cloudflare/cloudflare.ini # DIFFERENT FOR EVERYONE
     command: certonly --dns-cloudflare --dns-cloudflare-credentials /etc/cloudflare/cloudflare.ini -d sejm-stats.pl --email michalskibinski109@gmail.com --agree-tos --non-interactive --expand --dns-cloudflare-propagation-seconds 60
 
 volumes:
