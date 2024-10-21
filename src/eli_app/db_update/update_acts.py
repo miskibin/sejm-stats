@@ -1,13 +1,7 @@
-from datetime import datetime
-from functools import partial
 from itertools import product
-from typing import Callable, List
 import re
-
-from django.db import OperationalError
 from django.utils import timezone
 from loguru import logger
-from tqdm import tqdm
 
 from eli_app.libs.api_endpoints import EliAPI
 from eli_app.libs.embede import embed_text
