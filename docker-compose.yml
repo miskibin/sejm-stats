@@ -63,6 +63,7 @@ services:
     depends_on:
       - web
       - frontend
+      - certbot
 
   redis:
     image: redis:latest
