@@ -10,7 +10,7 @@ from loguru import logger
 from tqdm import tqdm
 
 from eli_app.libs.api_endpoints import EliAPI
-from eli_app.libs.embede import get_embeddings
+from eli_app.libs.embede import embed_text
 from eli_app.models import Act, ActStatus, DocumentType, Institution, Keyword, Publisher
 from sejm_app.db_updater import DbUpdaterTask
 from sejm_app.utils import parse_all_dates
@@ -85,26 +85,34 @@ class ActUpdaterTask(DbUpdaterTask):
 
     def create_embeddings_for_acts(self, acts: List[Act]):
         acts_without_embedding = [act for act in acts if not act.embedding]
+        total_acts = len(acts_without_embedding)
         if not acts_without_embedding:
             logger.info("All acts already have embeddings")
             return
-
-        logger.info(f"Creating embeddings for {len(acts_without_embedding)} acts")
-        titles = [self.clean_title(act.title) for act in acts_without_embedding]
-
-        try:
-            embeddings = get_embeddings(titles)
-            for act, embedding in tqdm(
-                zip(acts_without_embedding, embeddings),
-                total=len(acts_without_embedding),
-            ):
+        logger.info(f"Creating embeddings for {total_acts} acts")
+        for index, act in enumerate(acts_without_embedding, start=1):
+            if act.embedding:
+                logger.warning(f"Act {act.ELI} already has an embedding")
+                continue
+            try:
+                cleaned_title = self.clean_title(act.title)
+                logger.info(
+                    f"Creating embedding for act {index}/{total_acts}: {act.ELI}"
+                )
+                embedding = embed_text([cleaned_title])[0]  
                 act.embedding = embedding
                 act.save(update_fields=["embedding"])
-            logger.success(
-                f"Successfully created embeddings for {len(acts_without_embedding)} acts"
-            )
-        except Exception as e:
-            logger.error(f"Failed to create embeddings: {str(e)}")
+
+                logger.success(
+                    f"Successfully created embedding for act {index}/{total_acts}: {act.ELI}"
+                )
+            except Exception as e:
+                logger.error(
+                    f"Failed to create embedding for act {index}/{total_acts} ({act.ELI}): {str(e)}"
+                )
+        logger.success(
+            f"Embedding creation process completed. Created embeddings for {total_acts} acts"
+        )
 
     @staticmethod
     def clean_title(title):

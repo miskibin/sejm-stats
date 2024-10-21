@@ -4,7 +4,7 @@ from pgvector.django import VectorField
 
 class VectorizedModel(models.Model):
     embedding = VectorField(
-        dimensions=1024, null=True, blank=True
+        dimensions=512, null=True, blank=True
     )  # 1536-dimensional vector field
 
     class Meta:
