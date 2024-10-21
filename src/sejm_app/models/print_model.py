@@ -11,11 +11,11 @@ from django.utils.functional import cached_property
 
 
 class PrintModel(models.Model):
-    id = models.CharField(max_length=13, primary_key=True, editable=False)
+    id = models.CharField(max_length=18, primary_key=True, editable=False)
     processPrint = models.ForeignKey(
         "self", on_delete=models.CASCADE, null=True, blank=True
     )
-    number = models.CharField(max_length=10)
+    number = models.CharField(max_length=15)
     term = models.SmallIntegerField()
     title = models.TextField()
     documentDate = models.DateField()
