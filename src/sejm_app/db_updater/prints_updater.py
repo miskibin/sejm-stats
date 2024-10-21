@@ -69,10 +69,10 @@ class PrintsUpdaterTask(DbUpdaterTask):
             add_print["main_print"] = print_mdl
 
             # Check if AdditionalPrint already exists
-            if not AdditionalPrint.objects.filter(printmodel_ptr_id=add_print["printmodel_ptr_id"]).exists():
+            if not AdditionalPrint.objects.filter(number=add_print["number"]).exists():
                 AdditionalPrint.objects.create(**add_print)
             else:
-                logger.warning(f"AdditionalPrint with printmodel_ptr_id {add_print['printmodel_ptr_id']} already exists. Skipping creation.")
+                logger.warning(f"AdditionalPrint with printmodel_ptr_id {add_print['number']} already exists. Skipping creation.")
 
     def _download_prints(self):
         url = f"{settings.SEJM_ROOT_URL}/prints"
