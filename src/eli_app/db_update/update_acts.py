@@ -139,6 +139,7 @@ class ActUpdaterTask(DbUpdaterTask):
         authority = match.group(1) if match else ""
 
         # Remove the document type, date, and "w sprawie" phrases
+        title = title.replace("w sprawie", "dot. ")
         title = re.sub(r"^.*?(?:z dnia \d+\s+\w+\s+\d{4}\s*r\.\s*)", "", title)
         title = re.sub(r"(?:zmieniające\s+rozporządzenie\s+)?w\s+sprawie\s+", "", title)
         title = title.replace(
@@ -161,13 +162,13 @@ class ActUpdaterTask(DbUpdaterTask):
             r"zmieniające rozporządzenie",
         ]
         for pattern in patterns_to_remove:
-            cleaned_title = re.sub(pattern, "", cleaned_title)
+            text = re.sub(pattern, "", cleaned_title)
 
         # Convert to lowercase
-        cleaned_title = cleaned_title.lower()
+        text = text.lower()
 
         # Remove special characters and extra whitespace
-        cleaned_title = re.sub(r"[^a-zA-Z0-9\s]", "", cleaned_title)
-        cleaned_title = re.sub(r"\s+", " ", cleaned_title).strip()
+        text = re.sub(r"[^a-zA-Z0-9\s]", "", text)
+        text = re.sub(r"\s+", " ", text).strip()
 
         return cleaned_title
