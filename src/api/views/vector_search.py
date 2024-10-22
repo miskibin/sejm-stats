@@ -36,23 +36,25 @@ class VectorSearchView(APIView):
 
         try:
             similar_acts = (
-                Act.objects
-                .filter(
-                    embedding__isnull=False,
-                    text_length__gte=min_length
-                )
-                .annotate(
-                    _distance=CosineDistance('embedding', query_embedding)
-                )
-                .filter(_distance__lte=max_distance)
-                .order_by('_distance')[:n]
+                Act.objects.filter(embedding__isnull=False, text_length__gte=min_length)
+                .annotate(distance=CosineDistance("embedding", query_embedding))
+                .filter(distance__lte=max_distance)
+                .order_by("distance")[:n]
             )
 
-            serializer = ActListSerializer(similar_acts, many=True)
-            return Response({
-                "results": serializer.data,
-                "count": len(serializer.data),
-            })
+            # Serialize the acts
+            serialized_acts = ActListSerializer(similar_acts, many=True).data
+
+            # Add distance to each result
+            for act, serialized_act in zip(similar_acts, serialized_acts):
+                serialized_act["distance"] = float(act.distance)
+
+            return Response(
+                {
+                    "results": serialized_acts,
+                    "count": len(serialized_acts),
+                }
+            )
 
         except Exception as e:
             logger.exception("Error in vector search")
