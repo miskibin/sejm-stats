@@ -24,7 +24,7 @@ class VectorSearchView(APIView):
 
         Act = apps.get_model("eli_app", "Act")
         query_embedding = embed_text(query)[0]
-
+        logger.debug(f"total acts {Act.objects.count()}")
         # First try without normalization to check if basic search works
         base_query = Act.objects.annotate(
             cosine_dist=CosineDistance("embedding", query_embedding)
@@ -32,11 +32,6 @@ class VectorSearchView(APIView):
 
         # logger.debug first few results to debug
         debug_results = base_query.order_by("cosine_dist")[:5]
-        logger.debug(
-            "Debug - basic distances:",
-            [(act.id, act.cosine_dist) for act in debug_results],
-        )
-
         # Try with modified normalization
         similar_acts = (
             Act.objects.annotate(
