@@ -1,5 +1,5 @@
 from django.db.models import Q, F, FloatField, Value
-from django.db.models.functions import Cast, Log
+from django.db.models.functions import Cast, Log, Greatest
 from api.serializers.list_serializers import ActListSerializer
 from eli_app.libs.embede import embed_text
 from rest_framework.views import APIView
@@ -15,6 +15,9 @@ class VectorSearchView(APIView):
         query = request.GET.get("q")
         n = int(request.GET.get("n", 10))
         min_length = int(request.GET.get("min_length", 0))
+        max_distance = float(
+            request.GET.get("max_distance", 0.8)
+        )  # Add distance threshold
 
         if not query:
             return Response(
@@ -23,39 +26,64 @@ class VectorSearchView(APIView):
             )
 
         Act = apps.get_model("eli_app", "Act")
-        query_embedding = embed_text(query)[0]
 
+        try:
+            query_embedding = embed_text(query)[0]
+        except Exception as e:
+            logger.exception("Error generating query embedding")
+            return Response(
+                {"error": "Failed to generate embedding for query"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+        # Debug info gathering
         total_acts = Act.objects.count()
         total_with_embeddings = Act.objects.filter(embedding__isnull=False).count()
         logger.debug(
             f"Total acts: {total_acts}, with embeddings: {total_with_embeddings}"
         )
 
-        # Add filter for non-null embeddings and basic error checking
-        similar_acts = (
-            Act.objects.filter(embedding__isnull=False, text_length__gte=min_length)
-            .annotate(
-                cosine_dist=CosineDistance("embedding", query_embedding),
-                # Log function requires both an expression and a base
-                length_factor=Log(F("text_length"), Value(2.0)),
-                # Multiply negative distance by log of length for final score
-                normalized_score=(-1 * F("cosine_dist")) * F("length_factor"),
-            )
-            .filter(cosine_dist__lte=1.0)
-            .order_by("-normalized_score")[:n]
-        )
-
         try:
-            result_count = similar_acts.count()
-            logger.debug(f"Result count: {result_count}")
-            logger.debug(f"Query SQL: {similar_acts.query}")
+            # Build the query in steps for better debugging
+            base_query = Act.objects.filter(
+                embedding__isnull=False, text_length__gte=min_length
+            )
 
-            # Get some sample scores for debugging
+            # Add distance calculation
+            with_distance = base_query.annotate(
+                cosine_dist=CosineDistance("embedding", query_embedding),
+            )
+
+            # Add scoring components
+            with_scoring = with_distance.annotate(
+                # Ensure we don't take log of zero
+                safe_length=Greatest(
+                    F("text_length"), Value(1.0), output_field=FloatField()
+                ),
+                length_factor=Log(F("safe_length"), Value(2.0)),
+                # Normalize distance to 0-1 range and combine with length
+                similarity_score=Value(1.0) - F("cosine_dist"),
+                normalized_score=(F("similarity_score") * F("length_factor")),
+            )
+
+            # Apply distance threshold and get results
+            similar_acts = with_scoring.filter(cosine_dist__lte=max_distance).order_by(
+                "-normalized_score"
+            )[:n]
+
+            # Get detailed debug info for first few results
             sample_results = list(similar_acts[:5])
+            debug_samples = []
             for act in sample_results:
-                logger.debug(
-                    f"Act {act.id}: dist={act.cosine_dist}, score={act.normalized_score}, length={act.text_length}"
-                )
+                debug_info = {
+                    "id": act.id,
+                    "distance": float(act.cosine_dist),
+                    "score": float(act.normalized_score),
+                    "length": act.text_length,
+                    "title": str(act.title)[:50],  # Add title for easier debugging
+                }
+                debug_samples.append(debug_info)
+                logger.debug(f"Result details: {debug_info}")
 
             serializer = ActListSerializer(similar_acts, many=True)
 
@@ -65,10 +93,12 @@ class VectorSearchView(APIView):
                     "count": len(serializer.data),
                     "debug": {
                         "min_length": min_length,
+                        "max_distance": max_distance,
                         "query_length": len(query),
                         "embedding_size": len(query_embedding),
                         "total_acts": total_acts,
                         "acts_with_embeddings": total_with_embeddings,
+                        "sample_scores": debug_samples,
                     },
                 }
             )
@@ -76,5 +106,9 @@ class VectorSearchView(APIView):
         except Exception as e:
             logger.exception("Error in vector search")
             return Response(
-                {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                {
+                    "error": str(e),
+                    "detail": str(e.__class__.__name__),
+                },
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
