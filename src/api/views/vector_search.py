@@ -1,4 +1,4 @@
-from django.db.models import Q, F, FloatField
+from django.db.models import Q, F, FloatField, Value
 from django.db.models.functions import Cast, Log
 from api.serializers.list_serializers import ActListSerializer
 from eli_app.libs.embede import embed_text
@@ -36,7 +36,10 @@ class VectorSearchView(APIView):
             Act.objects.filter(embedding__isnull=False, text_length__gte=min_length)
             .annotate(
                 cosine_dist=CosineDistance("embedding", query_embedding),
-                normalized_score=(-1 * F("cosine_dist")) * Log(F("text_length")),
+                # Log function requires both an expression and a base
+                length_factor=Log(F("text_length"), Value(2.0)),
+                # Multiply negative distance by log of length for final score
+                normalized_score=(-1 * F("cosine_dist")) * F("length_factor"),
             )
             .filter(cosine_dist__lte=1.0)
             .order_by("-normalized_score")[:n]
