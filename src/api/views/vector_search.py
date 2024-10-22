@@ -29,10 +29,6 @@ class VectorSearchView(APIView):
         base_query = Act.objects.annotate(
             cosine_dist=CosineDistance("embedding", query_embedding)
         )
-
-        # logger.debug first few results to debug
-        debug_results = base_query.order_by("cosine_dist")[:5]
-        # Try with modified normalization
         similar_acts = (
             Act.objects.annotate(
                 cosine_dist=CosineDistance("embedding", query_embedding),
