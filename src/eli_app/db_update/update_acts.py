@@ -120,7 +120,7 @@ class ActUpdaterTask(DbUpdaterTask):
                     act.text_length = len(cleaned_title)
                     embedding = embed_text([cleaned_title])[0]
                     act.embedding = embedding
-                    act.save(update_fields=["embedding"])
+                    act.save(update_fields=["embedding", "text_length"])
                     logger.success(f"Created embedding for act: {act.ELI}")
                 except Exception as e:
                     logger.error(
