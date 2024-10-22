@@ -54,16 +54,16 @@ RUN chmod +x /code/docker-entrypoint.sh
 
 EXPOSE 8000
 
+ENTRYPOINT ["/code/docker-entrypoint.sh"]
+
 # Use build argument to determine which service to run
 ARG SERVICE=web
 ENV SERVICE=${SERVICE}
 
-# Conditional entrypoint and CMD based on SERVICE
-ENTRYPOINT ["/bin/bash", "-c"]
-CMD if [ "$SERVICE" = "web" ]; then \
-    /code/docker-entrypoint.sh && gunicorn --bind 0.0.0.0:8000 core.wsgi:application; \
-    else \
+CMD if [ "$SERVICE" = "celery" ]; then \
     celery -A core worker --beat --scheduler django -l INFO; \
+    else \
+    gunicorn --bind 0.0.0.0:8000 core.wsgi:application; \
     fi
 
 # Build commands:
