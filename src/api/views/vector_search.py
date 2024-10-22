@@ -24,39 +24,54 @@ class VectorSearchView(APIView):
 
         Act = apps.get_model("eli_app", "Act")
         query_embedding = embed_text(query)[0]
-        logger.debug(f"total acts {Act.objects.count()}")
-        # First try without normalization to check if basic search works
-        base_query = Act.objects.annotate(
-            cosine_dist=CosineDistance("embedding", query_embedding)
+
+        total_acts = Act.objects.count()
+        total_with_embeddings = Act.objects.filter(embedding__isnull=False).count()
+        logger.debug(
+            f"Total acts: {total_acts}, with embeddings: {total_with_embeddings}"
         )
+
+        # Add filter for non-null embeddings and basic error checking
         similar_acts = (
-            Act.objects.annotate(
+            Act.objects.filter(embedding__isnull=False, text_length__gte=min_length)
+            .annotate(
                 cosine_dist=CosineDistance("embedding", query_embedding),
-                # Try log normalization to handle varying text lengths better
-                normalized_score=(-1 * F("cosine_dist"))
-                * Log(Cast("text_length", FloatField())),
+                normalized_score=(-1 * F("cosine_dist")) * Log(F("text_length")),
             )
-            .filter(
-                text_length__gte=min_length,
-                # Add maximum distance threshold
-                cosine_dist__lte=1.0,  # Adjust this threshold as needed
-            )
+            .filter(cosine_dist__lte=1.0)
             .order_by("-normalized_score")[:n]
         )
 
-        logger.debug("Debug - result count:", similar_acts.count())
-        logger.debug("Debug - SQL:", similar_acts.query)
+        try:
+            result_count = similar_acts.count()
+            logger.debug(f"Result count: {result_count}")
+            logger.debug(f"Query SQL: {similar_acts.query}")
 
-        serializer = ActListSerializer(similar_acts, many=True)
-        return Response(
-            {
-                "results": serializer.data,
-                "count": len(serializer.data),
-                # Add debug info in development
-                "debug": {
-                    "min_length": min_length,
-                    "query_length": len(query),
-                    "embedding_size": len(query_embedding),
-                },
-            }
-        )
+            # Get some sample scores for debugging
+            sample_results = list(similar_acts[:5])
+            for act in sample_results:
+                logger.debug(
+                    f"Act {act.id}: dist={act.cosine_dist}, score={act.normalized_score}, length={act.text_length}"
+                )
+
+            serializer = ActListSerializer(similar_acts, many=True)
+
+            return Response(
+                {
+                    "results": serializer.data,
+                    "count": len(serializer.data),
+                    "debug": {
+                        "min_length": min_length,
+                        "query_length": len(query),
+                        "embedding_size": len(query_embedding),
+                        "total_acts": total_acts,
+                        "acts_with_embeddings": total_with_embeddings,
+                    },
+                }
+            )
+
+        except Exception as e:
+            logger.exception("Error in vector search")
+            return Response(
+                {"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
