@@ -98,9 +98,9 @@ class ActUpdaterTask(DbUpdaterTask):
             # Update acts with their embeddings
             for act, embedding in zip(acts_without_embedding, embeddings):
                 act.embedding = embedding
-
+                act.text_length = self.clean_title(act.title)
             # Bulk update all acts
-            Act.objects.bulk_update(acts_without_embedding, ["embedding"])
+            Act.objects.bulk_update(acts_without_embedding, ["embedding", "text_length"])
 
             logger.success(
                 f"Successfully created embeddings for {total_acts} acts in batch"

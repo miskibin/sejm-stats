@@ -1,5 +1,4 @@
-from django.db.models import Q, F, FloatField, Value
-from django.db.models.functions import Cast, Log, Greatest
+from django.db.models import F
 from api.serializers.list_serializers import ActListSerializer
 from eli_app.libs.embede import embed_text
 from rest_framework.views import APIView
@@ -26,6 +25,7 @@ class VectorSearchView(APIView):
         Act = apps.get_model("eli_app", "Act")
 
         try:
+            # Make sure we get a vector of the right dimension
             query_embedding = embed_text(query)[0]
         except Exception as e:
             logger.exception("Error generating query embedding")
@@ -35,24 +35,24 @@ class VectorSearchView(APIView):
             )
 
         try:
-            # Filter acts and calculate similarity scores
             similar_acts = (
-                Act.objects.filter(embedding__isnull=False, text_length__gte=min_length)
-                .annotate(
-                    cosine_dist=CosineDistance("embedding", query_embedding),
-                    safe_length=Greatest(
-                        F("text_length"), Value(1.0), output_field=FloatField()
-                    ),
-                    length_factor=Log(F("safe_length"), Value(2.0)),
-                    similarity_score=Value(1.0) - F("cosine_dist"),
-                    normalized_score=(F("similarity_score") * F("length_factor")),
+                Act.objects
+                .filter(
+                    embedding__isnull=False,
+                    text_length__gte=min_length
                 )
-                .filter(cosine_dist__lte=max_distance)
-                .order_by("-normalized_score")[:n]
+                .annotate(
+                    _distance=CosineDistance('embedding', query_embedding)
+                )
+                .filter(_distance__lte=max_distance)
+                .order_by('_distance')[:n]
             )
 
             serializer = ActListSerializer(similar_acts, many=True)
-            return Response({"results": serializer.data, "count": len(serializer.data)})
+            return Response({
+                "results": serializer.data,
+                "count": len(serializer.data),
+            })
 
         except Exception as e:
             logger.exception("Error in vector search")
