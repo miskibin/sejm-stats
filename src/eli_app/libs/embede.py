@@ -28,18 +28,12 @@ def embed_text(texts: List[str]) -> List[np.ndarray]:
     """
     dimensionality = 512
     task = "RETRIEVAL_DOCUMENT"
-    SCALING_FACTOR = 1e9  # Scale to billions to better utilize float32 range
-
     model = TextEmbeddingModel.from_pretrained("text-multilingual-embedding-002")
     inputs = [TextEmbeddingInput(text, task) for text in texts]
     kwargs = dict(output_dimensionality=dimensionality) if dimensionality else {}
-
     embeddings = model.get_embeddings(inputs, **kwargs)
-
-    # Convert to numpy array, scale, and ensure float32 precision
     scaled_embeddings = [
-        (np.array(embedding.values) * SCALING_FACTOR).astype(np.float32)
-        for embedding in embeddings
+        (np.array(embedding.values)).astype(np.float32) for embedding in embeddings
     ]
-
     return scaled_embeddings
+    # return embeddings

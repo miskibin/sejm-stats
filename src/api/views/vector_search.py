@@ -25,14 +25,11 @@ class VectorSearchView(APIView):
 
         try:
             # Get query embedding
-            query_embedding = embed_text(query)[0]
-            query_embedding = np.array(query_embedding).reshape(
-                1, -1
-            )  # Reshape for sklearn
+            query_embedding = embed_text([query])
+            logger.info(f"query: {query}")
 
             # Get all acts with embeddings
             acts_with_embeddings = Act.objects.filter(embedding__isnull=False)
-
             # Extract embeddings and convert to numpy array
             act_embeddings = []
             valid_acts = []
@@ -65,9 +62,15 @@ class VectorSearchView(APIView):
 
             # Add similarity scores to results
             for serialized_act, (_, similarity) in zip(serialized_acts, top_results):
-                serialized_act["similarity"] = round(float(similarity), 3)
+                serialized_act["similarity"] = float(similarity)
 
-            return Response({"results": serialized_acts, "count": len(serialized_acts)})
+            return Response(
+                {
+                    "results": serialized_acts,
+                    "count": len(serialized_acts),
+                    "e": query_embedding,
+                }
+            )
 
         except Exception as e:
             logger.exception("Error in vector search")
