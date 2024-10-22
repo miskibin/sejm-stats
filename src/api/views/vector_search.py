@@ -30,7 +30,7 @@ class VectorSearchView(APIView):
             query_embedding = embed_text(query)[0]
             # Convert to numpy array and ensure float32 dtype
             query_embedding = np.array(query_embedding, dtype=np.float32)
-            
+
             # Ensure the embedding is the correct shape
             if len(query_embedding.shape) == 1:
                 query_embedding = query_embedding.reshape(1, -1)
