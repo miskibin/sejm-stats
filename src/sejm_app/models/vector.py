@@ -6,6 +6,7 @@ class VectorizedModel(models.Model):
     embedding = VectorField(
         dimensions=512, null=True, blank=True
     )  # 1536-dimensional vector field
+    text_length = models.IntegerField(blank=True, null=True)
 
     class Meta:
         abstract = True  # This makes it a base class that won't create a database table

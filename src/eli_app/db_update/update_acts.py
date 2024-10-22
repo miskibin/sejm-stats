@@ -117,6 +117,7 @@ class ActUpdaterTask(DbUpdaterTask):
             for act in remaining_acts:
                 try:
                     cleaned_title = self.clean_title(act.title)
+                    act.text_length = len(cleaned_title)
                     embedding = embed_text([cleaned_title])[0]
                     act.embedding = embedding
                     act.save(update_fields=["embedding"])
@@ -128,8 +129,29 @@ class ActUpdaterTask(DbUpdaterTask):
 
         logger.success("Embedding creation process completed")
 
+
     @staticmethod
-    def clean_title(title):
+    def clean_court_ruling(title):
+        """Handle court rulings specifically"""
+        # Extract court name, date, and case number
+        court_match = re.match(
+            r"^Wyrok\s+(.*?)\s+z\s+dnia\s+(\d+\s+\w+\s+\d{4})\s*r\.\s*sygn\.*(.*?)$",
+            title,
+            re.IGNORECASE,
+        )
+
+        if court_match:
+            court = court_match.group(1)
+            date = court_match.group(2)
+            case_number = court_match.group(3)
+            # Format: "Court ruling - case_number (date)"
+            cleaned = f"Wyrok {court} - {case_number}"
+            return cleaned
+        return title
+
+    @staticmethod
+    def clean_regulation(title):
+
         # Extract the authority and the rest of the title
         match = re.match(
             r"^(?:Rozporządzenie|Obwieszczenie)\s+(.*?)\s+z\s+dnia.*?(?:w sprawie|zmieniające)",
@@ -139,36 +161,43 @@ class ActUpdaterTask(DbUpdaterTask):
         authority = match.group(1) if match else ""
 
         # Remove the document type, date, and "w sprawie" phrases
-        title = title.replace("w sprawie", "dot. ")
         title = re.sub(r"^.*?(?:z dnia \d+\s+\w+\s+\d{4}\s*r\.\s*)", "", title)
-        title = re.sub(r"(?:zmieniające\s+rozporządzenie\s+)?w\s+sprawie\s+", "", title)
+        title = re.sub(
+            r"(?:zmieniające\s+rozporządzenie\s+)?w\s+sprawie\s+", "dot. ", title
+        )
         title = title.replace(
             "Rzeczypospolitej Polskiej ogłoszenia jednolitego tekstu ustawy", ""
         )
+
         # Combine authority with cleaned title
         cleaned_title = f"{authority} {title}".strip()
 
-        # remove this type of things with (ALPHANUMERICBIGCASENOSPACES)
-        # (PLH120079)
+        # Remove code patterns like (PLH120079)
         cleaned_title = re.sub(r"\(\w+\d+\)", "", cleaned_title)
+
         # Remove extra whitespace
         cleaned_title = re.sub(r"\s+", " ", cleaned_title).strip()
+
+        # Remove specific patterns - now excluding 'Ministra' and 'Marszałka'
         patterns_to_remove = [
-            r"Ministra",
-            r"Marszałka Sejmu Rzeczypospolitej Polskiej",
             r"Prezesa Rady Ministrów",
             r"Rady Ministrów",
             r"ogłoszenia jednolitego tekstu",
             r"zmieniające rozporządzenie",
         ]
         for pattern in patterns_to_remove:
-            text = re.sub(pattern, "", cleaned_title)
+            cleaned_title = re.sub(pattern, "", cleaned_title)
 
-        # Convert to lowercase
-        text = text.lower()
+        # Final cleanup
+        cleaned_title = re.sub(r"\s+", " ", cleaned_title).strip()
 
-        # Remove special characters and extra whitespace
-        text = re.sub(r"[^a-zA-Z0-9\s]", "", text)
-        text = re.sub(r"\s+", " ", text).strip()
 
         return cleaned_title
+
+    @staticmethod
+    def clean_title(title):
+        if "wyrok" in title.lower():
+            cleaned = ActUpdaterTask.clean_court_ruling(title)
+        else:
+            cleaned = ActUpdaterTask.clean_regulation(title)
+        return cleaned if len(cleaned) > 45 else title
