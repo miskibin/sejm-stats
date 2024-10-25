@@ -1,21 +1,86 @@
+import time
+import requests
+import pdfplumber
 from itertools import product
 import re
 from django.utils import timezone
 from loguru import logger
-
+from pathlib import Path
+from typing import List, Optional
+from django.db.models import Q
 from eli_app.libs.api_endpoints import EliAPI
-from eli_app.libs.embede import embed_text
+from eli_app.libs.embede import LegalSummarizer, embed_text
 from eli_app.models import Act, ActStatus, DocumentType, Institution, Keyword, Publisher
 from sejm_app.db_updater import DbUpdaterTask
 from sejm_app.utils import parse_all_dates
 
-ELI_API = EliAPI()  # Assume this is already imported from the relevant module
+ELI_API = EliAPI()
 
 
 class ActUpdaterTask(DbUpdaterTask):
     MODEL = Act
     DATE_FIELD_NAME = "announcementDate"
     STARTING_YEAR = 2023
+    TEMP_PDF_PATH = Path("temp.pdf")
+
+    def download_and_parse_pdf(self, eli: str) -> Optional[str]:
+        url = f"https://api.sejm.gov.pl/eli/acts/{eli}/text.pdf"
+        logger.info(f"Downloading PDF from: {url}")
+
+        response = requests.get(url)
+        with open(self.TEMP_PDF_PATH, "wb") as f:
+            f.write(response.content)
+
+        text = ""
+        with pdfplumber.open(self.TEMP_PDF_PATH) as pdf:
+            for page in pdf.pages:
+                text += page.extract_text() or ""
+
+        if self.TEMP_PDF_PATH.exists():
+            self.TEMP_PDF_PATH.unlink()
+
+        return text.strip() if text.strip() else None
+
+    def prepare_text_for_embedding(self, title: str, summary: str) -> str:
+        cleaned_title = self.clean_title(title)
+        return f"{cleaned_title}: {summary}".strip()
+
+    def create_single_act_embedding(self, act: Act) -> bool:
+        try:
+            pdf_text = self.download_and_parse_pdf(act.ELI)
+            if not pdf_text:
+                return False
+            logger.debug(f"Downloaded {act.ELI} with len {len(pdf_text)}. Summarizing")
+            summarizer = LegalSummarizer()
+            summary = summarizer.generate_summary(
+                summarizer.create_prompt(act.title, pdf_text)
+            )
+
+            embedding_text = self.prepare_text_for_embedding(act.title, summary)
+            embedding = embed_text(embedding_text)
+
+            act.embedding = embedding
+            act.text_length = len(pdf_text)
+            act.summary = summary
+            act.save(update_fields=["embedding", "text_length", "summary"])
+
+            return True
+
+        except Exception as e:
+            logger.error(f"Failed to process act {act.ELI}: {str(e)}")
+            return False
+
+    def create_embeddings_for_acts(self, acts: list[Act]):
+        acts_without_embedding = [act for act in acts if not act.embedding]
+        if not acts_without_embedding:
+            return
+
+        logger.info(f"Processing {len(acts_without_embedding)} acts")
+
+        for act in acts_without_embedding:
+            success = self.create_single_act_embedding(act)
+            if success:
+                time.sleep(10)
 
     def run(self, *args, **kwargs):
         years = range(self.STARTING_YEAR, timezone.now().year + 1)
@@ -70,70 +135,15 @@ class ActUpdaterTask(DbUpdaterTask):
 
                 new_acts.append(act_instance)
 
-            # After creating all new acts, check if we need to create embeddings
             if new_acts:
                 self.create_embeddings_for_acts(new_acts)
-
-        # After processing all years and publishers, check for any remaining acts without embeddings
-        self.create_embeddings_for_acts(Act.objects.filter(embedding__isnull=True))
-
-    def create_embeddings_for_acts(self, acts: list[Act]):
-        acts_without_embedding = [act for act in acts if not act.embedding]
-        total_acts = len(acts_without_embedding)
-        if not acts_without_embedding:
-            logger.info("All acts already have embeddings")
-            return
-        logger.info(f"Creating embeddings for {total_acts} acts")
-
-        try:
-            # Prepare all titles at once
-            cleaned_titles = [
-                self.clean_title(act.title) for act in acts_without_embedding
-            ]
-
-            # Create embeddings for all titles at once
-            logger.info(f"Creating embeddings for {total_acts} acts in batch")
-            embeddings = embed_text(cleaned_titles)
-
-            # Update acts with their embeddings
-            for act, embedding in zip(acts_without_embedding, embeddings):
-                act.embedding = embedding
-                act.text_length = self.clean_title(act.title)
-            # Bulk update all acts
-            Act.objects.bulk_update(acts_without_embedding, ["embedding", "text_length"])
-
-            logger.success(
-                f"Successfully created embeddings for {total_acts} acts in batch"
-            )
-        except Exception as e:
-            logger.error(f"Failed to create embeddings in batch: {str(e)}")
-
-        # After batch processing, check if any acts still don't have embeddings
-        remaining_acts = Act.objects.filter(embedding__isnull=True)
-        if remaining_acts.exists():
-            logger.warning(
-                f"{remaining_acts.count()} acts still without embeddings. Processing individually."
-            )
-            for act in remaining_acts:
-                try:
-                    cleaned_title = self.clean_title(act.title)
-                    act.text_length = len(cleaned_title)
-                    embedding = embed_text([cleaned_title])[0]
-                    act.embedding = embedding
-                    act.save(update_fields=["embedding", "text_length"])
-                    logger.success(f"Created embedding for act: {act.ELI}")
-                except Exception as e:
-                    logger.error(
-                        f"Failed to create embedding for act {act.ELI}: {str(e)}"
-                    )
-
-        logger.success("Embedding creation process completed")
-
+        acts_needing_processing = Act.objects.filter(
+            Q(embedding__isnull=True) | Q(summary__isnull=True)
+        )
+        self.create_embeddings_for_acts(acts_needing_processing)
 
     @staticmethod
     def clean_court_ruling(title):
-        """Handle court rulings specifically"""
-        # Extract court name, date, and case number
         court_match = re.match(
             r"^Wyrok\s+(.*?)\s+z\s+dnia\s+(\d+\s+\w+\s+\d{4})\s*r\.\s*sygn\.*(.*?)$",
             title,
@@ -142,17 +152,13 @@ class ActUpdaterTask(DbUpdaterTask):
 
         if court_match:
             court = court_match.group(1)
-            date = court_match.group(2)
             case_number = court_match.group(3)
-            # Format: "Court ruling - case_number (date)"
             cleaned = f"Wyrok {court} - {case_number}"
             return cleaned
         return title
 
     @staticmethod
     def clean_regulation(title):
-
-        # Extract the authority and the rest of the title
         match = re.match(
             r"^(?:Rozporządzenie|Obwieszczenie)\s+(.*?)\s+z\s+dnia.*?(?:w sprawie|zmieniające)",
             title,
@@ -160,7 +166,6 @@ class ActUpdaterTask(DbUpdaterTask):
         )
         authority = match.group(1) if match else ""
 
-        # Remove the document type, date, and "w sprawie" phrases
         title = re.sub(r"^.*?(?:z dnia \d+\s+\w+\s+\d{4}\s*r\.\s*)", "", title)
         title = re.sub(
             r"(?:zmieniające\s+rozporządzenie\s+)?w\s+sprawie\s+", "dot. ", title
@@ -169,16 +174,10 @@ class ActUpdaterTask(DbUpdaterTask):
             "Rzeczypospolitej Polskiej ogłoszenia jednolitego tekstu ustawy", ""
         )
 
-        # Combine authority with cleaned title
         cleaned_title = f"{authority} {title}".strip()
-
-        # Remove code patterns like (PLH120079)
         cleaned_title = re.sub(r"\(\w+\d+\)", "", cleaned_title)
-
-        # Remove extra whitespace
         cleaned_title = re.sub(r"\s+", " ", cleaned_title).strip()
 
-        # Remove specific patterns - now excluding 'Ministra' and 'Marszałka'
         patterns_to_remove = [
             r"Prezesa Rady Ministrów",
             r"Rady Ministrów",
@@ -188,9 +187,7 @@ class ActUpdaterTask(DbUpdaterTask):
         for pattern in patterns_to_remove:
             cleaned_title = re.sub(pattern, "", cleaned_title)
 
-        # Final cleanup
         cleaned_title = re.sub(r"\s+", " ", cleaned_title).strip()
-
 
         return cleaned_title
 

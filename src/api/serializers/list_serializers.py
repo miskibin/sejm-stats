@@ -182,7 +182,7 @@ class ActListSerializer(serializers.ModelSerializer):
     status = serializers.CharField(source="status.name")
     releasedBy = serializers.SerializerMethodField()
     url = serializers.SerializerMethodField()
-
+    
     class Meta:
         model = Act
         fields = [
@@ -193,7 +193,8 @@ class ActListSerializer(serializers.ModelSerializer):
             "title",
             "releasedBy",
             "announcementDate",
-            "entryIntoForce",
+            "summary",
+            "text_length",
         ]
 
     def get_url(self, obj):

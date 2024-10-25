@@ -1,6 +1,5 @@
 from django.db.models import F
 from api.serializers.list_serializers import ActListSerializer
-from eli_app.libs.embede import embed_text
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -8,6 +7,8 @@ from django.apps import apps
 from loguru import logger
 from pgvector.django import CosineDistance
 import time
+
+from eli_app.libs.embede import embed_text
 
 
 class VectorSearchView(APIView):
@@ -27,7 +28,9 @@ class VectorSearchView(APIView):
 
         # Time the embedding generation
         embed_start = time.time()
-        query_embedding = embed_text([query])[0]  # Extract first row
+        query_embedding = embed_text(texts=[query])[
+            0
+        ]  # Extract first row
         embed_time = time.time() - embed_start
 
         logger.info(
