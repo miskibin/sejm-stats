@@ -23,7 +23,7 @@ class ActUpdaterTask(DbUpdaterTask):
     STARTING_YEAR = 2023
     TEMP_PDF_PATH = Path("temp.pdf")
 
-    def download_and_parse_pdf(self, eli: str) -> Optional[str]:
+    def download_and_parse_pdf(self, eli: str, max_pages=40) -> Optional[str]:
         url = f"https://api.sejm.gov.pl/eli/acts/{eli}/text.pdf"
         logger.info(f"Downloading PDF from: {url}")
 
@@ -33,7 +33,12 @@ class ActUpdaterTask(DbUpdaterTask):
 
         text = ""
         with pdfplumber.open(self.TEMP_PDF_PATH) as pdf:
-            for page in pdf.pages:
+            pages_to_process = min(len(pdf.pages), max_pages)
+            logger.info(
+                f"Processing {pages_to_process} pages out of {len(pdf.pages)} total pages"
+            )
+
+            for page in pdf.pages[:pages_to_process]:
                 text += page.extract_text() or ""
 
         if self.TEMP_PDF_PATH.exists():
@@ -55,7 +60,7 @@ class ActUpdaterTask(DbUpdaterTask):
             summary = summarizer.generate_summary(
                 summarizer.create_prompt(act.title, pdf_text)
             )
-
+            logger.debug(f"summarized text. len: {len(summary)} ")
             embedding_text = self.prepare_text_for_embedding(act.title, summary)
             embedding = embed_text(embedding_text)
 
