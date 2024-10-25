@@ -62,7 +62,7 @@ class ActUpdaterTask(DbUpdaterTask):
             )
             logger.debug(f"summarized text. len: {len(summary)} ")
             embedding_text = self.prepare_text_for_embedding(act.title, summary)
-            embedding = embed_text([embedding_text])
+            embedding = embed_text([embedding_text])[0]
 
             act.embedding = embedding
             act.text_length = len(pdf_text)
