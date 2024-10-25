@@ -35,7 +35,7 @@ class LegalSummarizer:
 
             return Prompt(
                 prompt_data=[self._prompt_template],
-                model_name=self.config.model_name,
+                model_name="gemini-1.5-flash-002",
                 variables=variables,
                 generation_config={
                     "max_output_tokens": 1024,
