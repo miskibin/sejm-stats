@@ -10,8 +10,8 @@ from sejm_app import models
 class DbUpdaterTask(Task):
     MODEL: Model = None
     DATE_FIELD_NAME = None
-    time_limit = 6 * 60 * 60
     SKIP_BY_DEFAULT = False
+    time_limit = 24 * 60 * 60
 
     def __init__(self) -> None:
         self.name = self.MODEL.__name__
