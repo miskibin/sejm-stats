@@ -20,7 +20,7 @@ ELI_API = EliAPI()
 class ActUpdaterTask(DbUpdaterTask):
     MODEL = Act
     DATE_FIELD_NAME = "announcementDate"
-    STARTING_YEAR = 2023
+    STARTING_YEAR = 2020
     TEMP_PDF_PATH = Path("temp.pdf")
 
     def download_and_parse_pdf(self, eli: str, max_pages=40) -> Optional[str]:
