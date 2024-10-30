@@ -20,7 +20,6 @@ type SearchOptionKey =
   | "interpellations"
   | "processes"
   | "prints"
-  | "acts"
   | "votings";
 
 const DateRangeModal: React.FC<DateRangeModalProps> = ({
@@ -32,8 +31,6 @@ const DateRangeModal: React.FC<DateRangeModalProps> = ({
     { label: "miesiąc", value: "1m" },
     { label: "3 miesiące", value: "3m" },
     { label: "6 miesięcy", value: "6m" },
-    { label: "1 rok", value: "12m" },
-    { label: "Wszystko", value: "all" },
   ];
 
   const [searchOptions, setSearchOptions] = useState<
@@ -43,7 +40,6 @@ const DateRangeModal: React.FC<DateRangeModalProps> = ({
     interpellations: true,
     processes: true,
     prints: true,
-    acts: false,
     votings: true,
   });
 
@@ -65,8 +61,6 @@ const DateRangeModal: React.FC<DateRangeModalProps> = ({
         return "Procesy";
       case "prints":
         return "Druki";
-      case "acts":
-        return "Akty prawne";
       case "votings":
         return "Głosowania";
       default:
