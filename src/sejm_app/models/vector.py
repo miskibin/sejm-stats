@@ -4,12 +4,11 @@ from pgvector.django import VectorField
 
 class VectorizedModel(models.Model):
     embedding = VectorField(
-        dimensions=512, null=True, blank=True
+        dimensions=768, null=True, blank=True
     )  # 1536-dimensional vector field
-    text_length = models.IntegerField(
-        blank=True, null=True, verbose_name="Total length of text that was summarized"
+    summary = models.TextField(
+        verbose_name="AI summary of the document", max_length=1024, null=True
     )
-    summary = models.TextField(verbose_name="AI summary of the document", max_length=1024, null=True)
 
     class Meta:
         abstract = True  # This makes it a base class that won't create a database table

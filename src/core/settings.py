@@ -25,7 +25,7 @@ from celery.schedules import crontab
 CELERY_BEAT_SCHEDULE = {
     "update_tasks": {
         "task": "sejm_app.tasks.run_update_tasks",
-        "schedule": crontab(hour="*/12"),  # Run every 12 hours
+        "schedule": crontab(hour="*/12", minute='1'),  # Run every 12 hours
     },
 }
 # SECURITY WARNING: keep the secret key used in production secret!
@@ -132,7 +132,8 @@ DATABASES = {
         "NAME": config("POSTGRES_DB"),
         "USER": config("POSTGRES_USER"),
         "PASSWORD": config("POSTGRES_PASSWORD"),
-        "HOST": config("DATABASE_HOST"),
+        # "HOST": config("DATABASE_HOST"),
+        "HOST": "db",
         "PORT": config("POSTGRES_PORT"),
     }
 }

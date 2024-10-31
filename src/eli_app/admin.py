@@ -13,6 +13,11 @@ class act_admin(admin.ModelAdmin):
     )
 
 
+@admin.register(models.ActSection)
+class ActSection(admin.ModelAdmin):
+    list_display = ("chapters",)
+
+
 @admin.register(models.Publisher)
 class publisher_admin(admin.ModelAdmin):
     list_display = ("name",)

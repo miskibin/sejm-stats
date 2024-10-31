@@ -15,6 +15,20 @@ class Publisher(models.Model):
         return self.name
 
 
+class ActSection(VectorizedModel):
+    start_char = models.IntegerField(
+        help_text="The starting character position of the section within the act.",
+        null=True,
+    )
+    end_char = models.IntegerField(
+        help_text="The ending character position of the section within the act.",
+        null=True,
+    )
+    act = models.ForeignKey("Act", on_delete=models.CASCADE, null=True)
+    content = models.TextField(help_text="The text content of the section.", null=True)
+    chapters = models.CharField(max_length=255, null=True)
+
+
 class ActStatus(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=255)
@@ -61,7 +75,7 @@ class Reference(models.Model):
         return self.name
 
 
-class Act(VectorizedModel):
+class Act(models.Model):
     ELI = models.CharField(max_length=255, primary_key=True)
     address = models.CharField(max_length=255)
     announcementDate = models.DateField(blank=True, null=True)

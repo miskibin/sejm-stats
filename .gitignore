@@ -19,7 +19,7 @@ cloudflare.ini
 # production
 /build
 /sejm-stats-*.json
-# misc
+src/sejm-stats-439117-39efc9d2f8b8.json
 .DS_Store
 *.pem
 

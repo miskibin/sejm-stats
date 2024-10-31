@@ -6,7 +6,7 @@ const nextConfig = {
   },
   output: 'standalone',
   images: {
-    domains: ['localhost'],
+    domains: ['localhost', "sejm-stats.pl", "api.sejm.gov.pl"],
   },
 };
 

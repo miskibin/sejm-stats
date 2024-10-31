@@ -5,7 +5,9 @@ from .update_helpers import (
     KeywordUpdaterTask,
     PublisherUpdaterTask,
     ReferenceUpdaterTask,
+    
 )
+from .update_law import ActSectionUpdaterTask
 
 tasks = (
     ActStatusUpdaterTask(),
@@ -14,4 +16,5 @@ tasks = (
     PublisherUpdaterTask(),
     ReferenceUpdaterTask(),
     ActUpdaterTask(),
+    ActSectionUpdaterTask(),
 )

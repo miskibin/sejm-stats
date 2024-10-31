@@ -97,7 +97,6 @@ services:
 
     environment:
       - C_FORCE_ROOT=true
-      - CUDA=${CUDA:-false}
     env_file:
       - .env
     mem_limit: 4g
