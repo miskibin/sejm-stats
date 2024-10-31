@@ -10,6 +10,7 @@ from pgvector.django import CosineDistance
 import time
 from functools import lru_cache
 from typing import List, Optional
+import numpy as np
 
 from eli_app.libs.embede import embed_text
 
@@ -22,7 +23,9 @@ class VectorSearchView(APIView):
 
     @lru_cache(maxsize=1000)
     def get_embedding(self, query: str):
-        return embed_text(texts=[query])[0]
+        embedding = embed_text(texts=[query])[0]
+        # Convert numpy array to list for database compatibility
+        return embedding.tolist() if isinstance(embedding, np.ndarray) else embedding
 
     def build_filters(
         self, publishers: Optional[str] = None, statuses: Optional[str] = None
@@ -66,6 +69,9 @@ class VectorSearchView(APIView):
                     return Response([], status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
             filters = self.build_filters(publishers, statuses)
+
+            # Add embedding not null filter
+            filters["embedding__isnull"] = False
 
             initial_results = (
                 Act.objects.filter(**filters)
