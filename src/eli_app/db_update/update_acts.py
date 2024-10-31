@@ -20,11 +20,20 @@ ELI_API = EliAPI()
 class ActUpdaterTask(DbUpdaterTask):
     MODEL = Act
     DATE_FIELD_NAME = "announcementDate"
-    STARTING_YEAR = 2022
+    STARTING_YEAR = 2020
     TEMP_PDF_PATH = Path("temp.pdf")
     EMBEDE_STATUSES = ["obowiązujący"]
     EMBEDE_PUBLISHERS = "DU"
     SUBSTRING = "sprawie ogłoszenia jednolitego tekstu"
+
+    def should_create_embedding(self, act: Act) -> bool:
+        """Check if the act meets the criteria for embedding creation"""
+        return (
+            act.status.name in self.EMBEDE_STATUSES
+            and act.publisher.code == self.EMBEDE_PUBLISHERS
+            and self.SUBSTRING.lower() in act.title.lower()
+        )
+
     def download_and_parse_pdf(self, eli: str, max_pages=70) -> Optional[str]:
         url = f"https://api.sejm.gov.pl/eli/acts/{eli}/text.pdf"
         logger.info(f"Downloading PDF from: {url}")
@@ -49,10 +58,13 @@ class ActUpdaterTask(DbUpdaterTask):
         return text.strip() if text.strip() else None
 
     def prepare_text_for_embedding(self, title: str, summary: str) -> str:
-        cleaned_title = self.clean_title(title)
-        return f"{cleaned_title}: {summary}".strip()
+        return f"{title}: {summary}".strip()
 
     def create_single_act_embedding(self, act: Act) -> bool:
+        if not self.should_create_embedding(act):
+            logger.debug(f"Skipping {act.ELI} - does not meet embedding criteria")
+            return False
+
         try:
             pdf_text = self.download_and_parse_pdf(act.ELI)
             if not pdf_text:
@@ -78,13 +90,19 @@ class ActUpdaterTask(DbUpdaterTask):
             return False
 
     def create_embeddings_for_acts(self, acts: list[Act]):
-        acts_without_embedding = [act for act in acts if not act.embedding]
-        if not acts_without_embedding:
+        # Filter acts that need embedding and meet the criteria
+        acts_to_process = [
+            act
+            for act in acts
+            if not act.embedding and self.should_create_embedding(act)
+        ]
+
+        if not acts_to_process:
             return
 
-        logger.info(f"Processing {len(acts_without_embedding)} acts")
+        logger.info(f"Processing {len(acts_to_process)} acts")
 
-        for act in acts_without_embedding:
+        for act in acts_to_process:
             success = self.create_single_act_embedding(act)
             if success:
                 time.sleep(10)
@@ -144,64 +162,14 @@ class ActUpdaterTask(DbUpdaterTask):
 
             if new_acts:
                 self.create_embeddings_for_acts(new_acts)
+
+        # Process any remaining acts that need embeddings and meet criteria
         acts_needing_processing = Act.objects.filter(
             Q(embedding__isnull=True) | Q(summary__isnull=True)
+        ).filter(
+            status__name__in=self.EMBEDE_STATUSES,
+            publisher__code=self.EMBEDE_PUBLISHERS,
+            title__icontains=self.SUBSTRING,
         )
         self.create_embeddings_for_acts(acts_needing_processing)
 
-    @staticmethod
-    def clean_court_ruling(title):
-        court_match = re.match(
-            r"^Wyrok\s+(.*?)\s+z\s+dnia\s+(\d+\s+\w+\s+\d{4})\s*r\.\s*sygn\.*(.*?)$",
-            title,
-            re.IGNORECASE,
-        )
-
-        if court_match:
-            court = court_match.group(1)
-            case_number = court_match.group(3)
-            cleaned = f"Wyrok {court} - {case_number}"
-            return cleaned
-        return title
-
-    @staticmethod
-    def clean_regulation(title):
-        match = re.match(
-            r"^(?:Rozporządzenie|Obwieszczenie)\s+(.*?)\s+z\s+dnia.*?(?:w sprawie|zmieniające)",
-            title,
-            re.IGNORECASE,
-        )
-        authority = match.group(1) if match else ""
-
-        title = re.sub(r"^.*?(?:z dnia \d+\s+\w+\s+\d{4}\s*r\.\s*)", "", title)
-        title = re.sub(
-            r"(?:zmieniające\s+rozporządzenie\s+)?w\s+sprawie\s+", "dot. ", title
-        )
-        title = title.replace(
-            "Rzeczypospolitej Polskiej ogłoszenia jednolitego tekstu ustawy", ""
-        )
-
-        cleaned_title = f"{authority} {title}".strip()
-        cleaned_title = re.sub(r"\(\w+\d+\)", "", cleaned_title)
-        cleaned_title = re.sub(r"\s+", " ", cleaned_title).strip()
-
-        patterns_to_remove = [
-            r"Prezesa Rady Ministrów",
-            r"Rady Ministrów",
-            r"ogłoszenia jednolitego tekstu",
-            r"zmieniające rozporządzenie",
-        ]
-        for pattern in patterns_to_remove:
-            cleaned_title = re.sub(pattern, "", cleaned_title)
-
-        cleaned_title = re.sub(r"\s+", " ", cleaned_title).strip()
-
-        return cleaned_title
-
-    @staticmethod
-    def clean_title(title):
-        if "wyrok" in title.lower():
-            cleaned = ActUpdaterTask.clean_court_ruling(title)
-        else:
-            cleaned = ActUpdaterTask.clean_regulation(title)
-        return cleaned if len(cleaned) > 45 else title
