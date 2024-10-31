@@ -22,8 +22,10 @@ class ActUpdaterTask(DbUpdaterTask):
     DATE_FIELD_NAME = "announcementDate"
     STARTING_YEAR = 2022
     TEMP_PDF_PATH = Path("temp.pdf")
-
-    def download_and_parse_pdf(self, eli: str, max_pages=40) -> Optional[str]:
+    EMBEDE_STATUSES = ["obowiązujący"]
+    EMBEDE_PUBLISHERS = "DU"
+    SUBSTRING = "sprawie ogłoszenia jednolitego tekstu"
+    def download_and_parse_pdf(self, eli: str, max_pages=70) -> Optional[str]:
         url = f"https://api.sejm.gov.pl/eli/acts/{eli}/text.pdf"
         logger.info(f"Downloading PDF from: {url}")
 
