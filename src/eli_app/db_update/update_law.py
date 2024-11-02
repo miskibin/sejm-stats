@@ -12,19 +12,26 @@ from loguru import logger
 
 class ActSectionUpdaterTask(DbUpdaterTask):
     MODEL = ActSection
-    SKIP_BY_DEFAULT = True
+    SKIP_BY_DEFAULT = False
+    YEARS = [2024]
+    STATUSES = ["obowiązujący"]
+    SUBSTRING = "jednolitego tekstu ustawy"
+    PUBLISHER = "DU"
 
     def run(self, *args, **kwargs):
-        elis_to_process = [
-            "DU/2023/2151",  # ALKOHOL
-            "DU/2024/1061",  # KODEKS CYWILNY
-            "DU/2024/17",  # KODEKS KARNY
-        ]
-        self.process_legal_documents(elis_to_process)
+        self.process_legal_documents()
         self.process_sections_without_embeddings()
 
-    def process_legal_documents(self, elis: list[str]):
-        for eli in elis:
+    def process_legal_documents(self):
+        acts_to_process = Act.objects.filter(
+            year__in=self.YEARS,
+            status__name__in=self.STATUSES,
+            publisher__code=self.PUBLISHER,
+            title__icontains=self.SUBSTRING,
+            actsection__isnull=True,
+        )
+        logger.info(f"Found {acts_to_process.count()} acts to process.")
+        for eli in acts_to_process.values_list("ELI", flat=True):
             try:
                 logger.info(f"Processing ELI: {eli}")
                 metadata, full_text = self.fetch_metadata_and_text(eli)
@@ -41,7 +48,9 @@ class ActSectionUpdaterTask(DbUpdaterTask):
 
         with tempfile.NamedTemporaryFile(suffix=".pdf", delete=False) as temp_pdf:
             temp_pdf.write(response.content)
+            logger.info(f"Downloaded PDF for {eli}")
             with pdfplumber.open(temp_pdf.name) as pdf:
+                logger.info(f"Opened PDF for {eli}")
                 full_text = "".join(page.extract_text() or "" for page in pdf.pages)
 
         return metadata, full_text
@@ -92,7 +101,10 @@ class ActSectionUpdaterTask(DbUpdaterTask):
         logger.info(
             f"Found {sections_without_embeddings.count()} sections without embeddings."
         )
-        texts = [prepare_section_for_embedding(section) for section in sections_without_embeddings]
+        texts = [
+            prepare_section_for_embedding(section)
+            for section in sections_without_embeddings
+        ]
         embeddings = embed_texts_in_chunks(texts)
 
         for section, embedding in zip(sections_without_embeddings, embeddings):

@@ -3,6 +3,15 @@ from loguru import logger
 
 from eli_app.models import ActSection
 
+# from typing import TypedDict
+
+
+# class ActSection(TypedDict):
+#     chapters: str
+#     content: str
+#     start_char: int
+#     end_char: int
+
 
 def find_document_start(text: str) -> int | None:
     """Find the starting position of actual document content."""
@@ -101,7 +110,9 @@ def create_section_title(sections: list[dict], current_idx: int) -> str:
     return " -> ".join(parts)
 
 
-def process_section_content(sections: list[dict], text: str, start_pos: int) -> list[ActSection]:
+def process_section_content(
+    sections: list[dict], text: str, start_pos: int
+) -> list[ActSection]:
     """Process sections and their content with minimum section size of 5000 characters."""
     result = []
     text_length = len(text)
@@ -178,7 +189,7 @@ def process_section_content(sections: list[dict], text: str, start_pos: int) -> 
             combined_title = grouped_titles[0]
 
         # Handle large sections
-        if current_size > 1500:
+        if current_size > 15000:
             logger.info(
                 f"Splitting large section '{combined_title}' of {current_size} chars"
             )
@@ -200,6 +211,7 @@ def process_section_content(sections: list[dict], text: str, start_pos: int) -> 
         i += 1
 
     return result
+
 
 def split_into_sections(text: str) -> list[ActSection]:
     """Split document into hierarchical sections."""
@@ -242,13 +254,51 @@ def create_paginated_sections(
     result = []
     current_pos = 0
     page_num = 1
+
     while current_pos < len(content):
-        next_chunk = content[current_pos:current_pos + chunk_size]
-        if len(next_chunk) == chunk_size and current_pos + chunk_size < len(content):
-            last_space = next_chunk.rfind(' ')
-            if last_space != -1:
-                next_chunk = next_chunk[:last_space]
-        chunk_title = f"{title} (Część {page_num}/{total_pages})" if total_pages > 1 else title
+        logger.info(f"Processing chunk starting at position {current_pos}")
+
+        # Calculate remaining content size
+        remaining_size = len(content) - current_pos
+        current_chunk_size = min(chunk_size, remaining_size)
+
+        next_chunk = content[current_pos : current_pos + current_chunk_size]
+
+        # Only try to find split points if we're not at the end
+        if current_pos + current_chunk_size < len(content):
+            # Look for split points in the current chunk
+            split_found = False
+
+            # Try to split at the start of a new article
+            last_article_start = next_chunk.rfind("Art. ")
+            if last_article_start > 0:  # Ensure we're not at the start of the chunk
+                logger.info(
+                    f"Splitting at new article start at position {last_article_start}"
+                )
+                next_chunk = next_chunk[:last_article_start]
+                split_found = True
+
+            # If no article start found, try splitting at newline
+            if not split_found:
+                last_space = next_chunk.rfind("\n")
+                if last_space > 0:  # Ensure we're not at the start of the chunk
+                    logger.info(f"Splitting at last line end at position {last_space}")
+                    next_chunk = next_chunk[:last_space]
+                    split_found = True
+
+            # If no suitable split point found, use the full chunk
+            if not split_found:
+                logger.warning("No suitable split point found, using full chunk size")
+
+        # Ensure we're not creating an empty chunk
+        if len(next_chunk) == 0:
+            logger.warning("Empty chunk detected, using minimum content")
+            next_chunk = content[current_pos : current_pos + min(1000, remaining_size)]
+
+        chunk_title = (
+            f"{title} (Część {page_num}/{total_pages})" if total_pages > 1 else title
+        )
+
         result.append(
             ActSection(
                 chapters=chunk_title,
@@ -258,7 +308,42 @@ def create_paginated_sections(
             )
         )
 
+        logger.info(f"Added section '{chunk_title}' with {len(next_chunk)} chars")
+
+        # Move position by the length of the processed chunk
         current_pos += len(next_chunk)
         page_num += 1
 
+        # Additional safety check
+        if len(next_chunk) == 0:
+            logger.error(
+                f"Empty chunk detected at position {current_pos}, stopping pagination"
+            )
+            break
+
+        # Ensure we're making progress
+        if current_pos >= len(content):
+            break
+
     return result
+
+
+if __name__ == "__main__":
+    import pdfplumber
+    from pathlib import Path
+
+    path = Path(__file__).parent.parent / "tests" / "1539.pdf"
+    with pdfplumber.open(path) as pdf:
+        text = "".join(page.extract_text() or "" for page in pdf.pages)
+
+    sections = split_into_sections(text)
+    for section in sections:
+        print(section["chapters"])
+        print(len(section["content"]))
+        print(section["content"][:100])
+        print()
+        print("-" * 80)
+        print()
+    print(f"Total sections: {len(sections)}")
+    print(f"Total characters: {sum(len(s["content"]) for s in sections)}")
+    print(f"Total pages: {sum(s["content"].count('\n') for s in sections) + 1}")

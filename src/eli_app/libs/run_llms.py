@@ -1,4 +1,4 @@
-from asyncio import sleep
+from time import sleep
 import os
 from pathlib import Path
 from typing import List

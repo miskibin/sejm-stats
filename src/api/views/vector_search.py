@@ -1,35 +1,40 @@
-from django.db.models import F, Case, When, Value, FloatField
+from django.db.models import F
 from django.core.cache import cache
-from api.serializers.list_serializers import ActListSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from django.apps import apps
 from loguru import logger
 from pgvector.django import CosineDistance
-import time
 from functools import lru_cache
-from typing import List, Optional
 import numpy as np
 
 from eli_app.libs.run_llms import embed_text
-
+from eli_app.models import ActSection
 from rest_framework import serializers
 
-from eli_app.models import ActSection
 
 class ActSectionSerializer(serializers.ModelSerializer):
     act_url = serializers.SerializerMethodField()
-    act_title = serializers.CharField(source='act.title')
+    act_title = serializers.CharField(source="act.title")
+    act_announcement_date = serializers.DateTimeField(source="act.announcementDate")
+    similarity_score = serializers.FloatField()
 
     class Meta:
         model = ActSection
-        fields = ['act_url', 'act_title', 'summary', 'content', 'chapters']
+        fields = [
+            "act_url",
+            "act_title",
+            "summary",
+            "content",
+            "chapters",
+            "act_announcement_date",
+            "similarity_score",
+        ]
 
     def get_act_url(self, obj: ActSection):
         return obj.act.url
-    
-    
+
+
 class VectorSearchView(APIView):
     CACHE_TIMEOUT = 3600
 
@@ -64,9 +69,9 @@ class VectorSearchView(APIView):
             similar_sections = (
                 ActSection.objects.filter(**filters)
                 .annotate(
-                    distance=CosineDistance("embedding", query_embedding),
+                    similarity_score=1 - CosineDistance("embedding", query_embedding),
                 )
-                .order_by("distance")[:n]
+                .order_by("-similarity_score")[:n]
             )
 
             serializer = ActSectionSerializer(similar_sections, many=True)
