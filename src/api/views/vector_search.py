@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.db.models import F
 from django.core.cache import cache
 from rest_framework.views import APIView
@@ -16,7 +17,7 @@ from rest_framework import serializers
 class ActSectionSerializer(serializers.ModelSerializer):
     act_url = serializers.SerializerMethodField()
     act_title = serializers.CharField(source="act.title")
-    act_announcement_date = serializers.DateTimeField(source="act.announcementDate")
+    act_announcement_date = serializers.SerializerMethodField()
     similarity_score = serializers.FloatField()
 
     class Meta:
@@ -33,6 +34,9 @@ class ActSectionSerializer(serializers.ModelSerializer):
 
     def get_act_url(self, obj: ActSection):
         return obj.act.url
+
+    def get_act_announcement_date(self, obj: ActSection):
+        return str(obj.act.announcementDate)
 
 
 class VectorSearchView(APIView):
