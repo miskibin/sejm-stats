@@ -13,7 +13,7 @@ from loguru import logger
 class ActSectionUpdaterTask(DbUpdaterTask):
     MODEL = ActSection
     SKIP_BY_DEFAULT = False
-    YEARS = [2024]
+    YEARS = [2023]
     STATUSES = ["obowiązujący"]
     SUBSTRING = "jednolitego tekstu ustawy"
     PUBLISHER = "DU"
@@ -88,7 +88,7 @@ class ActSectionUpdaterTask(DbUpdaterTask):
             logger.info(f"Updated section {chapter.chapters}")
 
             # Run process_sections_without_embeddings every 20 new sections
-            if new_sections_count >= 20:
+            if new_sections_count >= 50:
                 self.process_sections_without_embeddings()
                 new_sections_count = 0  # Reset the counter
 
