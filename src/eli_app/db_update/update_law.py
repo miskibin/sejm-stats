@@ -56,6 +56,8 @@ class ActSectionUpdaterTask(DbUpdaterTask):
         return metadata, full_text
 
     def process_chapters(self, eli: str, chapters: list[ActSection], metadata: dict):
+        new_sections_count = 0  # Counter for new sections created
+
         for chapter in chapters:
             if self.should_skip_section(eli, chapter):
                 logger.info(
@@ -81,8 +83,14 @@ class ActSectionUpdaterTask(DbUpdaterTask):
                     "summary": summary,
                 },
             )
-            sleep(8)
+            new_sections_count += 1  # Increment the counter
+            sleep(5)
             logger.info(f"Updated section {chapter.chapters}")
+
+            # Run process_sections_without_embeddings every 20 new sections
+            if new_sections_count >= 20:
+                self.process_sections_without_embeddings()
+                new_sections_count = 0  # Reset the counter
 
     def should_skip_section(self, eli: str, chapter: ActSection) -> bool:
         existing_section = ActSection.objects.filter(

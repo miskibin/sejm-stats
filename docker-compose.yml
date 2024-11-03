@@ -99,7 +99,7 @@ services:
       - C_FORCE_ROOT=true
     env_file:
       - .env
-    mem_limit: 4g
+    mem_limit: 2g
   certbot:
     image: certbot/dns-cloudflare
     volumes:
