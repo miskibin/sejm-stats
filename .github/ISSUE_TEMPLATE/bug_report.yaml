@@ -16,18 +16,6 @@ body:
       value: "A bug happened!"
     validations:
       required: true
-  - type: dropdown
-    id: browsers
-    attributes:
-      label: What type of browser are you seeing the problem on?
-      multiple: true
-      options:
-        - Firefox
-        - Chrome
-        - Safari
-        - Microsoft Edge
-    validations:
-      required: true
   - type: textarea
     id: logs
     attributes:
