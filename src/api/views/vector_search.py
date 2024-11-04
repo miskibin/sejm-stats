@@ -41,6 +41,7 @@ class ActSectionSerializer(serializers.ModelSerializer):
 
 class VectorSearchView(APIView):
     CACHE_TIMEOUT = 3600
+    MIN_CONTENT_LENGTH = 100
 
     @lru_cache(maxsize=1000)
     def get_embedding(self, query: str):
@@ -55,6 +56,8 @@ class VectorSearchView(APIView):
                 return Response([], status=status.HTTP_400_BAD_REQUEST)
 
             n = int(request.GET.get("n", 4))
+            # Fetch more results initially to account for filtering
+            search_limit = n * 2
 
             cache_key = f"embedding:{query}"
             query_embedding = cache.get(cache_key)
@@ -67,7 +70,7 @@ class VectorSearchView(APIView):
                     logger.error(f"Error generating embedding: {str(e)}")
                     return Response([], status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-            # Add embedding not null filter
+            # Only filter for non-null embeddings in database query
             filters = {"embedding__isnull": False}
 
             similar_sections = (
@@ -75,10 +78,17 @@ class VectorSearchView(APIView):
                 .annotate(
                     similarity_score=1 - CosineDistance("embedding", query_embedding),
                 )
-                .order_by("-similarity_score")[:n]
+                .order_by("-similarity_score")[:search_limit]
             )
 
-            serializer = ActSectionSerializer(similar_sections, many=True)
+            # Post-process to filter by content length
+            filtered_sections = [
+                section
+                for section in similar_sections
+                if len(section.content) >= self.MIN_CONTENT_LENGTH
+            ][:n]
+
+            serializer = ActSectionSerializer(filtered_sections, many=True)
             return Response(serializer.data)
 
         except Exception as e:
