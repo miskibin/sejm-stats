@@ -193,8 +193,6 @@ class ActListSerializer(serializers.ModelSerializer):
             "title",
             "releasedBy",
             "announcementDate",
-            "summary",
-            "text_length",
         ]
 
     def get_url(self, obj):
