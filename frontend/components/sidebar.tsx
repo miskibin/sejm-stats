@@ -1,8 +1,18 @@
 import React from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
 import Image from "next/image";
+import Link from "next/link";
 import { FaTimes } from "react-icons/fa";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  useSidebar,
+} from "@/components/ui/sidebar";
 
 type MenuItem = {
   href: string;
@@ -10,77 +20,76 @@ type MenuItem = {
   icon: React.ReactNode;
 };
 
-type SidebarProps = {
+type AppSidebarProps = {
   menuItems: MenuItem[];
-  isOpen: boolean;
-  onClose: () => void;
 };
 
-const Sidebar: React.FC<SidebarProps> = ({ menuItems, isOpen, onClose }) => {
-  const pathname = usePathname();
+export function AppSidebar({ menuItems }: AppSidebarProps) {
+  const { state } = useSidebar();
 
   return (
-    <>
-      <div
-        className={`fixed inset-0 bg-black bg-opacity-50 z-20 transition-opacity duration-300 ease-in-out md:hidden ${
-          isOpen ? "opacity-100" : "opacity-0 pointer-events-none"
-        }`}
-        onClick={onClose}
-      />
-
-      <div
-        className={`
-          fixed inset-y-0 left-0 z-30 w-64  bg-gray-800  text-gray-200 p-4
-          transform transition-transform duration-300 ease-in-out
-          ${isOpen ? "translate-x-0" : "-translate-x-full"}
-          md:translate-x-0 md:static
-        `}
-      >
-        <div className="flex items-center justify-between mb-8">
-          <Link href="/" className="flex items-center space-x-2">
+    <Sidebar collapsible="offcanvas">
+      <SidebarHeader className="p-4">
+        <div className="flex items-center space-x-2">
+          <div className="w-10 h-10 flex-shrink-0">
             <Image
               src="/logo.png"
-              alt="Logo"
-              width={32}
-              height={32}
-              className="rounded-full"
+              alt="Sejm Stats Logo"
+              width={40}
+              height={40}
             />
-            <span className="text-xl font-semibold text-white">
-              Sejm-Stats
-            </span>
-          </Link>
-          <button
-            onClick={onClose}
-            className="md:hidden  text-gray-400 hover:text-gray-200"
-            aria-label="Close sidebar"
+          </div>
+          <span
+            className={`text-xl font-bold ${
+              state === "collapsed" ? "hidden" : "block"
+            }`}
           >
-            <FaTimes size={20} />
-          </button>
+            sejm-stats
+          </span>
         </div>
-        <nav className="space-y-1">
-          {menuItems.map((item, index) => (
-            <Link
-              key={index}
-              href={item.href}
-              className={`flex items-center space-x-3 py-2 px-3 rounded-md transition duration-150 ${
-                pathname === item.href
-                  ? "bg-blue-500 text-white"
-                  : "text-gray-300  hover:bg-gray-700  hover:text-white"
-              }`}
-              onClick={() => {
-                if (window.innerWidth < 768) {
-                  onClose();
-                }
-              }}
-            >
-              {item.icon}
-              <span className="text-sm">{item.label}</span>
-            </Link>
-          ))}
-        </nav>
-      </div>
-    </>
+        <button
+          className="lg:hidden absolute top-4 right-4 text-slate-400 hover:text-slate-200"
+          aria-label="Close sidebar"
+        >
+          <FaTimes size={20} />
+        </button>
+      </SidebarHeader>
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {menuItems.map((item, index) => (
+                <SidebarMenuItem key={index}>
+                  <SidebarMenuButton
+                    asChild
+                    className={`py-5 px-4 text-base  transition-all duration-200 ${
+                      state === "collapsed" ? "justify-center" : ""
+                    }`}
+                  >
+                    <Link
+                      href={item.href}
+                      className="flex items-center space-x-3"
+                    >
+                      <span
+                        className={`text-lg ${
+                          state === "collapsed" ? "mx-auto" : ""
+                        }`}
+                      >
+                        {item.icon}
+                      </span>
+                      <span
+                        className={state === "collapsed" ? "hidden" : "block"}
+                      >
+                        {item.label}
+                      </span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
+    </Sidebar>
   );
-};
-
-export default Sidebar;
+}
