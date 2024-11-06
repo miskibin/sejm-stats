@@ -30,6 +30,7 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/sidebar";
+import { ExternalLink } from "lucide-react";
 
 type ClientLayoutProps = {
   children: ReactNode;
@@ -91,6 +92,11 @@ const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
       href: "https://github.com/miskibin/sejm-stats/issues/new/choose",
       label: "Zgłoś błąd",
       icon: <FaGithub className="w-6 h-6" />,
+    },
+    {
+      href: "https://chat.sejm-stats.pl/",
+      label: "Asystent prawny",
+      icon: <ExternalLink className="w-6 h-6" />,
     },
   ];
 
