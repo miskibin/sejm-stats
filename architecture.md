@@ -90,7 +90,7 @@ flowchart TD
 
 #### Kluczowe Szczegóły Procesu Frontend
 
-Przy wyszukiwaniu wykorzystywana jest miara `cosine simmilarity`
+Przy wyszukiwaniu wykorzystywana jest miara `cosine simmilarity`. 
 
 1. **Krok: Znaleziono odpowiednie akty?**
    - Model przetwarza streszczenia sekcji z **n** najistotniejszych aktów prawnych zwróconych przez bazę danych.
