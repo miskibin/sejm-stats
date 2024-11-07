@@ -1,16 +1,15 @@
-# Architektura Projektu
+## **Architektura Projektu**
 
-## Architektura Backend
+### Architektura Backend
 
-Tech stack:
+**Tech Stack Backend**: 
 - Python
 - Django
-- Postgres + pgvector
+- PostgreSQL + pgvector
 - Vertex AI
 - Docker Compose
-- Początkowo LangChain (obecnie nieużywany)
 
-### Diagram Sekwencji
+#### Diagram Sekwencji Przetwarzania
 
 ```mermaid
 sequenceDiagram
@@ -39,29 +38,36 @@ sequenceDiagram
     end
 ```
 
-### Kluczowe Informacje
+#### Kluczowe Informacje Backend
 
-1. **Testowanie Embeddings**: Testy pokazują, że używanie tylko streszczeń zamiast pełnej treści obniża trafność o około **20%**. Dlatego streszczenia stosowane są wyłącznie na poziomie frontendu.
+1. **Testowanie Embeddings**: 
+   - Przeprowadzono testy różnych konfiguracji danych wejściowych do modelu wektoryzującego. Użycie jedynie streszczeń zamiast pełnej treści obniża trafność o około **20%**. Dlatego streszczenia stosowane są wyłącznie na poziomie frontendu.
+
 2. **Metadane Rozdziałów**:
    - **Start/End**: Numery stron, na których rozpoczyna i kończy się rozdział
-   - **Nazwy Rozdziałów**: Tytuły lub podtytuły ułatwiające odwołania
+   - **Nazwy Rozdziałów**: Tytuły lub podtytuły dla łatwiejszego odwołania się do konkretnych części aktu
+
+**Przykładowe zapytanie:**  
+[GET /q=apteki i szpitale](https://sejm-stats.pl/apiInt/vector-search/?q=%22apteki%20i%20szpitale%22)
+
+**Kod z fazy research:**  
+[embedings.ipynb](https://github.com/miskibin/sejm-stats/blob/main/research/embedings.ipynb)  
+(Końcowe sekcje notebooka zawierają testy semantyczne)
 
 
-Przykładowe zapytanie [GET /q=apteki i szpitale](https://sejm-stats.pl/apiInt/vector-search/?q=%22apteki%20i%20szpitale%22)
+---
 
-[Kod z fazy research](https://github.com/miskibin/sejm-stats/blob/main/research/embedings.ipynb) (na samym końcu znajdują się testy semantyczne)
+### **Asystent RP** – Architektura Frontend
 
-
-## **Asystent RP**
-
-### Tech stack
+**Tech Stack Frontend**:
 - TypeScript
 - Next.js, React, Tailwind, shadcn
 - Supabase
 - Together AI, OpenAI
 - Vercel
+- (Początkowo) LangChain (teraz wykorzystywany tylko jako referencja)
 
-### Schemat Blokowy
+#### Schemat Blokowy Procesu
 
 ```mermaid
 flowchart TD
@@ -82,35 +88,37 @@ flowchart TD
     H --> I
 ```
 
-### Kluczowe Szczegóły Procesu
+#### Kluczowe Szczegóły Procesu Frontend
 
-1. **uwaga do kroku: `Znaleziono odpowiednie akty?`**:
-   - Model przetwarza **streszczenia** sekcji z `n` najistotniejszych aktów prawnych zwróconych przez bazę danych. Ponieważ streszczenia są około **10 razy krótsze** niż oryginalne sekcje, jest to efektywna metoda wyboru odpowiedniej treści prawnej
-   - Z tych streszczeń wybierane są **od 0 do 3** najbardziej adekwatne sekcje, aby odpowiedzieć na zapytanie użytkownika
+1. **Znaleziono odpowiednie akty?**
+   - Model przetwarza streszczenia sekcji z **n** najistotniejszych aktów prawnych zwróconych przez bazę danych.
+   - Streszczenia są o **90% krótsze** niż oryginalne sekcje, co pozwala efektywnie wybrać odpowiednie treści prawne.
+   - Spośród streszczeń wybierane są **0 do 3** najbardziej adekwatne sekcje do odpowiedzi na zapytanie użytkownika.
 
-2. **Używanie Poprzednich Artefaktów**:
-   - **Poprzednie Artefakty** to poprostu sekcje aktów prawnych wykorzystane we wcześniejszych odpowiedziach
-   - Dzięki temu asystent może zapewnić ciągłość odpowiedzi, odnosząc się do wcześniejszych treści prawnych, co wzbogaca odpowiedź i utrzymuje kontekst
+2. **Używanie Poprzednich Artefaktów**
+   - Poprzednie Artefakty to sekcje aktów prawnych użyte we wcześniejszych odpowiedziach.
+   - Pozwala to na zachowanie ciągłości odpowiedzi i utrzymanie spójnego kontekstu.
 
-3. **Rezygnacja z LangChain**:
-   - LangChain.js jest znacznie mniej rozwinięty niż pakiet Pythonowy. Biblioteka nie wspiera `ollama` ani `Together AI`
-   - Cele dydaktyczne. (Chciałem lepiej zrozumieć proces działania RAG).
-
-Nie wykluczam jednak powrotu do LangChain w przyszłości, jeśli będzie on bardziej rozwinięty i dostosowany do moich potrzeb.
+3. **Rezygnacja z LangChain**
+   - LangChain.js jest znacznie mniej rozwinięty niż jego wersja Pythonowa; nie obsługuje `ollama` ani `Together AI`.
+   - Dydaktyczne podejście – lepsze zrozumienie procesu działania RAG.
+   - Powrót do LangChain rozważany, jeśli jego możliwości rozwiną się w przyszłości.
 
 4. **Rozszerzalność**
-    
-    Asystent jest zaimplementowany tak aby: 
-    - Wspierać wiele różnych narzędzi bez potrzeby zmian w kodzie
-    - Umożliwiać dodawanie nowych `providers` modeli  NLP (np `ollama`) bez konieczności zmian w kodzie
+   - Asystent wspiera wiele różnych narzędzi bez potrzeby modyfikacji kodu.
+   - Dodanie nowych `providers` NLP, takich jak `ollama`, jest możliwe bez istotnych zmian w kodzie.
 
-5. Obecnie koszt jednego zapytania do agenta wynosi około 1 grosz dla modelu `gpt-4o-mini`. Około 80% błędnych odpowiedzi zgłaszanych przez użytkowników nie pojawiłoby się, gdyby model otrzymywał dwa razy więcej danych wejściowych na wejściu.
+5. **Koszt i Efektywność Modelu**
+   - Koszt jednego zapytania do agenta wynosi około **1 grosz** dla modelu `gpt-4o-mini`.
+   - 80% zgłaszanych błędów w odpowiedziach wynika z niedostatecznej ilości danych na wejściu – zwiększenie ilości danych dwukrotnie zmniejszyłoby liczbę błędnych odpowiedzi.
 
-### Źródła
+
+### Źródła Projektu
+
 - [Asystent RP](https://chat.sejm-stats.pl/)   
-    -  [repozytorium](https://github.com/miskibin/asystent-rp)
+    -  [Repozytorium](https://github.com/miskibin/asystent-rp)
 
-- [sejm stats](https://sejm-stats.pl/)  
-    -  [repozytorium](https://github.com/miskibin/sejm-stats)
+- [Sejm Stats](https://sejm-stats.pl/)  
+    -  [Repozytorium](https://github.com/miskibin/sejm-stats)
 
-- [Kanał yt](https://www.youtube.com/@sejm-stats)
+- [Kanał YouTube](https://www.youtube.com/@sejm-stats)
