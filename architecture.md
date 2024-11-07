@@ -90,10 +90,13 @@ flowchart TD
 
 #### Kluczowe Szczegóły Procesu Frontend
 
-1. **Znaleziono odpowiednie akty?**
+Przy wyszukiwaniu wykorzystywana jest miara `cosine simmilarity`
+
+1. **Krok: Znaleziono odpowiednie akty?**
    - Model przetwarza streszczenia sekcji z **n** najistotniejszych aktów prawnych zwróconych przez bazę danych.
    - Streszczenia są o **90% krótsze** niż oryginalne sekcje, co pozwala efektywnie wybrać odpowiednie treści prawne.
    - Spośród streszczeń wybierane są **0 do 3** najbardziej adekwatne sekcje do odpowiedzi na zapytanie użytkownika.
+   - Pełni funkcję rerankingu wyników z bazy danych. 
 
 2. **Używanie Poprzednich Artefaktów**
    - Poprzednie Artefakty to sekcje aktów prawnych użyte we wcześniejszych odpowiedziach.
