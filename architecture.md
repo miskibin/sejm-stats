@@ -1,4 +1,4 @@
-# Architektura Projektu: Backend Asystenta Prawnego i Proces Tworzenia Odpowiedzi
+# Architektura Projektu
 
 ## Architektura Backend
 
@@ -84,28 +84,27 @@ flowchart TD
 
 ### Kluczowe Szczegóły Procesu
 
-1. **Identyfikacja Ogólnych Przepisów**:
-   - Model przetwarza **streszczenia sekcji** z `n` najistotniejszych aktów prawnych zwróconych przez bazę danych
-   - Ponieważ streszczenia są około **10 razy krótsze** niż oryginalne sekcje, jest to efektywna metoda wyboru odpowiedniej treści prawnej
+1. **uwaga do kroku: `Znaleziono odpowiednie akty?`**:
+   - Model przetwarza **streszczenia** sekcji z `n` najistotniejszych aktów prawnych zwróconych przez bazę danych. Ponieważ streszczenia są około **10 razy krótsze** niż oryginalne sekcje, jest to efektywna metoda wyboru odpowiedniej treści prawnej
    - Z tych streszczeń wybierane są **od 0 do 3** najbardziej adekwatne sekcje, aby odpowiedzieć na zapytanie użytkownika
 
 2. **Używanie Poprzednich Artefaktów**:
-   - **Poprzednie Artefakty** obejmują sekcje aktów prawnych wykorzystane we wcześniejszych odpowiedziach
+   - **Poprzednie Artefakty** to poprostu sekcje aktów prawnych wykorzystane we wcześniejszych odpowiedziach
    - Dzięki temu asystent może zapewnić ciągłość odpowiedzi, odnosząc się do wcześniejszych treści prawnych, co wzbogaca odpowiedź i utrzymuje kontekst
 
 3. **Rezygnacja z LangChain**:
    - LangChain.js jest znacznie mniej rozwinięty niż pakiet Pythonowy. Biblioteka nie wspiera `ollama` ani `Together AI`
-   - Chciałem się nauczyć, jak to działa "pod maską"
-   - Aby aplikacja była konkurencyjna dla narzędzi takich jak `GPT Search`, ustawy muszą być jak najgłębiej zintegrowane z chatbotem
+   - Cele dydaktyczne. (Chciałem lepiej zrozumieć proces działania RAG).
 
 Nie wykluczam jednak powrotu do LangChain w przyszłości, jeśli będzie on bardziej rozwinięty i dostosowany do moich potrzeb.
 
 4. **Rozszerzalność**
-    - Asystent jest zaimplementowany tak aby: 
+    
+    Asystent jest zaimplementowany tak aby: 
     - Wspierać wiele różnych narzędzi bez potrzeby zmian w kodzie
-    - Umożliwiać dodawanie nowych `providers` modeli NLP bez konieczności zmian w kodzie
+    - Umożliwiać dodawanie nowych `providers` modeli  NLP (np `ollama`) bez konieczności zmian w kodzie
 
-5. Obecnie koszt jednego zapytania do agenta wynosi około 1 grosz dla modelu `gpt-4o-mini`. Około 80% błędnych odpowiedzi zgłaszanych przez użytkowników nie pojawiłoby się, gdyby model otrzymywał dwa razy więcej fragmentów aktów prawnych na wejściu.
+5. Obecnie koszt jednego zapytania do agenta wynosi około 1 grosz dla modelu `gpt-4o-mini`. Około 80% błędnych odpowiedzi zgłaszanych przez użytkowników nie pojawiłoby się, gdyby model otrzymywał dwa razy więcej danych wejściowych na wejściu.
 
 ### Źródła
 - [Asystent RP](https://chat.sejm-stats.pl/)   
