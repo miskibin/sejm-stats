@@ -30,7 +30,7 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import AppSidebar from "@/components/sidebar";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, Sparkle, Sparkles } from "lucide-react";
 
 type ClientLayoutProps = {
   children: ReactNode;
@@ -100,9 +100,9 @@ const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
 
   const footerLinks = [
     {
-      href: "https://docs.sejm-stats.pl/",
-      label: "Dokumentacja",
-      icon: <FaBook className="w-6 h-6 text-blue-600" />,
+      href: "https://chat.sejm-stats.pl/",
+      label: "Asystent prawny",
+      icon: <Sparkles className="w-6 h-6 text-blue-600" />,
     },
     {
       href: "https://patronite.pl/sejm-stats",
