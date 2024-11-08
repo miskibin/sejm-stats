@@ -139,19 +139,19 @@ const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
                   } as React.CSSProperties
                 }
               >
-                  <AppSidebar menuItems={menuItems} />
-                  <SidebarInset className="flex min-h-screen w-full flex-col">
-                    <Navbar>
-                      <SidebarTrigger className="-ml-1" />
-                    </Navbar>
-                    <main className="overflow-y-auto bg-gray-100 dark:bg-gray-900">
-                      <div className="container w-full px-0 mx-0">
-                        <Breadcrumbs />
-                        {children}
-                      </div>
-                    </main>
-                    <Footer links={footerLinks} />
-                  </SidebarInset>
+                <AppSidebar menuItems={menuItems} />
+                <SidebarInset className="flex min-h-screen w-full flex-col">
+                  <Navbar>
+                    <SidebarTrigger className="-ml-1" />
+                  </Navbar>
+                  <main className="overflow-y-auto min-h-screen bg-gray-100 dark:bg-gray-900 w-full">
+                    <div className="w-full">
+                      <Breadcrumbs />
+                      {children}
+                    </div>
+                  </main>
+                  <Footer links={footerLinks} />
+                </SidebarInset>
               </SidebarProvider>
             </ThemeProvider>
           </body>
