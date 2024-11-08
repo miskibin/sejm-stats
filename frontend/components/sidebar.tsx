@@ -1,7 +1,9 @@
+"use client";
+
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { FaTimes } from "react-icons/fa";
+import { X } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -13,6 +15,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { stat } from "fs";
 
 type MenuItem = {
   href: string;
@@ -24,34 +27,38 @@ type AppSidebarProps = {
   menuItems: MenuItem[];
 };
 
-export function AppSidebar({ menuItems }: AppSidebarProps) {
-  const { state } = useSidebar();
+export default function AppSidebar({ menuItems = [] }: AppSidebarProps) {
+  const { state, toggleSidebar } = useSidebar();
+  const isCollapsed = state === "collapsed";
 
   return (
-    <Sidebar collapsible="offcanvas">
-      <SidebarHeader className="p-4">
-        <div className="flex items-center space-x-2">
-          <div className="w-10 h-10 flex-shrink-0">
-            <Image
-              src="/logo.png"
-              alt="Sejm Stats Logo"
-              width={40}
-              height={40}
-            />
+    <Sidebar collapsible="icon">
+      <SidebarHeader className="relative p-4">
+        <Link href={"/"}>
+          <div className="flex items-center gap-2">
+            <div
+              className={`relative flex-shrink-0 ${
+                isCollapsed ? "w-8 h-8" : "w-10 h-10"
+              }`}
+            >
+              <Image
+                src="/logo.png"
+                alt="Sejm Stats Logo"
+                fill
+                className="object-contain"
+              />
+            </div>
+            {!isCollapsed && (
+              <span className="text-xl font-bold">sejm-stats</span>
+            )}
           </div>
-          <span
-            className={`text-xl font-bold ${
-              state === "collapsed" ? "hidden" : "block"
-            }`}
-          >
-            sejm-stats
-          </span>
-        </div>
+        </Link>
         <button
-          className="lg:hidden absolute top-4 right-4 text-slate-400 hover:text-slate-200"
+          className="absolute right-4 top-4 text-muted-foreground hover:text-foreground lg:hidden"
           aria-label="Close sidebar"
+          onClick={toggleSidebar}
         >
-          <FaTimes size={20} />
+          <X className="h-5 w-5" />
         </button>
       </SidebarHeader>
       <SidebarContent>
@@ -59,29 +66,16 @@ export function AppSidebar({ menuItems }: AppSidebarProps) {
           <SidebarGroupContent>
             <SidebarMenu>
               {menuItems.map((item, index) => (
-                <SidebarMenuItem key={index}>
-                  <SidebarMenuButton
-                    asChild
-                    className={`py-5 px-4 text-base  transition-all duration-200 ${
-                      state === "collapsed" ? "justify-center" : ""
-                    }`}
-                  >
+                <SidebarMenuItem key={index} className="py-1.5">
+                  <SidebarMenuButton className="transition-all duration-200 w-full">
                     <Link
                       href={item.href}
-                      className="flex items-center space-x-3"
+                      className={`flex items-center gap-2 ${
+                        isCollapsed ? "justify-center" : ""
+                      }`}
                     >
-                      <span
-                        className={`text-lg ${
-                          state === "collapsed" ? "mx-auto" : ""
-                        }`}
-                      >
-                        {item.icon}
-                      </span>
-                      <span
-                        className={state === "collapsed" ? "hidden" : "block"}
-                      >
-                        {item.label}
-                      </span>
+                      <span className="text-lg">{item.icon}</span>
+                      {!isCollapsed && <span>{item.label}</span>}
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

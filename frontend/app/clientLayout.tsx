@@ -29,7 +29,7 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";
-import { AppSidebar } from "@/components/sidebar";
+import AppSidebar from "@/components/sidebar";
 import { ExternalLink } from "lucide-react";
 
 type ClientLayoutProps = {
@@ -37,11 +37,9 @@ type ClientLayoutProps = {
 };
 
 const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
-  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [queryClient] = useState(() => new QueryClient());
 
   const menuItems = [
-    { href: "/", label: "Strona główna", icon: <FaHome className="w-6 h-6" /> },
     {
       href: "/envoys",
       label: "Posłowie",
@@ -132,7 +130,7 @@ const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
     <QueryClientProvider client={queryClient}>
       <SessionProvider>
         <html lang="pl" className="h-full">
-          <body className="h-full overflow-hidden">
+          <body className="h-full ">
             <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
               <SidebarProvider
                 style={
@@ -146,8 +144,8 @@ const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
                     <Navbar>
                       <SidebarTrigger className="-ml-1" />
                     </Navbar>
-                    <main className="flex-1 overflow-y-auto bg-neutral-100 dark:bg-gray-900">
-                      <div className="container mx-auto px-4">
+                    <main className="overflow-y-auto bg-gray-100 dark:bg-gray-900">
+                      <div className="container w-full px-0 mx-0">
                         <Breadcrumbs />
                         {children}
                       </div>
