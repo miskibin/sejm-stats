@@ -3,6 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { X } from "lucide-react";
 import {
   Sidebar,
@@ -15,7 +16,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
-import { stat } from "fs";
+import { cn } from "@/lib/utils";
 
 type MenuItem = {
   href: string;
@@ -29,7 +30,15 @@ type AppSidebarProps = {
 
 export default function AppSidebar({ menuItems = [] }: AppSidebarProps) {
   const { state, toggleSidebar } = useSidebar();
+  const pathname = usePathname();
   const isCollapsed = state === "collapsed";
+
+  const isActive = (href: string) => {
+    if (href === "/") {
+      return pathname === href;
+    }
+    return pathname.startsWith(href);
+  };
 
   return (
     <Sidebar collapsible="icon">
@@ -65,21 +74,33 @@ export default function AppSidebar({ menuItems = [] }: AppSidebarProps) {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {menuItems.map((item, index) => (
-                <SidebarMenuItem key={index} className="py-1.5">
-                  <SidebarMenuButton className="transition-all duration-200 w-full">
-                    <Link
-                      href={item.href}
-                      className={`flex items-center gap-2 ${
-                        isCollapsed ? "justify-center" : ""
-                      }`}
+              {menuItems.map((item, index) => {
+                const active = isActive(item.href);
+                return (
+                  <SidebarMenuItem key={index} className="py-1.5">
+                    <SidebarMenuButton
+                      className={cn(
+                        "transition-all duration-200 w-full rounded-md",
+                        active && "text-primary font-medium"
+                      )}
                     >
-                      <span className="text-lg">{item.icon}</span>
-                      {!isCollapsed && <span>{item.label}</span>}
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+                      <Link
+                        href={item.href}
+                        className={cn(
+                          "flex items-center gap-2",
+                          isCollapsed ? "justify-center" : "",
+                          active
+                            ? "text-primary"
+                            : "text-muted-foreground hover:text-foreground"
+                        )}
+                      >
+                        <span className="text-lg">{item.icon}</span>
+                        {!isCollapsed && <span>{item.label}</span>}
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
