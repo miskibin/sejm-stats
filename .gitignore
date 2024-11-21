@@ -11,7 +11,8 @@ mdb/
 /src/static/
 # testing
 /coverage
-
+./lightgraph/
+/lightgraph/**
 # next.js
 /.next/
 /out/
