@@ -4,7 +4,19 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { X } from "lucide-react";
+import { ExternalLink, X, ChevronDown } from "lucide-react";
+import {
+  FaUsers,
+  FaVoteYea,
+  FaCogs,
+  FaAddressBook,
+  FaPeopleCarry,
+  FaHandshake,
+  FaCommentDots,
+  FaBook,
+  FaChartBar,
+  FaGithub,
+} from "react-icons/fa";
 import {
   Sidebar,
   SidebarContent,
@@ -14,21 +26,94 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubItem,
+  SidebarMenuSubButton,
   useSidebar,
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 
 type MenuItem = {
   href: string;
   label: string;
   icon: React.ReactNode;
+  submenu?: MenuItem[];
 };
 
-type AppSidebarProps = {
-  menuItems: MenuItem[];
-};
+const menuItems: MenuItem[] = [
+  {
+    href: "/envoys",
+    label: "Posłowie",
+    icon: <FaUsers className="w-6 h-6" />,
+  },
+  {
+    href: "/clubs",
+    label: "Kluby parlamentarne",
+    icon: <FaHandshake className="w-6 h-6" />,
+  },
+  {
+    href: "/committees",
+    label: "Komisje sejmowe",
+    icon: <FaPeopleCarry className="w-6 h-6" />,
+  },
+  {
+    href: "/legislative",
+    label: "Legislacja",
+    icon: <FaCogs className="w-6 h-6" />,
+    submenu: [
+      {
+        href: "/votings",
+        label: "Głosowania",
+        icon: <FaVoteYea className="w-4 h-4" />,
+      },
+      {
+        href: "/processes",
+        label: "Procesy legislacyjne",
+        icon: <FaCogs className="w-4 h-4" />,
+      },
+      {
+        href: "/acts",
+        label: "Dziennik ustaw",
+        icon: <FaBook className="w-4 h-4" />,
+      },
+      {
+        href: "/interpellations",
+        label: "Interpelacje",
+        icon: <FaCommentDots className="w-4 h-4" />,
+      },
+    ],
+  },
+  {
+    href: "/about",
+    label: "O projekcie",
+    icon: <FaAddressBook className="w-6 h-6" />,
+    submenu: [
+      { href: "/faq", label: "FAQ", icon: <FaBook className="w-4 h-4" /> },
+      {
+        href: "https://github.com/miskibin/sejm-stats/issues/new/choose",
+        label: "Zgłoś błąd",
+        icon: <FaGithub className="w-4 h-4" />,
+      },
+      {
+        href: "https://chat.sejm-stats.pl/",
+        label: "Asystent prawny",
+        icon: <ExternalLink className="w-4 h-4" />,
+      },
+    ],
+  },
+  {
+    href: "/stats",
+    label: "Statystyki",
+    icon: <FaChartBar className="w-6 h-6" />,
+  },
+];
 
-export default function AppSidebar({ menuItems = [] }: AppSidebarProps) {
+export default function AppSidebar() {
   const { state, toggleSidebar } = useSidebar();
   const pathname = usePathname();
   const isCollapsed = state === "collapsed";
@@ -78,26 +163,81 @@ export default function AppSidebar({ menuItems = [] }: AppSidebarProps) {
                 const active = isActive(item.href);
                 return (
                   <SidebarMenuItem key={index} className="py-1.5">
-                    <SidebarMenuButton
-                      className={cn(
-                        "transition-all duration-200 w-full rounded-md",
-                        active && "text-primary font-medium"
-                      )}
-                    >
-                      <Link
-                        href={item.href}
+                    {item.submenu ? (
+                      <Collapsible>
+                        <CollapsibleTrigger asChild>
+                          <div
+                            className={cn(
+                              "transition-all duration-200 w-full rounded-md cursor-pointer",
+                              active && "text-primary font-medium"
+                            )}
+                          >
+                            <div
+                              className={cn(
+                                "flex items-center gap-2 p-2",
+                                isCollapsed ? "justify-center" : "",
+                                active
+                                  ? "text-primary"
+                                  : "text-muted-foreground hover:text-foreground"
+                              )}
+                            >
+                              <span className="text-lg">{item.icon}</span>
+                              {!isCollapsed && (
+                                <>
+                                  <span>{item.label}</span>
+                                  <ChevronDown className="ml-auto h-4 w-4" />
+                                </>
+                              )}
+                            </div>
+                          </div>
+                        </CollapsibleTrigger>
+                        <CollapsibleContent>
+                          <SidebarMenuSub>
+                            {item.submenu.map((subItem, subIndex) => (
+                              <SidebarMenuSubItem key={subIndex}>
+                                <SidebarMenuSubButton asChild>
+                                  <Link
+                                    href={subItem.href}
+                                    className={cn(
+                                      "flex items-center gap-2",
+                                      isActive(subItem.href)
+                                        ? "text-primary"
+                                        : "text-muted-foreground hover:text-foreground"
+                                    )}
+                                  >
+                                    <span className="text-sm">
+                                      {subItem.icon}
+                                    </span>
+                                    <span>{subItem.label}</span>
+                                  </Link>
+                                </SidebarMenuSubButton>
+                              </SidebarMenuSubItem>
+                            ))}
+                          </SidebarMenuSub>
+                        </CollapsibleContent>
+                      </Collapsible>
+                    ) : (
+                      <div
                         className={cn(
-                          "flex items-center gap-2",
-                          isCollapsed ? "justify-center" : "",
-                          active
-                            ? "text-primary"
-                            : "text-muted-foreground hover:text-foreground"
+                          "transition-all duration-200 w-full rounded-md",
+                          active && "text-primary font-medium"
                         )}
                       >
-                        <span className="text-lg">{item.icon}</span>
-                        {!isCollapsed && <span>{item.label}</span>}
-                      </Link>
-                    </SidebarMenuButton>
+                        <Link
+                          href={item.href}
+                          className={cn(
+                            "flex items-center gap-2 p-2",
+                            isCollapsed ? "justify-center" : "",
+                            active
+                              ? "text-primary"
+                              : "text-muted-foreground hover:text-foreground"
+                          )}
+                        >
+                          <span className="text-lg">{item.icon}</span>
+                          {!isCollapsed && <span>{item.label}</span>}
+                        </Link>
+                      </div>
+                    )}
                   </SidebarMenuItem>
                 );
               })}

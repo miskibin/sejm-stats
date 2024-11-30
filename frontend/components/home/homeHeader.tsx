@@ -13,32 +13,6 @@ import DateRangeModal from "../dateRangeModal";
 import { motion } from "framer-motion";
 import styles from "@/app/home.module.css";
 
-const LegalAssistantCard = () => (
-  <motion.div
-    initial={{ opacity: 0, x: 50 }}
-    animate={{ opacity: 1, x: 0 }}
-    transition={{ duration: 0.5 }}
-    className="absolute top-16 right-12 w-80 z-20"
-  >
-    <div className="bg-card text-card-foreground border border-border rounded-lg p-4 shadow-lg">
-      <h2 className="text-lg font-semibold mb-2 flex items-center">
-        <FaRobot className="mr-2 text-primary" /> Nowość: Asystent Prawny
-      </h2>
-      <p className="text-muted-foreground mb-3">
-        Wypróbuj asystenta prawnego, który przeczytał wszystkie ustawy dostępne na sejm-stats, by odpowiadać na pytania prawne.
-      </p>
-      <a
-        href="https://chat.sejm-stats.pl"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="inline-flex items-center bg-primary text-primary-foreground px-4 py-2 rounded hover:bg-primary/90 transition"
-      >
-        Przejdź do Asystenta <FaExternalLinkAlt className="ml-2 h-4 w-4" />
-      </a>
-    </div>
-  </motion.div>
-);
-
 export const HomeHeader: React.FC = ({}) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -72,7 +46,6 @@ export const HomeHeader: React.FC = ({}) => {
       <header
         className={`relative overflow-hidden ${styles.bgBanner} border-b border-gray-200 py-16 lg:px-12 sm:px-1`}
       >
-        <LegalAssistantCard />
         <div className="container mx-auto px-4 relative z-10">
           <motion.h1
             initial={{ opacity: 0, y: -50 }}

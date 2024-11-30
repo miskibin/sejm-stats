@@ -14,6 +14,7 @@ from sejm_app.models.voting import VotingOption
 from sejm_app.utils import parse_all_dates
 
 from .db_updater_task import DbUpdaterTask
+from django.db import DatabaseError
 
 
 class VotingsUpdaterTask(DbUpdaterTask):
@@ -83,9 +84,13 @@ class VotingsUpdaterTask(DbUpdaterTask):
                 logger.info(f"Finished downloading votings from {sitting} sitting")
                 break
             resp.raise_for_status()
-            with transaction.atomic():
-                voting = self._create_voting(resp.json())
-                self._create_club_votes(voting)
+            try:
+                with transaction.atomic():
+                    voting = self._create_voting(resp.json())
+                    self._create_club_votes(voting)
+            except DatabaseError as e:
+                logger.error(f"DatabaseError: {e}")
+                transaction.set_rollback(True)
             number += 1
 
     def _create_vote(self, vote_data: dict, voting: Voting) -> Vote:

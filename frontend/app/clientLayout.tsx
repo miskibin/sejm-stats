@@ -39,65 +39,6 @@ type ClientLayoutProps = {
 const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
   const [queryClient] = useState(() => new QueryClient());
 
-  const menuItems = [
-    {
-      href: "/envoys",
-      label: "Posłowie",
-      icon: <FaUsers className="w-6 h-6" />,
-    },
-    {
-      href: "/votings",
-      label: "Głosowania",
-      icon: <FaVoteYea className="w-6 h-6" />,
-    },
-    {
-      href: "/processes",
-      label: "Procesy legislacyjne",
-      icon: <FaCogs className="w-6 h-6" />,
-    },
-    {
-      href: "/faq",
-      label: "O projekcie",
-      icon: <FaAddressBook className="w-6 h-6" />,
-    },
-    {
-      href: "/committees",
-      label: "Komisje sejmowe",
-      icon: <FaPeopleCarry className="w-6 h-6" />,
-    },
-    {
-      href: "/clubs",
-      label: "Kluby parlamentarne",
-      icon: <FaHandshake className="w-6 h-6" />,
-    },
-    {
-      href: "/interpellations",
-      label: "Interpelacje",
-      icon: <FaCommentDots className="w-6 h-6" />,
-    },
-    {
-      href: "/acts",
-      label: "Dziennik ustaw",
-      icon: <FaBook className="w-6 h-6" />,
-    },
-    {
-      href: "/stats",
-      label: "Statystyki",
-      icon: <FaChartBar className="w-6 h-6" />,
-    },
-
-    {
-      href: "https://github.com/miskibin/sejm-stats/issues/new/choose",
-      label: "Zgłoś błąd",
-      icon: <FaGithub className="w-6 h-6" />,
-    },
-    {
-      href: "https://chat.sejm-stats.pl/",
-      label: "Asystent prawny",
-      icon: <ExternalLink className="w-6 h-6" />,
-    },
-  ];
-
   const footerLinks = [
     {
       href: "https://chat.sejm-stats.pl/",
@@ -139,7 +80,7 @@ const ClientLayout: React.FC<ClientLayoutProps> = ({ children }) => {
                   } as React.CSSProperties
                 }
               >
-                <AppSidebar menuItems={menuItems} />
+                <AppSidebar />
                 <SidebarInset className="flex min-h-screen w-full flex-col">
                   <Navbar>
                     <SidebarTrigger className="-ml-1" />
