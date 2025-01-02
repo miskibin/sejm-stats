@@ -1,5 +1,5 @@
 vertexai
-uvicorn==0.30.1
+uvicorn==0.34.0
 gunicorn==23.0.0
 pgvector==0.3.5
 django==5.0
