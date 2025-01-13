@@ -4,6 +4,10 @@
   <a href="https://sejm-stats.pl/"><img src="frontend/public/logo.png" alt="Sejm Stats logo" width="200"/></a>
 </p>
 
+**IMPORTANT**
+
+Project is no longer maintained, go to [new version](https://github.com/miskibin/sejmofil)
+
 <h1 align="center">Sejm Stats</h1>
 
 <p align="center">
@@ -23,8 +27,6 @@
 <p align="center">
   <a href="https://sejm-stats.pl"><img src="https://github.com/user-attachments/assets/f8b3a543-1b05-4541-b65d-4f004b868ccc" alt="Sejm Stats Preview" ></a>
 </p>
-
-Sejm-stats provides a clear and concise view of complex parliamentary data, making it easier for citizens to stay informed about the actions and decisions of their representatives.
 
 ## 🚀 Quick Start
 
