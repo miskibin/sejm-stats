@@ -73,7 +73,7 @@ class VotingsUpdaterTask(DbUpdaterTask):
     def _download_votings(self):
         sitting, number = self._get_sitting_and_number()
         logger.info(f"Downloading votings from {sitting} sitting")
-        while number < 1000:  # 1000 is a random number, we need to stop at some point
+        while number < 1000:
             resp = requests.get(f"{settings.VOTINGS_URL}/{sitting}/{number}")
             logger.debug(f"Downloaded voting {sitting}/{number}: {resp.status_code}")
             if resp.status_code == 404 and number > 1:
@@ -84,97 +84,128 @@ class VotingsUpdaterTask(DbUpdaterTask):
                 logger.info(f"Finished downloading votings from {sitting} sitting")
                 break
             resp.raise_for_status()
-            try:
-                with transaction.atomic():
-                    voting = self._create_voting(resp.json())
-                    self._create_club_votes(voting)
-            except DatabaseError as e:
-                logger.error(f"DatabaseError: {e}")
-                transaction.set_rollback(True)
-            number += 1
 
-    def _create_vote(self, vote_data: dict, voting: Voting) -> Vote:
-        vote = Vote()
-        vote.voting = voting
-        vote_data = parse_all_dates(vote_data)
-        vote.MP = Envoy.objects.get(id=vote_data["MP"])
-        if voting.votes.filter(MP=vote.MP).exists():
-            return voting.votes.get(MP=vote.MP)
-        if voting.kind == Voting.Kind.ON_LIST:
-            vote.save()
-            for index, val in vote_data.get("listVotes", {}).items():
-                list_vote = ListVote.objects.create(
-                    vote=vote,
-                    voteOption=VoteOption[val.upper()].value,
-                    optionIndex=VotingOption.objects.get(
-                        voting=voting, optionIndex=index
-                    ),
+            try:
+                voting_data = resp.json()
+                voting = self._create_voting(voting_data)
+                if voting:
+                    self._create_club_votes(voting)
+            except (DatabaseError, DataError) as e:
+                logger.warning(
+                    f"Skipping voting {sitting}/{number} due to data error: {str(e)[:200]}..."
                 )
-                list_vote.save()
+            except Exception as e:
+                logger.error(
+                    f"Unexpected error processing voting {sitting}/{number}: {e}"
+                )
+            finally:
+                number += 1
+
+    def _create_vote(self, vote_data: dict, voting: Voting) -> Vote | None:
+        try:
+            vote = Vote()
+            vote.voting = voting
+            vote_data = parse_all_dates(vote_data)
+            vote.MP = Envoy.objects.get(id=vote_data["MP"])
+
+            if voting.votes.filter(MP=vote.MP).exists():
+                return voting.votes.get(MP=vote.MP)
+
+            if voting.kind == Voting.Kind.ON_LIST:
+                vote.save()
+                for index, val in vote_data.get("listVotes", {}).items():
+                    try:
+                        option_index = int(index)
+                        voting_option = VotingOption.objects.get(
+                            voting=voting, optionIndex=option_index
+                        )
+                        list_vote = ListVote.objects.create(
+                            vote=vote,
+                            voteOption=VoteOption[val.upper()].value,
+                            optionIndex=voting_option,
+                        )
+                        list_vote.save()
+                    except (ValueError, VotingOption.DoesNotExist) as e:
+                        logger.warning(f"Error processing list vote: {e}")
+                        continue
+                return vote
+
+            if vote_data.get("vote"):
+                vote.vote = VoteOption[vote_data["vote"].upper()].value
             return vote
-        if vote_data.get("vote"):
-            vote.vote = VoteOption[vote_data["vote"].upper()].value
-        return vote
+        except Exception as e:
+            logger.warning(f"Skipping vote for MP {vote_data.get('MP')}: {e}")
+            return None
 
     def _create_voting(self, data: dict):
-        # if does not existss
-        if Voting.objects.filter(
-            sittingDay=data["sittingDay"],
-            votingNumber=data["votingNumber"],
-            sitting=data["sitting"],
-        ).exists():
-            return Voting.objects.filter(
+        try:
+            # if does not existss
+            if Voting.objects.filter(
                 sittingDay=data["sittingDay"],
                 votingNumber=data["votingNumber"],
                 sitting=data["sitting"],
-            ).first()
-        voting = Voting()
-        data = parse_all_dates(data)
-        for key, value in data.items():
-            if not hasattr(voting, key) or key in ("votes", "votingOptions"):
-                continue
-            if isinstance(value, str) and len(value) > 512:
-                value = value[:512]
-            setattr(voting, key, value)
-        title = f"{voting.title} {voting.topic}"
-        print_ids = get_prints_from_title(title)
-        voting.category = self._get_category(
-            voting.title,
-            voting.topic if voting.topic else "",
-            bool(print_ids),
-            voting.kind == Voting.Kind.ON_LIST,
-        )
-        voting.save()
-        voting.prints.set(
-            [
-                models.PrintModel.objects.filter(number=print_id).first()
-                for print_id in print_ids
-            ]
-        )
-        voting.save()
-        if votingOptions := data.get("votingOptions"):  # only for ON_LIST votings
-            for option in votingOptions:
-                opt_obj = VotingOption.objects.create(
-                    voting=voting,
-                    option=option["option"],
-                    optionIndex=option["optionIndex"],
-                )
-                opt_obj.save()
-        if votes_data := data.get("votes"):
-            try:
-                voting.save()
-                votes = [
-                    self._create_vote(vote_data, voting) for vote_data in votes_data
+            ).exists():
+                return Voting.objects.filter(
+                    sittingDay=data["sittingDay"],
+                    votingNumber=data["votingNumber"],
+                    sitting=data["sitting"],
+                ).first()
+            voting = Voting()
+            data = parse_all_dates(data)
+            for key, value in data.items():
+                if not hasattr(voting, key) or key in ("votes", "votingOptions"):
+                    continue
+                if isinstance(value, str) and len(value) > 512:
+                    value = value[:512]
+                setattr(voting, key, value)
+            title = f"{voting.title} {voting.topic}"
+            print_ids = get_prints_from_title(title)
+            voting.category = self._get_category(
+                voting.title,
+                voting.topic if voting.topic else "",
+                bool(print_ids),
+                voting.kind == Voting.Kind.ON_LIST,
+            )
+            voting.save()
+            voting.prints.set(
+                [
+                    models.PrintModel.objects.filter(number=print_id).first()
+                    for print_id in print_ids
                 ]
-                for vote in votes:
-                    vote.save()
-            except DataError:
-                logger.warning(f"DataError: {votes_data}")
-        if voting.kind == Voting.Kind.ON_LIST:
-            for option in voting.votingOptions.all():
-                option.votes = voting.votes.filter(
-                    listVotes__optionIndex=option.optionIndex,
-                    listVotes__voteOption=VoteOption.YES,
-                ).count()
-                option.save()
-        return voting
+            )
+            voting.save()
+            if votingOptions := data.get("votingOptions"):  # only for ON_LIST votings
+                for option in votingOptions:
+                    opt_obj = VotingOption.objects.create(
+                        voting=voting,
+                        option=option["option"],
+                        optionIndex=option["optionIndex"],
+                    )
+                    opt_obj.save()
+            if votes_data := data.get("votes"):
+                votes = []
+                for vote_data in votes_data:
+                    vote = self._create_vote(vote_data, voting)
+                    if vote:
+                        try:
+                            vote.save()
+                            votes.append(vote)
+                        except DataError as e:
+                            logger.warning(
+                                f"Failed to save vote for MP {vote_data.get('MP')}: {e}"
+                            )
+
+            if voting.kind == Voting.Kind.ON_LIST:
+                for option in voting.votingOptions.all():
+                    option.votes = voting.votes.filter(
+                        listVotes__optionIndex=option.optionIndex,
+                        listVotes__voteOption=VoteOption.YES,
+                    ).count()
+                    option.save()
+            return voting
+
+        except (DatabaseError, DataError) as e:
+            logger.warning(
+                f"Failed to create voting {data.get('sitting')}/{data.get('votingNumber')}: {e}"
+            )
+            raise

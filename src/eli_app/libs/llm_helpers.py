@@ -25,13 +25,15 @@ def split_texts(texts, max_chars=5000):
 
     return chunks
 
-def prepare_section_for_embedding(section:ActSection) -> str:
+
+def prepare_section_for_embedding(section: ActSection) -> str:
     eli = section.act.ELI
     title = section.act.title.replace("w sprawie ogłoszenia jednolitego tekstu", "")
     chapter_title = section.chapters
     summary = section.summary
     # return f"Tytuł: {clean_title(title)}, {keywords}\n\nRozdział: {chapter_title}\n\nPodsumowanie: {summary}\n\n{eli}"
     return f"Tytuł: {clean_title(title)} \nFragment: {chapter_title}\nPodsumowanie: {summary}\n\n{eli}"
+
 
 SYSTEM_MESSAGE = """
 You are a legal expert specializing in creating concise summaries of legal documents for vector models. Your responses must always be in Polish language. Follow these rules:
