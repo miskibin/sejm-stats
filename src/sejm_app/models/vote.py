@@ -14,7 +14,7 @@ class VoteOption(models.IntegerChoices):
 
 
 class Vote(models.Model):
-    id = models.IntegerField(primary_key=True)
+    id = models.BigIntegerField(primary_key=True)  # Changed to BigIntegerField
     voting = models.ForeignKey("Voting", on_delete=models.CASCADE, related_name="votes")
     MP = models.ForeignKey("Envoy", on_delete=models.CASCADE, related_name="votes")
     vote = models.SmallIntegerField(

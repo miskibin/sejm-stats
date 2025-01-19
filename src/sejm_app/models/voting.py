@@ -26,7 +26,7 @@ class Voting(models.Model):
         TRADITIONAL = "TRADITIONAL", _("Tradycyjne")
         ON_LIST = "ON_LIST", _("Na liście")
 
-    id = models.IntegerField(primary_key=True, help_text=_("Voting ID"))
+    id = models.BigIntegerField(primary_key=True, help_text=_("Voting ID"))
     yes = models.SmallIntegerField(null=True, blank=True, help_text=_("Yes votes"))
     no = models.SmallIntegerField(null=True, blank=True, help_text=_("No votes"))
     abstain = models.SmallIntegerField(
