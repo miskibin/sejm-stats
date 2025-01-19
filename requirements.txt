@@ -9,6 +9,7 @@ Pillow==10.4.0
 bs4==0.0.2
 django-select2==8.1.2
 psycopg==3.1.19
+django-cors-headers==4.6.0
 psycopg-binary==3.2.3
 wikipedia==1.4.0
 python-decouple==3.8
