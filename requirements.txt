@@ -12,7 +12,6 @@ psycopg==3.1.19
 psycopg-binary==3.2.3
 wikipedia==1.4.0
 python-decouple==3.8
-django-ratelimit
 pytesseract==0.3.13
 pdfminer.six==20240706
 pdf2image==1.17.0
@@ -24,9 +23,4 @@ django-celery-beat==2.6.0
 django-celery-results==2.5.1
 django-redis==5.4.0
 django-debug-toolbar==4.4.2
-einops
 djangorestframework==3.15.2
-django-filter
-drf-extensions
-django-cors-headers
-pdfplumber
