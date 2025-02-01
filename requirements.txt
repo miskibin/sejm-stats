@@ -1,7 +1,7 @@
 vertexai
 uvicorn==0.34.0
 gunicorn==23.0.0
-pgvector==0.3.5
+pgvector==0.3.6
 django==5.0
 loguru==0.7.2
 requests==2.32.3
